@@ -700,3 +700,55 @@ section[id]{scroll-margin-top:68px}
 
 .cham-soc{gap:10px}
 .cham-soc b{font-weight:500;color:var(--muc)}
+
+
+/* =========================================================
+   TÀI KHOẢN KHÁCH
+   ========================================================= */
+.nut-tk{width:34px;height:34px;border-radius:50%;display:grid;place-items:center;border:1px solid currentColor;opacity:.85;transition:opacity var(--tg-nut),background var(--tg-nut)}
+.nut-tk:hover{opacity:1}
+.nut-tk svg{width:18px;height:18px}
+.nut-tk .chu-tk{font:400 15px/1 var(--serif)}
+.dau .phai .nut-tk{display:grid!important;letter-spacing:0}
+.trang-tk{padding:40px 0 120px;min-height:70svh}
+.tk-hop{max-width:420px;margin:0 auto;padding:10px 0}
+.tk-hop.giua{text-align:center}
+.tk-hop .nho,.tk-dau .nho{color:var(--vang)}
+.tk-hop h1,.tk-dau h1{font-size:clamp(34px,5vw,52px);color:var(--muc);margin:12px 0 10px;line-height:1.12}
+.tk-hop h1 em,.tk-dau h1 em{color:var(--vang)}
+.tk-hop .dan{margin:0 0 26px;max-width:none}
+.tk-hop form,.tk-the form{display:grid;gap:14px}
+.tk-hop label,.tk-the label{display:grid;gap:6px;font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--mo)}
+.tk-hop input,.tk-the input,.tk-the textarea{font:400 15px var(--sans);letter-spacing:0;text-transform:none;color:var(--chu);background:var(--the);border:1px solid var(--vien);border-radius:12px;padding:13px 15px;outline:none;transition:border-color var(--tg-nut),box-shadow var(--tg-nut)}
+.tk-hop input:focus,.tk-the input:focus,.tk-the textarea:focus{border-color:var(--muc);box-shadow:0 0 0 4px rgba(29,58,70,.08)}
+.tk-hop .nut,.tk-the .nut{justify-content:center;padding:15px}
+.nut-gg{width:100%;justify-content:center;gap:12px;padding:14px;background:var(--the);color:var(--chu);border-color:var(--vien);letter-spacing:.08em;text-transform:none;font-size:14px}
+.nut-gg svg{width:18px;height:18px}
+.nut-gg:hover{background:var(--the);color:var(--chu);border-color:var(--muc)}
+.hoac{display:flex;align-items:center;gap:12px;margin:18px 0;color:var(--mo);font-size:12px}
+.hoac::before,.hoac::after{content:"";flex:1;height:1px;background:var(--vien)}
+.loi-tk{margin:0;color:var(--do);font-size:13.5px}
+.tk-doi{margin-top:20px;text-align:center;font-size:13.5px;color:var(--mo)}
+.tk-doi a{color:var(--muc);text-decoration:underline;text-underline-offset:3px}
+.tk-dau{display:flex;justify-content:space-between;align-items:flex-end;gap:20px;flex-wrap:wrap;margin-bottom:34px;padding-bottom:26px;border-bottom:1px solid var(--vien)}
+.tk-dau .dan{margin:0}
+.tk-luoi{display:grid;grid-template-columns:1fr 1.2fr;gap:24px;margin-bottom:60px}
+.tk-the{background:var(--the);border:1px solid var(--vien);border-radius:6px;padding:26px 24px}
+.tk-the h2,.tk-yt h2{font-size:26px;color:var(--muc);margin:0 0 18px}
+.tk-the h2 small,.tk-yt h2 small{font:400 13px var(--sans);color:var(--mo);margin-left:6px}
+.ds-tk{list-style:none;margin:0;padding:0}
+.ds-tk li{display:grid;grid-template-columns:1fr auto auto;gap:14px;align-items:center;padding:14px 0;border-top:1px dashed var(--vien)}
+.ds-tk li:first-child{border-top:0}
+.ds-tk a b{display:block;font-weight:500;color:var(--muc)}
+.ds-tk a small{font-size:12.5px;color:var(--mo)}
+.ds-tk span{font:400 17px var(--serif);color:var(--muc);white-space:nowrap}
+.xoa-tk{width:30px;height:30px;border-radius:50%;border:1px solid var(--vien);color:var(--mo)}
+.xoa-tk:hover{border-color:var(--do);color:var(--do)}
+.tk-yt .luoi{margin-top:6px}
+.nut-yt,.nut-luu-tk{grid-column:1/-1;justify-content:center;width:100%;margin-top:4px}
+.nut-yt span{font-size:16px;letter-spacing:0;color:var(--do)}
+.nut-yt.on{border-color:var(--do);color:var(--do)}
+.nut-yt.on:hover{background:var(--do);color:#fff}
+.nut-yt.on:hover span{color:#fff}
+.nut-luu-tk{margin-top:10px;padding:15px}
+@media (max-width:860px){.tk-luoi{grid-template-columns:1fr}.dau .phai .nut-tk{width:32px;height:32px}}

@@ -1,22 +1,11 @@
 /* Trang chi tiết sản phẩm: san-pham.html?ma=<mã> */
 /* cách giữ: món trầm (x.tram) dùng GIU_TRAM, còn lại GIU_NGOC */
-var GIU_NGOC =
-  '<details><summary>Giữ ngọc luôn đẹp</summary><div class="tl"><div><ul class="ds-tp cham-soc">' +
-            '<li><b>Đeo càng lâu, ngọc càng đẹp.</b> Ngọc đẹp nhất khi được đeo thường xuyên — đeo càng lâu, ngọc càng lên nước, bóng và trong hơn.</li>' +
-            '<li><b>Khi không đeo.</b> Có thể ngâm ngọc trong nước khoáng tinh khiết để vòng không bị khô, giữ nước ngọc luôn tươi. Với chuỗi có charm hoặc xâu dây chun, nên tháo charm hoặc chỉ ngâm phần ngọc để dây không nhanh giãn và charm không xỉn màu.</li>' +
-            '<li><b>Tránh hoá chất.</b> Tháo ra khi tắm, bơi, rửa bát hoặc dùng nước hoa, kem dưỡng, chất tẩy rửa — vừa giữ ngọc bóng, vừa giữ charm vàng không xỉn màu.</li>' +
-            '<li><b>Tránh va đập, nhiệt độ cao.</b> Tháo khi chơi thể thao, làm việc nặng; không để gần bếp hay phơi nắng gắt lâu.</li>' +
-            '<li><b>Vệ sinh nhẹ nhàng.</b> Lau bằng khăn mềm hơi ẩm rồi để khô tự nhiên, không dùng bàn chải cứng.</li>' +
-            '<li><b>Cất riêng từng món.</b> Mỗi món một túi vải hoặc một ngăn hộp, tránh cọ xát với kim loại và đá cứng.</li>' +
-            '<li><b>Giữ dây bền.</b> Đeo và tháo bằng cách lăn nhẹ qua bàn tay, không kéo căng dây. Dây giãn thì mang tới cửa hàng, xâu lại miễn phí trong 12 tháng.</li>' +
-          '</ul></div></div></details>';
-var GIU_TRAM =
-  '<details><summary>Giữ trầm luôn thơm</summary><div class="tl"><div><ul class="ds-tp cham-soc">' +
-    '<li><b>Kiêng nước.</b> Tháo ra khi tắm, rửa tay, bơi hay đi mưa. Nếu lỡ dính nước, lau khô ngay bằng khăn mềm và hong nơi thoáng mát, không phơi nắng hay sấy nóng.</li>' +
-    '<li><b>Kiêng nước hoa, mỹ phẩm.</b> Tránh để trầm tiếp xúc trực tiếp với nước hoa, kem dưỡng, xà phòng, dầu gội — sẽ làm trầm mất mùi và mất màu.</li>' +
-    '<li><b>Cất kín khi không đeo.</b> Để trong túi vải hoặc hộp kín, tránh nơi ẩm và tránh để chung với đồ có mùi mạnh để giữ hương trầm.</li>' +
-    '<li><b>Giữ dây bền.</b> Đeo và tháo bằng cách lăn nhẹ qua bàn tay, không kéo căng dây. Dây giãn thì mang tới cửa hàng, xâu lại miễn phí trong 12 tháng.</li>' +
-  '</ul></div></div></details>';
+function khoiGiu(tieu, ds) {
+  return '<details><summary>' + tieu + '</summary><div class="tl"><div><ul class="ds-tp cham-soc">' +
+    (ds || []).map(function (x) { return '<li><b>' + e(x.tieu) + '.</b> ' + e(x.noi) + '</li>'; }).join('') + '</ul></div></div></details>';
+}
+var GIU_NGOC = khoiGiu('Giữ ngọc luôn đẹp', (CH.chamSoc || {}).ngoc);
+var GIU_TRAM = khoiGiu('Giữ trầm luôn thơm', (CH.chamSoc || {}).tram);
 
 var maSp = new URLSearchParams(location.search).get('ma') || '';
 
@@ -75,6 +64,7 @@ function dungTrang(x) {
         '<div class="hang-mua" data-hien>' +
           '<a class="nut dac zalo" href="' + linkZalo() + '" target="_blank" data-chep="' + e(x.ma) + '">Hỏi mua qua Zalo</a>' +
           '<a class="nut" href="' + linkFb() + '" target="_blank" data-chep="' + e(x.ma) + '">Nhắn Messenger</a>' +
+          (KHACH.bat ? '<button class="nut nut-yt" id="nutYt" data-ma="' + e(x.ma) + '"><span>♡</span> Lưu vào yêu thích</button>' : '') +
         '</div>' +
         '<p class="ghi-ct" data-hien>Bấm nút, câu hỏi kèm mã ' + e(x.ma) + ' được chép sẵn — bạn chỉ cần dán vào tin nhắn.</p>' +
         '<ul class="cam-ket-sp" data-hien>' +
@@ -146,3 +136,14 @@ function dungLienQuan(x) {
 
 /* thẻ sản phẩm trên trang này dẫn sang trang chi tiết */
 document.addEventListener('click', function (ev) { var b = ev.target.closest('.sp'); if (b) location.href = 'san-pham.html?ma=' + encodeURIComponent(b.dataset.k); });
+
+/* ♡ yêu thích (cần tài khoản) */
+function veYt() { var b = $('#nutYt'); if (!b) return; var co = KHACH.yeuThich(b.dataset.ma); b.classList.toggle('on', co); b.innerHTML = '<span>' + (co ? '♥' : '♡') + '</span> ' + (co ? 'Đã lưu yêu thích' : 'Lưu vào yêu thích'); }
+if (KHACH.bat) { KHACH.nghe.push(veYt); KHACH.san.then(function () { setTimeout(veYt, 300); }); }
+document.addEventListener('click', function (ev) {
+  var b = ev.target.closest('#nutYt'); if (!b) return;
+  if (!KHACH.user) return KHACH.canDangNhap();
+  b.disabled = true;
+  KHACH.doiYeuThich(b.dataset.ma).then(function (moi) { baoTin(moi ? 'Đã lưu vào yêu thích' : 'Đã bỏ khỏi yêu thích'); veYt(); })
+    .catch(function () { baoTin('Chưa lưu được, thử lại nhé'); }).then(function () { b.disabled = false; });
+});

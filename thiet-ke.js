@@ -8,8 +8,8 @@
    ========================================================= */
 var TK = {day: [], charm: []}, chon = {day: null, tay: 15, vong: 1, gan: []};   // gan: [{c, k: vòng, j: hạt}]
 var dangChon = null, vongDang = 0, cheDo = 'sua';   // dangChon = charm đang chọn (object trong chon.gan)
-var nhomLoc = 'tat', tuCharm = '', xepC = 're', soCharmHien = 0, MOI = 24, TOI_DA = 12;
-var CX = 200, CY = 200, R = 150, VONG_GIA = 3;   // giá dây trong app là giá dây quấn 3 vòng
+var nhomLoc = 'tat', tuCharm = '', xepC = 're', soCharmHien = 0, MOI = 24, TOI_DA = +((CH.thietKe || {}).toiDaCharm) || 12;
+var CX = 200, CY = 200, R = 150, VONG_GIA = +((CH.thietKe || {}).vongGia) || 3;   // giá dây trong app là giá dây quấn 3 vòng
 
 fetch('thiet-ke.json', {cache: 'no-cache'}).then(function (r) { return r.json(); }).then(function (d) {
   TK = d; docLai(); dungDay(); dungVong(); dungChip(); hienCharm(true); ve(true);
@@ -354,7 +354,8 @@ function tomTat() {
     '<p class="ghi-tt">Tổng chỉ là giá xấp xỉ để bạn tham khảo. Giá chính xác cửa hàng sẽ báo lại sau khi xem thiết kế, kiểm tra hàng còn và tiền công xâu.</p>' +
     '<p class="ghi-tt luu-y">' + e(CHINH_SACH.luuY[0]) + '</p>' +
     '<div class="hang-mua"><a class="nut dac zalo" href="' + linkZalo() + '" target="_blank" data-gui>Gửi thiết kế qua Zalo</a>' +
-    '<a class="nut" href="' + linkFb() + '" target="_blank" data-gui>Gửi qua Messenger</a></div>';
+    '<a class="nut" href="' + linkFb() + '" target="_blank" data-gui>Gửi qua Messenger</a></div>' +
+    (KHACH.bat ? '<button class="nut nut-luu-tk" id="luuTk">♡ Lưu vào tài khoản</button>' : '');
   $('#thanhTk').innerHTML = '<div><small>Tổng ước tính · ' + chon.gan.length + ' charm</small><b>' + uoc(tong()) + '</b></div><a class="nut dac zalo" href="' + linkZalo() + '" target="_blank" data-gui>Gửi qua Zalo</a>';
   $('#thanhTk').classList.add('hien');
   $('#demCharm').textContent = chon.gan.length + ' / ' + TOI_DA + ' charm';
@@ -429,3 +430,16 @@ function docLai() {
   function an() { dang = null; x.classList.remove('on'); }
   addEventListener('scroll', an, {passive: true});
 })();
+
+/* lưu thiết kế vào tài khoản khách */
+document.addEventListener('click', function (ev) {
+  var b = ev.target.closest('#luuTk'); if (!b || !chon.day) return;
+  if (!KHACH.user) { luu(); return KHACH.canDangNhap(); }
+  var ten = prompt('Đặt tên cho thiết kế này:', chon.day.ten.replace(/\s*\d+([.,]\d+)? ly/, '') + ' · ' + chon.vong + ' vòng');
+  if (ten === null) return;
+  b.disabled = true;
+  KHACH.luuThietKe({ten: ten.trim() || 'Thiết kế', hash: location.hash.slice(1), gia: Math.round(tong() / 10000) * 10000,
+                    moTa: chon.vong + ' vòng · ' + chon.gan.length + ' charm'})
+    .then(function () { baoTin('Đã lưu — xem lại trong Tài khoản'); })
+    .catch(function () { baoTin('Chưa lưu được, thử lại nhé'); }).then(function () { b.disabled = false; });
+});

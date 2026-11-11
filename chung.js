@@ -1,22 +1,7 @@
-/* ======== THÔNG TIN CỬA HÀNG — sửa ở đây ======== */
-var LIEN_HE = {
-  sdt: '0888226862',                 // dùng cho nút Zalo + gọi
-  messenger: 'ngoctramstore.bn',     // nút Messenger → m.me/ngoctramstore.bn
-  fanpage: [
-    {ten: 'Ngọc Trầm Store', link: 'https://www.facebook.com/ngoctramstore.bn'},
-    {ten: 'Đá quý Trầm hương Thiên nhiên', link: 'https://www.facebook.com/daquytramhuongthiennhien'}
-  ],
-  diaChi: '1S Trần Hưng Đạo, Kinh Bắc, Bắc Ninh',
-  banDo: 'https://maps.app.goo.gl/LWLCGFmZdy5EG5oR8',   // Google Maps
-  gio: '8:30 – 21:30 mỗi ngày',
-  gioMo: '8:30', gioDong: '21:30',   // dùng cho chấm "Đang mở cửa" (giờ Việt Nam)
-  toaDo: '21.1814517,106.0636823',   // vị trí cửa hàng cho bản đồ nhỏ
-  // Mạng xã hội / nhóm Zalo — để trống thì tự ẩn, có link thì dán vào là hiện
-  instagram: '',
-  tiktok: '',
-  nhomZalo: ''                       // link nhóm/Zalo OA để khách "Nhận tin món mới"
-};
-/* ================================================ */
+/* ======== CÀI ĐẶT WEB — lấy từ cau-hinh.js (sửa trong app Ngọc Trầm › Quản trị web) ======== */
+var CH = window.CAU_HINH || {};
+var LIEN_HE = CH.lienHe || {fanpage: []};
+LIEN_HE.fanpage = LIEN_HE.fanpage || [];
 
 var LOAI = {
   chuoi:  {ten: 'Chuỗi mix charm', ngan: 'Chuỗi'},
@@ -40,29 +25,10 @@ function ngaySo(s) { var m = /(\d+)\/(\d+)\/(\d+)\s*(\d+)?:?(\d+)?/.exec(s || ''
 function hinh(id, alt, w, them) { return '<img src="' + anh(id, w) + '" alt="' + e(alt) + '" loading="lazy" decoding="async" referrerpolicy="no-referrer"' + (them || '') + '>'; }
 
 /* ======== CHÍNH SÁCH — sửa ở đây (dùng cho Hỏi đáp + trang chi tiết) ======== */
-var CHINH_SACH = {
-  giao: [
-    'Giao toàn quốc qua Vietnam Post. Nội thành Bắc Ninh có thể giao trong ngày, hoặc bạn ghé lấy tại 1S Trần Hưng Đạo.',
-    'Thời gian nhận hàng: 2–3 ngày với miền Bắc, 3–5 ngày với miền Trung và miền Nam.',
-    'Miễn phí ship khi mua online, chuyển khoản trước toàn bộ và hoá đơn trên 1.500.000đ. Các trường hợp khác, phí ship theo đơn vị giao hàng.',
-    'Mỗi món được đóng hộp, chèn chống sốc cẩn thận.',
-    'Được kiểm tra hàng trước khi thanh toán (COD). Với đơn giá trị cao, cửa hàng xin bạn cọc trước.',
-    'Trước khi gửi, cửa hàng quay video món hàng để bạn xem lại.'
-  ],
-  doi: [
-    'Đổi trong vòng 1 ngày kể từ khi nhận hàng nếu món không đúng mô tả, khác ảnh hoặc bị lỗi do vận chuyển. Cửa hàng chịu phí ship hai chiều.',
-    'Ngoài trường hợp trên, tất cả sản phẩm đều không áp dụng đổi trả, vì là đồ phong thuỷ mang năng lượng cao.'
-  ],
-  luuY: [
-    'Charm vàng là charm trang sức, không phải vàng tích sản. Khi bán lại (hồi vàng) sẽ mất giá nhiều so với giá mua, bạn cân nhắc trước khi chọn nhé.'
-  ],
-  bh: [
-    'Xâu lại dây miễn phí trong 12 tháng khi dây bị giãn hoặc đứt.',
-    'Đánh bóng, làm sạch charm vàng miễn phí 1 lần mỗi năm.',
-    'Không bảo hành ngọc bị nứt, vỡ do va đập hay rơi. Cửa hàng hỗ trợ tư vấn sửa với chi phí ưu đãi.',
-    'Khi cần bảo hành, bạn nhắn Zalo ' + LIEN_HE.sdt + ' kèm mã sản phẩm.'
-  ]
-};
+var CHINH_SACH = {};
+['giao', 'doi', 'luuY', 'bh'].forEach(function (k) {
+  CHINH_SACH[k] = ((CH.chinhSach || {})[k] || []).map(function (x) { return String(x).replace(/\{sdt\}/g, LIEN_HE.sdt || ''); });
+});
 function dsCs(k) { return '<ul class="ds-tp">' + CHINH_SACH[k].map(function (x) { return '<li>' + e(x) + '</li>'; }).join('') + '</ul>'; }
 $$('[data-cs]').forEach(function (u) { u.outerHTML = dsCs(u.dataset.cs); });
 
@@ -155,7 +121,8 @@ requestAnimationFrame(function () { setTimeout(function () { $$('.hero .tieu-de,
 
 /* ---------- dữ liệu ---------- */
 var taiDuLieu = fetch('san-pham.json', {cache: 'no-cache'}).then(function (r) { return r.json(); }).then(function (d) {
-  ds = d.filter(function (x) { return x.anh && x.anh.length; }); return ds;
+  var an = ((CH.trangChu || {}).an || []).map(String);
+  ds = d.filter(function (x) { return x.anh && x.anh.length && an.indexOf(String(x.ma)) < 0 && an.indexOf(String(x.id || '')) < 0; }); return ds;
 });
 function linkSp(x) { return 'san-pham.html?ma=' + encodeURIComponent(khoa(x)); }
 dungChanTrang();

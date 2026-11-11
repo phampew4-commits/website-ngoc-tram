@@ -31,6 +31,8 @@ function dungHero() {
 
 function dungNoiBat() {
   var c = conHang('chuoi'), chon = [c[1], conHang('nhan')[0], c[3], conHang('khuyen')[1] || conHang('matday')[0]].filter(Boolean);
+  var tay = ((CH.trangChu || {}).noiBat || []).map(function (m) { return ds.filter(function (x) { return x.ma === String(m) || x.id === String(m); })[0]; }).filter(Boolean);
+  if (tay.length) chon = tay.slice(0, 8);   // admin chọn tay thì dùng danh sách đó
   $('#noiBat').innerHTML = chon.map(the).join(''); theoDoi($('#noiBat'));
 }
 
