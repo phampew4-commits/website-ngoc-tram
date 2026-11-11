@@ -92,14 +92,14 @@ function laDoc(c) { return !!(DOC[c.id] || DOC[c.ma]) && !!(window.V3 && (window
 function hopCharm(c) { var H = window.V3_HOP || {}; return H[c.id] || H[c.ma] || [12, 12, 188, 188]; }   // khung hình thật trong ảnh (khung 200)
 function dayCharm(c, b) {   // bề dày charm (vuông góc với dây), ly
   var t = (c.ten || '').toLowerCase(), w = b[2] - b[0], h = b[3] - b[1], m = t.match(/(\d+(?:[.,]\d+)?)\s*(?:x\s*[\d.,]+\s*)?ly\b/);
-  if (/điếu/.test(t)) return 11;               // đĩa ngọc bình an ~11 ly, thanh khoen hai đầu kéo dài theo dây
-  if (w / h > 2.5) return 6;                   // ống dài, mảnh
+  if (/điếu/.test(t)) return 10;               // đĩa ngọc bình an ~11 ly, thanh khoen hai đầu kéo dài theo dây
+  if (w / h > 2.5) return 5;                   // ống dài, mảnh
   if (m) return Math.min(14, Math.max(6, parseFloat(m[1].replace(',', '.'))));
-  return 10;
+  return 8.5;
 }
 function doCharm(g, pmm) {   // {dai: phần dây chiếm, S: cạnh ảnh, b: khung hình} — đơn vị khung vẽ 400, trước khi co
   var b = hopCharm(g.c), w = b[2] - b[0], h = b[3] - b[1];
-  if (kieuXo(g.c) === 'treo') return {dai: 3.2 * pmm, S: 13 * pmm * 200 / h, b: b};   // mặt treo dài ~13 ly kể cả khoen
+  if (kieuXo(g.c) === 'treo') return {dai: 2.6 * pmm, S: 9.5 * pmm * 200 / Math.max(h, w * .8), b: b};   // mặt treo ~9,5 ly kể cả khoen (charm bè ngang thì tính theo bề ngang)
   if (laDoc(g.c)) { var Td = 12 * pmm, Sd = Td * 200 / w; return {dai: Math.max(Td * .5, h * Sd / 200) * 1.02, S: Sd, b: b, doc: true}; }   // ảnh đứng: bề ngang ảnh vuông góc dây
   var T = dayCharm(g.c, b) * pmm, S = T * 200 / h;
   return {dai: Math.max(T * .7, w * S / 200) * 1.02, S: S, b: b};
