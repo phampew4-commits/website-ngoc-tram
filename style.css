@@ -877,3 +877,21 @@ section[id]{scroll-margin-top:68px}
 
 /* charm có khoen thõng ra ngoài vòng: không cắt ở mép khung */
 #vong{overflow:visible}
+
+/* hộp gửi thiết kế (Zalo / Messenger) */
+.hop-gui{position:fixed;inset:0;z-index:90;background:rgba(14,28,34,.55);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);display:grid;place-items:center;padding:16px;opacity:0;pointer-events:none;transition:opacity .35s var(--muot)}
+.hop-gui.mo{opacity:1;pointer-events:auto}
+.hop-gui .hop{position:relative;width:min(440px,100%);max-height:calc(100dvh - 32px);overflow:auto;background:var(--giay);border-radius:18px;padding:24px 22px 20px;box-shadow:0 40px 80px -30px rgba(0,0,0,.5);translate:0 20px;transition:translate .45s var(--muot)}
+.hop-gui.mo .hop{translate:0 0}
+.hop-gui h3{font:400 24px/1.2 var(--serif);margin:0 0 14px;color:var(--muc)}.hop-gui h3 em{color:var(--vang)}
+.hop-gui .dong{position:absolute;right:12px;top:10px;width:34px;height:34px;border-radius:50%;border:0;background:transparent;font-size:24px;color:var(--mo);cursor:pointer}
+.anh-gui{aspect-ratio:4/5;border-radius:12px;overflow:hidden;background:#f6f0e6;display:grid;place-items:center;margin-bottom:14px;box-shadow:0 0 0 1px var(--vien)}
+.anh-gui img{width:100%;height:100%;object-fit:contain;display:block}.anh-gui span{font-size:13px;color:var(--mo);padding:20px;text-align:center}
+.hop-gui .chinh-gui{width:100%;justify-content:center;margin-bottom:6px}
+.goi-y-gui{font-size:12.5px;color:var(--mo);text-align:center;margin:0 0 14px}
+.buoc-gui{margin:0 0 16px;padding-left:20px;font-size:13.5px;line-height:1.55;color:var(--chu)}.buoc-gui li{margin-bottom:6px}
+.hop-gui .lien{background:none;border:0;padding:0;color:var(--vang);text-decoration:underline;cursor:pointer;font:inherit}
+.hop-gui .mo-kenh{width:100%;justify-content:center}
+.hop-gui .nut.dac.zalo{background:#0068ff;border-color:#0068ff}.hop-gui .nut.dac.ms{background:#0a7cff;border-color:#0a7cff}
+.xem-chu{margin-top:12px;font-size:12.5px;color:var(--mo)}.xem-chu pre{white-space:pre-wrap;font:12px/1.5 var(--sans);background:var(--the);border-radius:8px;padding:10px;margin:8px 0 0;user-select:text}
+html.khoa-cuon{overflow:hidden}

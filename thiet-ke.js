@@ -435,11 +435,85 @@ function tomTat() {
   $('#thanhTk').classList.add('hien');
   $('#demCharm').textContent = chon.gan.length + ' / ' + TOI_DA + ' charm';
 }
+/* ---------- gửi thiết kế: hộp hướng dẫn + ảnh thiết kế (link Zalo/Messenger không tự điền được tin nhắn) ---------- */
+function chepChu(s) {
+  if (navigator.clipboard && window.isSecureContext) return navigator.clipboard.writeText(s).then(function () { return true; }, function () { return chepCu(s); });
+  return Promise.resolve(chepCu(s));
+}
+function chepCu(s) { try { var a = document.createElement('textarea'); a.value = s; a.style.cssText = 'position:fixed;opacity:0'; document.body.appendChild(a); a.select(); var ok = document.execCommand('copy'); a.remove(); return ok; } catch (er) { return false; } }
+function anhDataUrl(u) { return fetch(u).then(function (r) { return r.blob(); }).then(function (b) { return new Promise(function (ok) { var f = new FileReader(); f.onload = function () { ok(f.result); }; f.readAsDataURL(b); }); }); }
+// ảnh thiết kế 1080×1350: vòng đang thiết kế + tóm tắt
+function taoAnhTk() {
+  var cu = cheDo; if (cu === 'deo') { cheDo = 'sua'; veVong(); }
+  var svg = $('#vong').cloneNode(true); if (cu === 'deo') { cheDo = cu; ve(); }
+  svg.querySelectorAll('.vong-chon').forEach(function (x) { x.remove(); });
+  svg.setAttribute('xmlns', 'http://www.w3.org/2000/svg'); svg.setAttribute('width', 400); svg.setAttribute('height', 400);
+  var anh = [].slice.call(svg.querySelectorAll('image')).filter(function (i) { return !/^data:/.test(i.getAttribute('href') || ''); });
+  return Promise.all(anh.map(function (i) { return anhDataUrl(i.getAttribute('href')).then(function (d) { i.setAttribute('href', d); }).catch(function () {}); })).then(function () {
+    return new Promise(function (ok, loi) {
+      var im = new Image(), url = URL.createObjectURL(new Blob([new XMLSerializer().serializeToString(svg)], {type: 'image/svg+xml'}));
+      im.onload = function () {
+        var W = 1080, H = 1350, c = document.createElement('canvas'), x = c.getContext('2d'); c.width = W; c.height = H;
+        x.fillStyle = '#f6f0e6'; x.fillRect(0, 0, W, H);
+        x.fillStyle = '#a8823a'; x.font = '500 26px "Be Vietnam Pro", sans-serif'; x.textAlign = 'center'; x.fillText('NGỌC TRẦM · THIẾT KẾ CHUỖI', W / 2, 78);
+        var g = x.createRadialGradient(W / 2, 520, 60, W / 2, 520, 470); g.addColorStop(0, '#fbf7f0'); g.addColorStop(1, '#efe5d3');
+        x.fillStyle = g; x.beginPath(); x.arc(W / 2, 520, 440, 0, 7); x.fill();
+        x.drawImage(im, W / 2 - 430, 90, 860, 860); URL.revokeObjectURL(url);
+        x.fillStyle = '#1d3a46'; x.font = '400 46px "Noto Serif Display", Georgia, serif';
+        x.fillText(chon.day.ten, W / 2, 1010, W - 120);
+        x.font = '400 28px "Be Vietnam Pro", sans-serif'; x.fillStyle = '#5b6b70';
+        x.fillText('Quấn ' + chon.vong + ' vòng · cỡ tay ' + String(chon.tay).replace('.', ',') + ' cm · ' + tongHat() + ' hạt · ' + chon.gan.length + ' charm', W / 2, 1060, W - 120);
+        var ds = thuTu().map(function (q) { return q.c.ten.replace(/^Charm\s+/i, ''); }), dong = '', dongs = [];
+        ds.forEach(function (s) { var t2 = dong ? dong + ' · ' + s : s; if (x.measureText(t2).width > W - 140 && dong) { dongs.push(dong); dong = s; } else dong = t2; });
+        if (dong) dongs.push(dong);
+        x.font = '400 24px "Be Vietnam Pro", sans-serif'; dongs.slice(0, 3).forEach(function (s, i) { x.fillText(s + (i === 2 && dongs.length > 3 ? ' …' : ''), W / 2, 1110 + i * 34, W - 120); });
+        x.fillStyle = '#a8823a'; x.font = '500 40px "Noto Serif Display", Georgia, serif'; x.fillText('Tổng ước tính ' + uoc(tong()), W / 2, 1250);
+        x.fillStyle = '#8a8070'; x.font = '400 22px "Be Vietnam Pro", sans-serif'; x.fillText('Ảnh thiết kế từ web Ngọc Trầm Store · giá chính xác cửa hàng báo lại', W / 2, 1300, W - 120);
+        c.toBlob(function (b) { b ? ok(b) : loi(); }, 'image/png');
+      };
+      im.onerror = function () { URL.revokeObjectURL(url); loi(); };
+      im.src = url;
+    });
+  });
+}
+var hopGui = null, anhGui = null;
+function moHopGui(kenh) {
+  var chu = tinNhan(), coChiaSe = false;
+  try { coChiaSe = !!(navigator.canShare && navigator.canShare({files: [new File(['x'], 'a.png', {type: 'image/png'})]})); } catch (er) {}
+  if (!hopGui) { hopGui = document.createElement('div'); hopGui.className = 'hop-gui'; document.body.appendChild(hopGui);
+    hopGui.addEventListener('click', function (ev) { if (ev.target === hopGui || ev.target.closest('[data-dong]')) dongHopGui(); }); }
+  var mo = kenh === 'ms' ? linkFb() + (linkFb().indexOf('m.me/') > 0 ? '?text=' + encodeURIComponent(chu.slice(0, 900)) : '') : linkZalo(), ten = kenh === 'ms' ? 'Messenger' : 'Zalo';
+  hopGui.innerHTML = '<div class="hop" role="dialog" aria-label="Gửi thiết kế cho Ngọc Trầm"><button class="dong" data-dong aria-label="Đóng">×</button>' +
+    '<h3>Gửi thiết kế cho <em>Ngọc Trầm</em></h3>' +
+    '<div class="anh-gui"><span>Đang tạo ảnh thiết kế…</span></div>' +
+    (coChiaSe ? '<button class="nut dac chinh-gui" data-chia-se>Gửi ảnh + tin nhắn qua ' + ten + '</button><p class="goi-y-gui">Chọn <b>' + ten + '</b> trong bảng chia sẻ, chọn Ngọc Trầm rồi gửi.</p>' : '') +
+    '<ol class="buoc-gui"><li><b>Tin nhắn thiết kế đã được chép sẵn.</b> <button class="lien" data-chep-tk>Chép lại</button></li>' +
+    '<li>Lưu ảnh thiết kế: <a class="lien" data-tai href="#" download="thiet-ke-ngoc-tram.png">Tải ảnh</a></li>' +
+    '<li>Mở ' + ten + ' Ngọc Trầm, <b>dán tin nhắn</b> (' + (/Mac|iPhone|iPad/.test(navigator.platform) ? '⌘V hoặc giữ ô chat → Dán' : 'Ctrl+V hoặc giữ ô chat → Dán') + ') và gửi kèm ảnh.</li></ol>' +
+    '<a class="nut ' + (coChiaSe ? '' : 'dac ') + (kenh === 'ms' ? 'ms' : 'zalo') + ' mo-kenh" href="' + mo + '" target="_blank" rel="noopener">Mở ' + ten + ' Ngọc Trầm</a>' +
+    '<details class="xem-chu"><summary>Xem nội dung tin nhắn</summary><pre>' + e(chu) + '</pre></details></div>';
+  hopGui.classList.add('mo'); document.documentElement.classList.add('khoa-cuon');
+  chepChu(chu).then(function (ok) { if (!ok) hopGui.querySelector('.buoc-gui b').textContent = 'Bấm "Chép lại" để chép tin nhắn thiết kế.'; });
+  anhGui = null;
+  taoAnhTk().then(function (b) {
+    anhGui = b; var u = URL.createObjectURL(b);
+    hopGui.querySelector('.anh-gui').innerHTML = '<img src="' + u + '" alt="Ảnh thiết kế chuỗi">';
+    hopGui.querySelector('[data-tai]').href = u;
+  }).catch(function () { hopGui.querySelector('.anh-gui').innerHTML = '<span>Chưa tạo được ảnh — bạn có thể gửi link thiết kế trong tin nhắn.</span>'; });
+}
+function dongHopGui() { if (hopGui) hopGui.classList.remove('mo'); document.documentElement.classList.remove('khoa-cuon'); }
 document.addEventListener('click', function (ev) {
-  if (!ev.target.closest('[data-gui]') || !chon.day) return;
-  if (navigator.clipboard) navigator.clipboard.writeText(tinNhan()).catch(function () {});
-  baoTin('Đã chép thiết kế — dán vào tin nhắn để gửi cửa hàng');
+  var a = ev.target.closest('[data-gui]');
+  if (a && chon.day) { ev.preventDefault(); moHopGui(a.classList.contains('zalo') ? 'zalo' : 'ms'); return; }
+  if (ev.target.closest('[data-chep-tk]')) { chepChu(tinNhan()).then(function (ok) { baoTin(ok ? 'Đã chép tin nhắn thiết kế' : 'Trình duyệt chặn chép — hãy chép trong mục "Xem nội dung"'); }); return; }
+  if (ev.target.closest('[data-tai]') && !anhGui) { ev.preventDefault(); baoTin('Ảnh đang tạo, chờ chút nhé'); return; }
+  if (ev.target.closest('[data-chia-se]')) {
+    if (!anhGui) { baoTin('Ảnh đang tạo, chờ chút nhé'); return; }
+    var f = new File([anhGui], 'thiet-ke-ngoc-tram.png', {type: 'image/png'});
+    navigator.share({files: [f], text: tinNhan(), title: 'Thiết kế chuỗi Ngọc Trầm'}).catch(function () {});
+  }
 });
+addEventListener('keydown', function (ev) { if (ev.key === 'Escape') dongHopGui(); });
 
 /* ---------- lưu / đọc lại (link + máy) ---------- */
 function luu() {
