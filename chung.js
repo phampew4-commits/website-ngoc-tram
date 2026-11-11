@@ -32,6 +32,41 @@ var CHINH_SACH = {};
 function dsCs(k) { return '<ul class="ds-tp">' + CHINH_SACH[k].map(function (x) { return '<li>' + e(x) + '</li>'; }).join('') + '</ul>'; }
 $$('[data-cs]').forEach(function (u) { u.outerHTML = dsCs(u.dataset.cs); });
 
+/* ---------- NỘI DUNG TRANG (CH.noiDung — sửa trong app › Nội dung trang) ----------
+   Chữ có *dấu sao* → in nghiêng màu vàng. Tiêu đề lớn: mỗi dòng xuống hàng là một dòng chữ trồi lên. */
+var ND = CH.noiDung || {};
+function ndHtml(v) { return e(v).replace(/\*(.+?)\*/g, '<em>$1</em>'); }
+$$('[data-nd]').forEach(function (el) {
+  var v = (ND.van || {})[el.dataset.nd];
+  if (v == null || String(v).trim() === '') return;
+  if (el.classList.contains('tieu-de'))
+    el.innerHTML = String(v).split('\n').filter(function (l) { return l.trim(); })
+      .map(function (l) { return '<span class="dong-chu"><span>' + ndHtml(l) + '</span></span>'; }).join('');
+  else el.innerHTML = ndHtml(v).replace(/\n/g, '<br>');
+});
+if ((ND.camKet || []).length) $$('.cam-ket ul').forEach(function (ul) {
+  [].forEach.call(ul.children, function (li, i) { if (ND.camKet[i]) li.lastChild.textContent = ND.camKet[i]; });
+});
+(function () {
+  var o = $('#hdChung'); if (!o) return;
+  o.outerHTML = (ND.hoiDap || []).filter(function (x) { return x.hoi; }).map(function (x, i) {
+    return '<details' + (i ? '' : ' open') + '><summary>' + e(x.hoi) + '</summary><div class="tl"><div><p>' + e(x.dap).replace(/\n/g, '<br>') + '</p></div></div></details>';
+  }).join('');
+})();
+(function () {   // dải thông báo trên cùng (đóng thì ẩn tới khi đổi nội dung)
+  var tb = ND.thongBao || {};
+  if (!tb.bat || !String(tb.chu || '').trim()) return;
+  var k = 'nt-tb-' + tb.chu, da = false;
+  try { da = !!localStorage.getItem(k); } catch (er) {}
+  if (da || !$('#dau')) return;
+  var b = document.createElement('div'); b.className = 'dai-tb';
+  b.innerHTML = (tb.link ? '<a href="' + e(tb.link) + '">' + ndHtml(tb.chu) + ' <span aria-hidden="true">→</span></a>' : '<span>' + ndHtml(tb.chu) + '</span>') +
+    '<button type="button" aria-label="Đóng thông báo">×</button>';
+  $('#dau').insertBefore(b, $('#dau').firstChild);
+  document.body.classList.add('co-tb');
+  b.querySelector('button').onclick = function () { b.remove(); document.body.classList.remove('co-tb'); try { localStorage.setItem(k, '1'); } catch (er) {} };
+})();
+
 /* ---------- liên hệ ---------- */
 function linkZalo() { return LIEN_HE.sdt ? 'https://zalo.me/' + LIEN_HE.sdt.replace(/\D/g, '') : '#lien-he'; }
 function linkFb() { return LIEN_HE.messenger ? 'https://m.me/' + LIEN_HE.messenger : '#lien-he'; }
@@ -68,7 +103,7 @@ function dungChanTrang() {
     '<div class="duoi"><div class="khung ct-luoi">' +
       '<div class="cot-tt">' +
         '<a class="hieu-ct" href="' + (veTrang || '#') + '"><img src="hoa.png" alt=""><b>Ngọc Trầm</b></a>' +
-        '<p>Phỉ thuý &amp; trang sức vàng, chọn tay từng món từ năm 2015.</p>' +
+        '<p>' + ndHtml(ND.gioiThieu || 'Phỉ thuý & trang sức vàng, chọn tay từng món từ năm 2015.') + '</p>' +
         '<div class="mo-cua' + (tt.mo ? ' mo' : '') + '"><i></i>' + tt.chu + '</div>' +
         '<ul class="lien-he-ct">' +
           '<li><small>Zalo · Điện thoại</small><a href="tel:' + e(LIEN_HE.sdt) + '">' + e(LIEN_HE.sdt) + '</a></li>' +
@@ -187,3 +222,18 @@ document.addEventListener('click', function (ev) {
     history.replaceState(null, '', '#' + id);
   });
 })();
+
+/* ---------- chế độ xem trước trong app: nhận lệnh cuộn tới khối đang sửa ---------- */
+var XEM_TRUOC = /[?&]xemtruoc=1/.test(location.search);
+if (XEM_TRUOC) {
+  document.documentElement.classList.add('xem-truoc');
+  addEventListener('message', function (ev) {
+    if (ev.origin !== location.origin || !ev.data || !ev.data.den) return;
+    var el = document.getElementById(ev.data.den); if (!el) return;
+    $$('.dang-sua').forEach(function (x) { x.classList.remove('dang-sua'); });
+    el.classList.add('dang-sua');
+    if (ev.data.ngay) { document.documentElement.style.scrollBehavior = 'auto'; scrollTo(0, Math.max(0, el.getBoundingClientRect().top + scrollY - (ev.data.den === 'dauTrang' ? 0 : 80))); }
+    else cuonToi(el);
+  });
+  document.addEventListener('click', function (ev) { var a = ev.target.closest('a'); if (a) ev.preventDefault(); }, true);   // khung xem trước: không mở link
+}

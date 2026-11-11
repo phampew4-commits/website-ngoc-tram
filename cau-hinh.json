@@ -8,8 +8,8 @@
     "gioMo": "8:30",
     "gioDong": "21:30",
     "toaDo": "21.1814517,106.0636823",
-    "instagram": "",
-    "tiktok": "",
+    "instagram": "https://www.instagram.com/ngc.trm.store/",
+    "tiktok": "https://www.tiktok.com/@ngc.trm.store2025",
     "nhomZalo": "",
     "fanpage": [
       {
@@ -111,5 +111,80 @@
     "authDomain": "braided-upgrade-476102-g7.firebaseapp.com",
     "projectId": "braided-upgrade-476102-g7",
     "appId": "1:655585162253:web:d71bdcf81765b5731fd144"
+  },
+  "noiDung": {
+    "thongBao": {
+      "bat": false,
+      "chu": "",
+      "link": ""
+    },
+    "heroAnh": [],
+    "van": {
+      "hero.nho": "Từ 2015 · Jade & Agarwood",
+      "hero.tieu": "Ngọc đẹp, chọn\n*từng món* cho\n*riêng bạn*",
+      "hero.moTa": "Phỉ thuý trong trẻo, trầm hương ấm áp, điểm xuyết charm vàng — những món trang sức chỉ dành riêng cho bạn.",
+      "hero.nut": "Xem sản phẩm",
+      "noiBat.nho": "Tuyển chọn",
+      "noiBat.tieu": "Món *nổi bật* tuần này",
+      "noiBat.nut": "Xem tất cả",
+      "quy.tieu": "Cách Ngọc Trầm\n*chọn* từng món",
+      "quy.b1t": "Chọn ngọc",
+      "quy.b1n": "Từng viên phỉ thuý, ngọc bích được xem dưới ánh sáng tự nhiên — màu, độ trong, vân ngọc — trước khi vào kho.",
+      "quy.b2t": "Phối charm vàng",
+      "quy.b2n": "Chuỗi được phối với charm vàng 14K – 18K theo tông ngọc, để mỗi bộ là một thiết kế không lặp lại.",
+      "quy.b3t": "Đóng hộp & gửi đi",
+      "quy.b3n": "Mỗi món được kiểm tra lần cuối, gửi video cho bạn xem trước, rồi đóng hộp cẩn thận và giao tận nơi.",
+      "tk.nho": "Mới · Xưởng phối chuỗi",
+      "tk.tieu": "Tự tay *thiết kế*\nchuỗi của riêng bạn",
+      "tk.moTa": "Chọn dây ngọc, nhập cỡ tay, gắn charm vàng vào đúng vị trí bạn muốn — xem trước ngay trên màn hình, xem ngay giá ước tính. Xong gửi thiết kế cho Ngọc Trầm xâu giúp bạn.",
+      "tk.nut": "Bắt đầu thiết kế",
+      "bst.nho": "Khám phá bộ sưu tập",
+      "bst.nut": "Tất cả sản phẩm",
+      "cc.tieu": "Mỗi viên ngọc mang\nmột *câu chuyện riêng*.",
+      "cc.nho": "Từ năm 2015",
+      "cc.h3": "Một cách làm, giữ suốt mười năm",
+      "cc.doan": "Ngọc Trầm Store bắt đầu từ phỉ thuý và trầm hương. Đến hôm nay chúng tôi vẫn chọn tay từng viên ngọc, chụp ảnh thật và ghi giá rõ ràng cho từng món.",
+      "cc.quet": "Không có hai viên ngọc giống nhau. Vì thế mỗi món ở Ngọc Trầm chỉ có một — một mã, một bộ ảnh thật, một mức giá rõ ràng — để bạn biết chính xác thứ mình sẽ đeo trên tay.",
+      "cc.nam": "2015",
+      "sp.nho": "Đang có tại cửa hàng",
+      "sp.tieu": "Tất cả *sản phẩm*",
+      "sp.moTa": "Mỗi món chỉ có một — ai chốt trước giữ trước. Bấm vào món để xem đủ ảnh và hỏi mua.",
+      "hd.nho": "Cần biết",
+      "hd.tieu": "Hỏi *&* đáp",
+      "hd.moTa": "Mọi điều về đặt hàng, giao hàng và chăm sóc ngọc. Chưa thấy câu bạn cần? Nhắn cho chúng tôi.",
+      "lh.nho": "Liên hệ",
+      "lh.tieu": "Cần tư vấn?\n*Nhắn cho Ngọc Trầm.*",
+      "lh.moTa": "Gửi mã sản phẩm hoặc ảnh mẫu bạn thích, cửa hàng sẽ tìm và phối giúp bạn."
+    },
+    "camKet": [
+      "Ngọc tự nhiên",
+      "Vàng 14K · 18K · 24K",
+      "Ảnh thật từng món",
+      "Giao toàn quốc"
+    ],
+    "chay1": [
+      "Ngọc Trầm",
+      "*Jade & Agarwood*"
+    ],
+    "chay2": [
+      "*Phỉ thuý*",
+      "Trầm hương",
+      "*Vàng 18K*"
+    ],
+    "hoiDap": [
+      {
+        "hoi": "Đặt mua thế nào?",
+        "dap": "Bấm “Hỏi mua qua Zalo” ở món bạn thích — câu hỏi kèm mã sản phẩm đã được chép sẵn, bạn chỉ cần dán vào tin nhắn. Cửa hàng xác nhận còn hàng, gửi thêm video và báo phí giao."
+      },
+      {
+        "hoi": "Ảnh trên web có phải ảnh thật?",
+        "dap": "Có. Mỗi món được chụp riêng và gắn đúng mã. Màu ngọc có thể chênh nhẹ theo màn hình, nên bạn cứ xin thêm video trước khi chốt."
+      },
+      {
+        "hoi": "Tôi có thể tự phối chuỗi với charm khác không?",
+        "dap": "Được. Bạn chọn chuỗi và các charm trong mục Charm, gửi mã cho cửa hàng để phối và báo giá trọn bộ."
+      }
+    ],
+    "gioiThieu": "Phỉ thuý & trang sức vàng, chọn tay từng món từ năm 2015."
   }
 }

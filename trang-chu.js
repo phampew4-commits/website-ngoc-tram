@@ -12,6 +12,19 @@ taiDuLieu.then(function () {
 var THOI_GIAN = 6000;
 function dungHero() {
   var c = conHang('chuoi'), cac = [c[0], conHang('khuyen')[0], c[2], conHang('nhan')[0]].filter(Boolean);
+  // ảnh trình chiếu: 'gia' = món giá cao (mặc định) · 'ngaunhien' = ngẫu nhiên theo loại · 'tay' = mã admin nhập
+  var cheDo = ND.heroCheDo || ((ND.heroAnh || []).length ? 'tay' : 'gia'), soAnh = Math.min(6, Math.max(2, +ND.heroSo || 4));
+  if (cheDo === 'tay') {
+    var chonAnh = (ND.heroAnh || []).map(function (m) { return ds.filter(function (x) { return x.ma === String(m) || x.id === String(m); })[0]; }).filter(Boolean);
+    if (chonAnh.length) cac = chonAnh.slice(0, 6);
+  } else if (cheDo === 'ngaunhien') {
+    var tron = function (a) { for (var i = a.length - 1; i > 0; i--) { var j = Math.floor(Math.random() * (i + 1)), t = a[i]; a[i] = a[j]; a[j] = t; } return a; };
+    var loaiDs = tron(((ND.heroLoai && ND.heroLoai.length) ? ND.heroLoai : ['chuoi', 'nhan', 'khuyen', 'matday']).slice());
+    var kho = loaiDs.map(function (l) { return tron(conHang(l).slice()); }).filter(function (k) { return k.length; });
+    var lay = [];   // lấy xen kẽ từng loại để không toàn chuỗi
+    while (lay.length < soAnh && kho.some(function (k) { return k.length; })) kho.forEach(function (k) { if (k.length && lay.length < soAnh) lay.push(k.shift()); });
+    if (lay.length) cac = lay;
+  }
   $('#chieu').innerHTML = cac.map(function (x, i) { return '<figure' + (i ? '' : ' class="on"') + '>' + hinh(x.anh[0], x.ten, 1600, i ? '' : ' fetchpriority="high"').replace(' loading="lazy"', i ? ' loading="lazy"' : '') + '</figure>'; }).join('');
   $('#tienTrinh').style.setProperty('--tg', THOI_GIAN + 'ms');
   $('#tienTrinh').innerHTML = cac.map(function (_, i) { return '<button' + (i ? '' : ' class="on"') + ' aria-label="Ảnh ' + (i + 1) + '">' + ('0' + (i + 1)) + '<i></i></button>'; }).join('');
@@ -75,7 +88,9 @@ function dungChay() {
   var c = conHang(), anhs = [c[2], c[6], c[9], c[12]].filter(Boolean);
   var t = function (k) { var a = anhs[k % anhs.length]; return '<span class="tron">' + (a ? hinh(a.anh[0], '', 300).replace(' loading="lazy"', '') : '') + '</span>'; };
   var h1 = '', h2 = '';
-  for (var k = 0; k < 4; k++) { h1 += '<span>Ngọc Trầm</span>' + t(k) + '<em>Jade &amp; Agarwood</em>' + t(k + 1); h2 += '<em>Phỉ thuý</em>' + t(k + 2) + '<span>Trầm hương</span>' + t(k + 3) + '<em>Vàng 18K</em>' + t(k); }
+  var cum = function (ds, lech) { return ds.map(function (p, i) { return '<span>' + ndHtml(p) + '</span>' + t(i + lech); }).join(''); };
+  var d1 = (ND.chay1 && ND.chay1.length) ? ND.chay1 : ['Ngọc Trầm', '*Jade & Agarwood*'], d2 = (ND.chay2 && ND.chay2.length) ? ND.chay2 : ['*Phỉ thuý*', 'Trầm hương', '*Vàng 18K*'];
+  for (var k = 0; k < 4; k++) { h1 += cum(d1, k); h2 += cum(d2, k + 2); }
   var r = $$('#chay .hang'); r[0].innerHTML = h1; r[1].innerHTML = h2;
 }
 

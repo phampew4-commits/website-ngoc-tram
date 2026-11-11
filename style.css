@@ -752,3 +752,17 @@ section[id]{scroll-margin-top:68px}
 .nut-yt.on:hover span{color:#fff}
 .nut-luu-tk{margin-top:10px;padding:15px}
 @media (max-width:860px){.tk-luoi{grid-template-columns:1fr}.dau .phai .nut-tk{width:32px;height:32px}}
+
+/* dải thông báo trên cùng (Nội dung trang › Thông báo) */
+.dai-tb{position:relative;display:flex;justify-content:center;align-items:center;min-height:34px;padding:6px 44px;background:var(--dem);color:#f3e6c9;
+  font-size:12.5px;letter-spacing:.04em;text-align:center;line-height:1.4}
+.dai-tb a,.dai-tb span{color:inherit}
+.dai-tb a:hover{color:var(--vang2)}
+.dai-tb em{color:var(--vang2);font-style:normal;font-weight:500}
+.dai-tb button{position:absolute;right:10px;top:50%;translate:0 -50%;width:28px;height:28px;border-radius:50%;color:#f3e6c9;font-size:18px;line-height:1;opacity:.7}
+.dai-tb button:hover{opacity:1;background:rgba(255,255,255,.1)}
+.chay .hang span em,.chay .hang > span:has(em){color:var(--vang)}
+
+/* khung xem trước trong app: viền khối đang sửa, hiện mọi chữ ngay */
+.xem-truoc .dang-sua{outline:3px dashed var(--vang2);outline-offset:-6px}
+.xem-truoc [data-hien],.xem-truoc .dong-chu>span{opacity:1!important;translate:none!important}

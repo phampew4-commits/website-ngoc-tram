@@ -13,7 +13,7 @@
 <link rel="icon" href="hoa.png">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+Display:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Be+Vietnam+Pro:wght@300;400;500;600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css?v=39">
+<link rel="stylesheet" href="style.css?v=42">
 </head>
 <body>
 
@@ -41,14 +41,14 @@
 <section class="hero" id="dauTrang">
   <div class="chieu" id="chieu"></div>
   <div class="noi">
-    <span class="nho" data-hien>Từ 2015 · Jade &amp; Agarwood</span>
-    <h1 class="tieu-de">
+    <span class="nho" data-hien data-nd="hero.nho">Từ 2015 · Jade &amp; Agarwood</span>
+    <h1 class="tieu-de" data-nd="hero.tieu">
       <span class="dong-chu"><span>Ngọc đẹp, chọn</span></span>
       <span class="dong-chu"><span><em>từng món</em> cho</span></span>
       <span class="dong-chu"><span><em>riêng bạn</em></span></span>
     </h1>
-    <p data-hien>Chuỗi phỉ thuý mix charm vàng, nhẫn, khuyên tai và mặt dây — mỗi món một mã, ảnh thật, giá rõ ràng.</p>
-    <a class="nut sang" href="#san-pham" data-hien>Xem sản phẩm</a>
+    <p data-hien data-nd="hero.moTa">Chuỗi phỉ thuý mix charm vàng, nhẫn, khuyên tai và mặt dây — mỗi món một mã, ảnh thật, giá rõ ràng.</p>
+    <a class="nut sang" href="#san-pham" data-hien data-nd="hero.nut">Xem sản phẩm</a>
   </div>
   <div class="tien-trinh" id="tienTrinh"></div>
   <a class="vong" href="#noi-bat" aria-label="Cuộn xuống">
@@ -60,7 +60,7 @@
 </section>
 
 <!-- ========== CAM KẾT ========== -->
-<div class="cam-ket"><div class="bang">
+<div class="cam-ket" id="camKet"><div class="bang">
   <ul>
     <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M12 3l7 4v5c0 4.5-3 8-7 9-4-1-7-4.5-7-9V7z"/><path d="M9 12l2 2 4-4"/></svg>Ngọc tự nhiên</li>
     <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><circle cx="12" cy="12" r="8"/><path d="M8 12h8M12 8v8"/></svg>Vàng 14K · 18K · 24K</li>
@@ -79,47 +79,47 @@
 <section class="muc" id="noi-bat">
   <div class="khung">
     <div class="giua">
-      <span class="nho" data-hien>Tuyển chọn</span>
-      <h2 class="tieu-de"><span class="dong-chu"><span>Món <em>nổi bật</em> tuần này</span></span></h2>
+      <span class="nho" data-hien data-nd="noiBat.nho">Tuyển chọn</span>
+      <h2 class="tieu-de" data-nd="noiBat.tieu"><span class="dong-chu"><span>Món <em>nổi bật</em> tuần này</span></span></h2>
     </div>
     <div class="luoi" id="noiBat" style="margin-top:56px"></div>
-    <div class="them"><a class="nut" href="#san-pham">Xem tất cả <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a></div>
+    <div class="them"><a class="nut" href="#san-pham"><span data-nd="noiBat.nut">Xem tất cả</span> <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a></div>
   </div>
 </section>
 
 <!-- ========== QUY TRÌNH ========== -->
-<section class="muc quy">
+<section class="muc quy" id="quyTrinh">
   <div class="khung">
-    <h2 class="tieu-de">
+    <h2 class="tieu-de" data-nd="quy.tieu">
       <span class="dong-chu"><span>Cách Ngọc Trầm</span></span>
       <span class="dong-chu"><span><em>chọn</em> từng món</span></span>
     </h2>
     <div class="buoc">
       <article data-hien>
         <svg viewBox="0 0 150 130"><circle pathLength="1" cx="40" cy="40" r="14"/><circle pathLength="1" cx="70" cy="34" r="14"/><circle pathLength="1" cx="100" cy="40" r="14"/><circle pathLength="1" cx="118" cy="66" r="14"/><circle pathLength="1" cx="28" cy="68" r="14"/><path pathLength="1" d="M64 74c0 0 0 14 11 24c11-10 11-24 11-24c-6-5-16-5-22 0z"/><path pathLength="1" d="M75 60v14"/></svg>
-        <div><span class="so">01</span><h3>Chọn ngọc</h3><p>Từng viên phỉ thuý, ngọc bích được xem dưới ánh sáng tự nhiên — màu, độ trong, vân ngọc — trước khi vào kho.</p></div>
+        <div><span class="so">01</span><h3 data-nd="quy.b1t">Chọn ngọc</h3><p data-nd="quy.b1n">Từng viên phỉ thuý, ngọc bích được xem dưới ánh sáng tự nhiên — màu, độ trong, vân ngọc — trước khi vào kho.</p></div>
       </article>
       <article data-hien>
         <svg viewBox="0 0 150 130"><path pathLength="1" d="M20 30c30 50 80 50 110 0"/><circle pathLength="1" cx="45" cy="58" r="7"/><circle pathLength="1" cx="75" cy="66" r="7"/><circle pathLength="1" cx="105" cy="58" r="7"/><path pathLength="1" d="M75 73v10"/><path pathLength="1" d="M66 92a9 9 0 1018 0c0-8-9-9-9-9s-9 1-9 9z"/><path pathLength="1" d="M75 101v8"/></svg>
-        <div><span class="so">02</span><h3>Phối charm vàng</h3><p>Chuỗi được phối với charm vàng 14K – 18K theo tông ngọc, để mỗi bộ là một thiết kế không lặp lại.</p></div>
+        <div><span class="so">02</span><h3 data-nd="quy.b2t">Phối charm vàng</h3><p data-nd="quy.b2n">Chuỗi được phối với charm vàng 14K – 18K theo tông ngọc, để mỗi bộ là một thiết kế không lặp lại.</p></div>
       </article>
       <article data-hien>
         <svg viewBox="0 0 150 130"><rect pathLength="1" x="30" y="50" width="90" height="60" rx="3"/><path pathLength="1" d="M24 50h102v-14H24z"/><path pathLength="1" d="M75 36v74"/><path pathLength="1" d="M75 36c-14-22-34-10-22 0M75 36c14-22 34-10 22 0"/></svg>
-        <div><span class="so">03</span><h3>Đóng hộp &amp; gửi đi</h3><p>Mỗi món được kiểm tra lần cuối, gửi video cho bạn xem trước, rồi đóng hộp cẩn thận và giao tận nơi.</p></div>
+        <div><span class="so">03</span><h3 data-nd="quy.b3t">Đóng hộp &amp; gửi đi</h3><p data-nd="quy.b3n">Mỗi món được kiểm tra lần cuối, gửi video cho bạn xem trước, rồi đóng hộp cẩn thận và giao tận nơi.</p></div>
       </article>
     </div>
   </div>
 </section>
 
 <!-- ========== TỰ THIẾT KẾ ========== -->
-<section class="muc moi-tk">
+<section class="muc moi-tk" id="tuThietKe">
   <div class="khung">
     <div class="trai">
-      <span class="nho" data-hien>Mới · Xưởng phối chuỗi</span>
-      <h2 class="tieu-de"><span class="dong-chu"><span>Tự tay <em>thiết kế</em></span></span><span class="dong-chu"><span>chuỗi của riêng bạn</span></span></h2>
-      <p data-hien>Chọn dây ngọc, nhập cỡ tay, gắn charm vàng vào đúng vị trí bạn muốn — xem trước ngay trên màn hình, xem ngay giá ước tính. Xong gửi thiết kế cho Ngọc Trầm xâu giúp bạn.</p>
+      <span class="nho" data-hien data-nd="tk.nho">Mới · Xưởng phối chuỗi</span>
+      <h2 class="tieu-de" data-nd="tk.tieu"><span class="dong-chu"><span>Tự tay <em>thiết kế</em></span></span><span class="dong-chu"><span>chuỗi của riêng bạn</span></span></h2>
+      <p data-hien data-nd="tk.moTa">Chọn dây ngọc, nhập cỡ tay, gắn charm vàng vào đúng vị trí bạn muốn — xem trước ngay trên màn hình, xem ngay giá ước tính. Xong gửi thiết kế cho Ngọc Trầm xâu giúp bạn.</p>
       <ol data-hien><li><b>01</b>Chọn dây ngọc</li><li><b>02</b>Nhập cỡ tay</li><li><b>03</b>Gắn &amp; kéo charm</li></ol>
-      <a class="nut sang" href="thiet-ke.html" data-hien>Bắt đầu thiết kế <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+      <a class="nut sang" href="thiet-ke.html" data-hien><span data-nd="tk.nut">Bắt đầu thiết kế</span> <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
     </div>
     <a class="phai" href="thiet-ke.html" aria-label="Mở trang tự thiết kế" data-hien><svg class="vong-mh" viewBox="0 0 300 300" aria-hidden="true"><defs><radialGradient id="ng0" cx="36%" cy="30%" r="75%"><stop offset="0" stop-color="#fff" stop-opacity=".85"/><stop offset=".2" stop-color="#8fc98a"/><stop offset="1" stop-color="#245f2c"/></radialGradient><radialGradient id="ng1" cx="36%" cy="30%" r="75%"><stop offset="0" stop-color="#fff" stop-opacity=".85"/><stop offset=".2" stop-color="#7cbf74"/><stop offset="1" stop-color="#2b6a33"/></radialGradient><radialGradient id="ng2" cx="36%" cy="30%" r="75%"><stop offset="0" stop-color="#fff" stop-opacity=".85"/><stop offset=".2" stop-color="#a2d39a"/><stop offset="1" stop-color="#2f6f37"/></radialGradient><radialGradient id="vk" cx="35%" cy="30%" r="80%"><stop offset="0" stop-color="#fff3cf"/><stop offset=".45" stop-color="#d9b56a"/><stop offset="1" stop-color="#8a6420"/></radialGradient></defs><circle cx="150" cy="150" r="120" fill="none" stroke="rgba(255,255,255,.15)"/><g transform="translate(150.0 30.0)"><circle r="14.8" fill="url(#ng0)"/><ellipse cx="-4.4" cy="-5.3" rx="4.1" ry="2.2" fill="#fff" opacity=".55" transform="rotate(-30)"/></g><g transform="translate(178.7 33.5)"><circle r="14.8" fill="url(#ng1)"/><ellipse cx="-4.4" cy="-5.3" rx="4.1" ry="2.2" fill="#fff" opacity=".55" transform="rotate(-30)"/></g><g transform="translate(205.8 43.7)"><circle r="14.8" fill="url(#ng2)"/><ellipse cx="-4.4" cy="-5.3" rx="4.1" ry="2.2" fill="#fff" opacity=".55" transform="rotate(-30)"/></g><g transform="translate(229.6 60.2)"><circle r="14.8" fill="url(#ng0)"/><ellipse cx="-4.4" cy="-5.3" rx="4.1" ry="2.2" fill="#fff" opacity=".55" transform="rotate(-30)"/></g><g transform="translate(248.8 81.8)"><circle r="14.8" fill="url(#ng1)"/><ellipse cx="-4.4" cy="-5.3" rx="4.1" ry="2.2" fill="#fff" opacity=".55" transform="rotate(-30)"/></g><g transform="translate(262.2 107.4)"><circle r="14.8" fill="url(#ng2)"/><ellipse cx="-4.4" cy="-5.3" rx="4.1" ry="2.2" fill="#fff" opacity=".55" transform="rotate(-30)"/></g><g transform="translate(269.1 135.5)"><circle r="14.8" fill="url(#ng0)"/><ellipse cx="-4.4" cy="-5.3" rx="4.1" ry="2.2" fill="#fff" opacity=".55" transform="rotate(-30)"/></g><g transform="translate(269.1 164.5)"><circle r="14.8" fill="url(#ng1)"/><ellipse cx="-4.4" cy="-5.3" rx="4.1" ry="2.2" fill="#fff" opacity=".55" transform="rotate(-30)"/></g><g transform="translate(262.2 192.6)"><circle r="14.8" fill="url(#ng2)"/><ellipse cx="-4.4" cy="-5.3" rx="4.1" ry="2.2" fill="#fff" opacity=".55" transform="rotate(-30)"/></g><g transform="translate(248.8 218.2)"><circle r="14.8" fill="url(#ng0)"/><ellipse cx="-4.4" cy="-5.3" rx="4.1" ry="2.2" fill="#fff" opacity=".55" transform="rotate(-30)"/></g><g transform="translate(229.6 239.8)"><circle r="22.1" fill="url(#vk)"/><circle r="15.5" fill="url(#ng1)" opacity=".9"/></g><g transform="translate(205.8 256.3)"><circle r="14.8" fill="url(#ng2)"/><ellipse cx="-4.4" cy="-5.3" rx="4.1" ry="2.2" fill="#fff" opacity=".55" transform="rotate(-30)"/></g><g transform="translate(178.7 266.5)"><circle r="14.8" fill="url(#ng0)"/><ellipse cx="-4.4" cy="-5.3" rx="4.1" ry="2.2" fill="#fff" opacity=".55" transform="rotate(-30)"/></g><g transform="translate(150.0 270.0)"><circle r="22.1" fill="url(#vk)"/><circle r="15.5" fill="url(#ng1)" opacity=".9"/></g><g transform="translate(121.3 266.5)"><circle r="14.8" fill="url(#ng2)"/><ellipse cx="-4.4" cy="-5.3" rx="4.1" ry="2.2" fill="#fff" opacity=".55" transform="rotate(-30)"/></g><g transform="translate(94.2 256.3)"><circle r="14.8" fill="url(#ng0)"/><ellipse cx="-4.4" cy="-5.3" rx="4.1" ry="2.2" fill="#fff" opacity=".55" transform="rotate(-30)"/></g><g transform="translate(70.4 239.8)"><circle r="22.1" fill="url(#vk)"/><circle r="15.5" fill="url(#ng1)" opacity=".9"/></g><g transform="translate(51.2 218.2)"><circle r="14.8" fill="url(#ng2)"/><ellipse cx="-4.4" cy="-5.3" rx="4.1" ry="2.2" fill="#fff" opacity=".55" transform="rotate(-30)"/></g><g transform="translate(37.8 192.6)"><circle r="14.8" fill="url(#ng0)"/><ellipse cx="-4.4" cy="-5.3" rx="4.1" ry="2.2" fill="#fff" opacity=".55" transform="rotate(-30)"/></g><g transform="translate(30.9 164.5)"><circle r="14.8" fill="url(#ng1)"/><ellipse cx="-4.4" cy="-5.3" rx="4.1" ry="2.2" fill="#fff" opacity=".55" transform="rotate(-30)"/></g><g transform="translate(30.9 135.5)"><circle r="14.8" fill="url(#ng2)"/><ellipse cx="-4.4" cy="-5.3" rx="4.1" ry="2.2" fill="#fff" opacity=".55" transform="rotate(-30)"/></g><g transform="translate(37.8 107.4)"><circle r="14.8" fill="url(#ng0)"/><ellipse cx="-4.4" cy="-5.3" rx="4.1" ry="2.2" fill="#fff" opacity=".55" transform="rotate(-30)"/></g><g transform="translate(51.2 81.8)"><circle r="14.8" fill="url(#ng1)"/><ellipse cx="-4.4" cy="-5.3" rx="4.1" ry="2.2" fill="#fff" opacity=".55" transform="rotate(-30)"/></g><g transform="translate(70.4 60.2)"><circle r="14.8" fill="url(#ng2)"/><ellipse cx="-4.4" cy="-5.3" rx="4.1" ry="2.2" fill="#fff" opacity=".55" transform="rotate(-30)"/></g><g transform="translate(94.2 43.7)"><circle r="14.8" fill="url(#ng0)"/><ellipse cx="-4.4" cy="-5.3" rx="4.1" ry="2.2" fill="#fff" opacity=".55" transform="rotate(-30)"/></g><g transform="translate(121.3 33.5)"><circle r="14.8" fill="url(#ng1)"/><ellipse cx="-4.4" cy="-5.3" rx="4.1" ry="2.2" fill="#fff" opacity=".55" transform="rotate(-30)"/></g></svg><span class="giua-mh">Thử ngay</span></a>
   </div>
@@ -129,9 +129,9 @@
 <!-- ========== BỘ SƯU TẬP ========== -->
 <section class="bst" id="bo-suu-tap">
   <div class="khung giua">
-    <span class="nho" data-hien>Khám phá bộ sưu tập</span>
+    <span class="nho" data-hien data-nd="bst.nho">Khám phá bộ sưu tập</span>
     <ul class="ds-bst" id="dsBst"></ul>
-    <a class="nut" href="#san-pham">Tất cả sản phẩm</a>
+    <a class="nut" href="#san-pham" data-nd="bst.nut">Tất cả sản phẩm</a>
   </div>
 </section>
 <div class="xem-chuot" id="xemChuot"></div>
@@ -139,22 +139,22 @@
 <!-- ========== CÂU CHUYỆN ========== -->
 <section class="chuyen" id="cau-chuyen">
   <div class="phong" id="phong">
-    <h2 class="tieu-de">
+    <h2 class="tieu-de" data-nd="cc.tieu">
       <span class="dong-chu"><span>Mỗi viên ngọc mang</span></span>
       <span class="dong-chu"><span>một <em>câu chuyện riêng</em>.</span></span>
     </h2>
   </div>
   <div class="khung ke">
     <div data-hien>
-      <span class="nho">Từ năm 2015</span>
-      <h3>Một cách làm, giữ suốt mười năm</h3>
-      <p class="thuong">Ngọc Trầm Store bắt đầu từ phỉ thuý và trầm hương. Đến hôm nay chúng tôi vẫn chọn tay từng viên ngọc, chụp ảnh thật và ghi giá rõ ràng cho từng món.</p>
+      <span class="nho" data-nd="cc.nho">Từ năm 2015</span>
+      <h3 data-nd="cc.h3">Một cách làm, giữ suốt mười năm</h3>
+      <p class="thuong" data-nd="cc.doan">Ngọc Trầm Store bắt đầu từ phỉ thuý và trầm hương. Đến hôm nay chúng tôi vẫn chọn tay từng viên ngọc, chụp ảnh thật và ghi giá rõ ràng cho từng món.</p>
       <div class="so-lieu">
-        <div><b>2015</b><span>Thành lập</span></div>
+        <div><b data-nd="cc.nam">2015</b><span>Thành lập</span></div>
         <div><b id="tongSp">—</b><span>Món đang có</span></div>
       </div>
     </div>
-    <p class="chu-quet" id="chuQuet">Không có hai viên ngọc giống nhau. Vì thế mỗi món ở Ngọc Trầm chỉ có một — một mã, một bộ ảnh thật, một mức giá rõ ràng — để bạn biết chính xác thứ mình sẽ đeo trên tay.</p>
+    <p class="chu-quet" id="chuQuet" data-nd="cc.quet">Không có hai viên ngọc giống nhau. Vì thế mỗi món ở Ngọc Trầm chỉ có một — một mã, một bộ ảnh thật, một mức giá rõ ràng — để bạn biết chính xác thứ mình sẽ đeo trên tay.</p>
   </div>
 </section>
 
@@ -170,9 +170,9 @@
 <section class="muc" id="san-pham" style="padding-top:40px">
   <div class="khung">
     <div class="giua">
-      <span class="nho" data-hien>Đang có tại cửa hàng</span>
-      <h2 class="tieu-de"><span class="dong-chu"><span>Tất cả <em>sản phẩm</em></span></span></h2>
-      <p class="dan" data-hien>Mỗi món chỉ có một — ai chốt trước giữ trước. Bấm vào món để xem đủ ảnh và hỏi mua.</p>
+      <span class="nho" data-hien data-nd="sp.nho">Đang có tại cửa hàng</span>
+      <h2 class="tieu-de" data-nd="sp.tieu"><span class="dong-chu"><span>Tất cả <em>sản phẩm</em></span></span></h2>
+      <p class="dan" data-hien data-nd="sp.moTa">Mỗi món chỉ có một — ai chốt trước giữ trước. Bấm vào món để xem đủ ảnh và hỏi mua.</p>
     </div>
     <div class="loc">
       <div class="tab" id="tab"></div>
@@ -194,15 +194,13 @@
 <section class="muc hd" id="hoi-dap" style="padding-top:40px">
   <div class="khung">
     <div class="trai">
-      <span class="nho" data-hien>Cần biết</span>
-      <h2 class="tieu-de"><span class="dong-chu"><span>Hỏi <em>&amp;</em> đáp</span></span></h2>
-      <p data-hien>Mọi điều về đặt hàng, giao hàng và chăm sóc ngọc. Chưa thấy câu bạn cần? Nhắn cho chúng tôi.</p>
+      <span class="nho" data-hien data-nd="hd.nho">Cần biết</span>
+      <h2 class="tieu-de" data-nd="hd.tieu"><span class="dong-chu"><span>Hỏi <em>&amp;</em> đáp</span></span></h2>
+      <p data-hien data-nd="hd.moTa">Mọi điều về đặt hàng, giao hàng và chăm sóc ngọc. Chưa thấy câu bạn cần? Nhắn cho chúng tôi.</p>
       <a class="nut" href="#lien-he" data-hien>Liên hệ</a>
     </div>
     <div data-hien>
-      <details open><summary>Đặt mua thế nào?</summary><div class="tl"><div><p>Bấm “Hỏi mua qua Zalo” ở món bạn thích — câu hỏi kèm mã sản phẩm đã được chép sẵn, bạn chỉ cần dán vào tin nhắn. Cửa hàng xác nhận còn hàng, gửi thêm video và báo phí giao.</p></div></div></details>
-      <details><summary>Ảnh trên web có phải ảnh thật?</summary><div class="tl"><div><p>Có. Mỗi món được chụp riêng và gắn đúng mã. Màu ngọc có thể chênh nhẹ theo màn hình, nên bạn cứ xin thêm video trước khi chốt.</p></div></div></details>
-      <details><summary>Tôi có thể tự phối chuỗi với charm khác không?</summary><div class="tl"><div><p>Được. Bạn chọn chuỗi và các charm trong mục Charm, gửi mã cho cửa hàng để phối và báo giá trọn bộ.</p></div></div></details>
+      <div id="hdChung"></div>
       <details id="hd-giao"><summary>Giao hàng thế nào, phí ship bao nhiêu?</summary><div class="tl"><div><ul data-cs="giao"></ul></div></div></details>
       <details id="hd-doi"><summary>Chính sách đổi trả?</summary><div class="tl"><div><ul data-cs="doi"></ul></div></div></details>
       <details id="hd-luuy"><summary>Charm vàng có bán lại được giá không?</summary><div class="tl"><div><ul data-cs="luuY"></ul></div></div></details>
@@ -216,12 +214,12 @@
 <footer class="lh" id="lien-he">
   <div class="tren">
     <img class="hoa-nen" src="hoa.png" alt="">
-    <span class="nho" data-hien>Liên hệ</span>
-    <h2 class="tieu-de">
+    <span class="nho" data-hien data-nd="lh.nho">Liên hệ</span>
+    <h2 class="tieu-de" data-nd="lh.tieu">
       <span class="dong-chu"><span>Cần tư vấn?</span></span>
       <span class="dong-chu"><span><em>Nhắn cho Ngọc Trầm.</em></span></span>
     </h2>
-    <p data-hien>Gửi mã sản phẩm hoặc ảnh mẫu bạn thích, cửa hàng sẽ tìm và phối giúp bạn.</p>
+    <p data-hien data-nd="lh.moTa">Gửi mã sản phẩm hoặc ảnh mẫu bạn thích, cửa hàng sẽ tìm và phối giúp bạn.</p>
     <div class="hang" data-hien>
       <a class="nut dac" href="#" data-zalo style="background:#0068ff;border-color:#0068ff">Nhắn Zalo</a>
       <a class="nut sang" href="#" data-fb>Messenger</a>
@@ -241,9 +239,9 @@
 </div>
 <div class="thong-bao" id="thongBao"></div>
 
-<script src="cau-hinh.js?v=39"></script>
-<script src="chung.js?v=39"></script>
-<script src="khach.js?v=39"></script>
-<script src="trang-chu.js?v=39"></script>
+<script src="cau-hinh.js?v=42"></script>
+<script src="chung.js?v=42"></script>
+<script src="khach.js?v=42"></script>
+<script src="trang-chu.js?v=42"></script>
 </body>
 </html>
