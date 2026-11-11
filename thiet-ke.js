@@ -79,7 +79,7 @@ function ve(lanDau) {
   chuanHoa();
   $('.tk-san').classList.toggle('deo', cheDo === 'deo');
   if (cheDo === 'deo') veTay(); else veVong(lanDau);
-  dungTabVong(); bong(); tomTat(); luu();
+  dungTabVong(); bong(); tomTat(); luu(); capMini();
 }
 
 /* chế độ thiết kế: chỉ vẽ vòng đang chọn */
@@ -299,7 +299,7 @@ function hienCharm(lai) {
   if (lai) { soCharmHien = 0; $('#dsCharm').innerHTML = ''; }
   var moi = r.slice(soCharmHien, soCharmHien + MOI); soCharmHien += moi.length;
   $('#dsCharm').insertAdjacentHTML('beforeend', moi.map(function (c) {
-    return '<button class="the-charm' + (daGan(c) ? ' da' : '') + '" data-id="' + e(c.id) + '"><span class="h">' + hinh(c.anh, c.ten, 300) +
+    return '<button class="the-charm' + (daGan(c) ? ' da' : '') + '" data-id="' + e(c.id) + '"><span class="h-vo"><span class="h">' + hinh(c.anh, c.ten, 300) + '</span>' +
       '<i class="dau-cong"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path class="cong" d="M12 6v12M6 12h12"/><path class="tick" d="M6 12.5l4 4 8-9"/></svg></i>' +
       '<em class="so-gan">' + (soGan(c) > 1 ? '×' + soGan(c) : '') + '</em><i class="bot-charm" role="button" aria-label="Gỡ bớt một charm này" title="Gỡ bớt 1">−</i></span>' +
       '<b>' + e(c.ten) + '</b><small>' + gia(c.gia) + '</small></button>';
@@ -322,7 +322,7 @@ $('#dsCharm').addEventListener('click', function (ev) {
   chon.gan.push({c: c, k: vongDang, j: j, moi: true}); dangChon = null;
   danhDauDa(); ve();
   if (chon.vong > 1) baoTin('Đã gắn vào vòng ' + (vongDang + 1));
-  if (innerWidth < 900) $('.tk-san').scrollIntoView({behavior: 'smooth', block: 'start'});
+  nhayMini();
 });
 function boMot(g) { chon.gan = chon.gan.filter(function (x) { return x !== g; }); dangChon = null; danhDauDa(); ve(); }
 function boCharm(c) {
@@ -451,3 +451,25 @@ document.addEventListener('click', function (ev) {
     .then(function () { baoTin('Đã lưu — xem lại trong Tài khoản'); })
     .catch(function () { baoTin('Chưa lưu được, thử lại nhé'); }).then(function () { b.disabled = false; });
 });
+
+/* ---------- điện thoại: vòng thu nhỏ nổi góc màn hình khi đang chọn charm (khỏi phải kéo lên xem) ---------- */
+var mini = document.createElement('button'), ngoaiSan = false;
+mini.type = 'button'; mini.className = 'vong-mini'; mini.setAttribute('aria-label', 'Xem chuỗi đang thiết kế');
+mini.innerHTML = '<svg viewBox="0 0 400 400" aria-hidden="true"></svg><b></b>';
+document.body.appendChild(mini);
+function capMini() {
+  if (!mini) return;
+  mini.querySelector('svg').innerHTML = $('#vong').innerHTML;
+  var n = cuaVong(vongDang).length;
+  mini.querySelector('b').textContent = (chon.vong > 1 ? 'Vòng ' + (vongDang + 1) + ' · ' : '') + n + ' charm';
+  mini.classList.toggle('hien', ngoaiSan && !!chon.day && innerWidth < 900);
+}
+function nhayMini() { mini.classList.remove('nhay'); void mini.offsetWidth; mini.classList.add('nhay'); }
+mini.onclick = function () { $('.tk-san').scrollIntoView({behavior: 'smooth', block: 'start'}); };
+function doSan() {   // vòng lớn đã khuất (gần hết) khỏi màn hình?
+  var r = $('.san-trong').getBoundingClientRect(), moi = r.bottom < 120 || r.top > innerHeight - 120;
+  if (moi !== ngoaiSan) { ngoaiSan = moi; capMini(); }
+}
+addEventListener('scroll', doSan, {passive: true});
+addEventListener('resize', function () { doSan(); capMini(); });
+doSan();

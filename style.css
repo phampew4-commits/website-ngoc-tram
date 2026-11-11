@@ -786,3 +786,33 @@ section[id]{scroll-margin-top:68px}
 .the-charm.da .bot-charm{opacity:1;scale:1;pointer-events:auto}
 .the-charm .bot-charm:hover{background:#b3473b;color:#fff}
 .the-charm.da .dau-cong .tick{display:none}.the-charm.da .dau-cong .cong{display:inline}
+/* bong bóng charm: nút ‹ › gọn, ô "Sang vòng…" đủ chỗ hiện chữ */
+.bong-charm{width:290px}
+.bong-charm [data-dich]{flex:0 0 38px}
+.bong-charm [data-bo]{flex:0 0 62px}
+.bong-charm select{flex:1 1 auto;padding:6px 12px;text-align:center;text-align-last:center}
+
+/* nút trên ảnh charm nằm ở lớp ngoài khung tròn → không bị viền cắt */
+.the-charm .h-vo{position:relative;display:block}
+.the-charm .h-vo .h{position:relative}
+.the-charm .dau-cong{right:4%;bottom:4%}
+.the-charm .bot-charm{left:4%;bottom:4%}
+.the-charm .so-gan{top:2%}
+
+/* vòng thu nhỏ nổi (điện thoại) */
+.vong-mini{position:fixed;right:14px;bottom:calc(100px + env(safe-area-inset-bottom));z-index:34;width:112px;padding:6px 6px 8px;border-radius:22px;
+  background:rgba(251,247,240,.94);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);box-shadow:0 12px 30px -10px rgba(0,0,0,.35),0 0 0 1px var(--vien);
+  display:flex;flex-direction:column;align-items:center;gap:2px;opacity:0;translate:0 24px;scale:.85;pointer-events:none;
+  transition:opacity .45s var(--muot),translate .45s var(--muot),scale .45s var(--muot)}
+.vong-mini.hien{opacity:1;translate:0 0;scale:1;pointer-events:auto}
+.vong-mini svg{width:100px;height:100px;display:block}
+.vong-mini svg *{pointer-events:none}
+.vong-mini b{font:500 11px/1.2 var(--sans);color:var(--muc);letter-spacing:.02em}
+.vong-mini.nhay{animation:nhayMini .6s var(--muot)}
+@keyframes nhayMini{0%{scale:1}35%{scale:1.12}100%{scale:1}}
+@media (min-width:900px){.vong-mini{display:none}}
+/* tự thiết kế: cột con không được rộng quá màn hình (điện thoại bị tràn ngang) */
+.tk-luoi>*{min-width:0}
+.loc-charm .tim input{flex:1;width:auto;min-width:0}
+.loc-charm .tim select{flex:none}
+.loc-charm>*{min-width:0}
