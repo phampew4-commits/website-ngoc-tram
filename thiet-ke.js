@@ -97,7 +97,9 @@ function dayCharm(c, b) {   // bề dày charm (vuông góc với dây), ly
   if (m) return Math.min(14, Math.max(6, parseFloat(m[1].replace(',', '.'))));
   return 8.5;
 }
+var CO_CHARM = .8;   // thu nhỏ charm xỏ trên dây (xuyên/ống) — không áp cho charm treo & điếu
 function doCharm(g, pmm) {   // {dai: phần dây chiếm, S: cạnh ảnh, b: khung hình} — đơn vị khung vẽ 400, trước khi co
+  if (kieuXo(g.c) !== 'treo' && !laDoc(g.c) && !/điếu/i.test(g.c.ten || '')) pmm *= CO_CHARM;   // charm treo & điếu đã thu nhỏ trước → giữ nguyên
   var b = hopCharm(g.c), w = b[2] - b[0], h = b[3] - b[1];
   if (kieuXo(g.c) === 'treo') return {dai: 2.6 * pmm, S: 9.5 * pmm * 200 / Math.max(h, w * .8), b: b};   // mặt treo ~9,5 ly kể cả khoen (charm bè ngang thì tính theo bề ngang)
   if (laDoc(g.c)) { var Td = 8 * pmm, Sd = Td * 200 / w; return {dai: Math.max(Td * .5, h * Sd / 200) * 1.02, S: Sd, b: b, doc: true}; }   // ảnh đứng: bề ngang ảnh vuông góc dây
