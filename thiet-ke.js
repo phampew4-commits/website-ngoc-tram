@@ -203,7 +203,7 @@ $('#bongCharm').addEventListener('click', function (ev) {
   var g = dangChon; if (!g) return;
   var d = ev.target.closest('[data-dich]'), n = soHat();
   if (d) doiCho(g, g.k, (g.j + +d.dataset.dich + n) % n);
-  if (ev.target.closest('[data-bo]')) boCharm(g.c);
+  if (ev.target.closest('[data-bo]')) boMot(g);
 });
 $('#bongCharm').addEventListener('change', function (ev) {
   var s = ev.target.closest('[data-sang]'), g = dangChon; if (!s || !g || s.value === '') return;
@@ -287,8 +287,12 @@ $('#chipNhom').addEventListener('click', function (ev) {
 var henC; $('#timCharm').oninput = function () { clearTimeout(henC); var v = this.value; henC = setTimeout(function () { tuCharm = boDau(v.trim()); hienCharm(true); }, 160); };
 $('#xepCharm').onchange = function () { xepC = this.value; hienCharm(true); };
 $('#themCharm').onclick = function () { hienCharm(false); };
-function daGan(c) { return chon.gan.some(function (g) { return g.c === c; }); }
-function danhDauDa() { $$('#dsCharm .the-charm').forEach(function (b) { b.classList.toggle('da', chon.gan.some(function (g) { return g.c.id === b.dataset.id; })); }); }
+function soGan(c) { return chon.gan.filter(function (g) { return g.c === c; }).length; }   // 1 charm có thể gắn nhiều lần
+function daGan(c) { return soGan(c) > 0; }
+function danhDauDa() { $$('#dsCharm .the-charm').forEach(function (b) {
+  var n = chon.gan.filter(function (g) { return g.c.id === b.dataset.id; }).length;
+  b.classList.toggle('da', n > 0); b.querySelector('.so-gan').textContent = n > 1 ? '×' + n : '';
+}); }
 function hienCharm(lai) {
   var r = TK.charm.filter(function (c) { return (nhomLoc === 'tat' || c.nhom === nhomLoc) && (!tuCharm || boDau(c.ten + ' ' + c.ma).indexOf(tuCharm) >= 0); });
   r.sort(function (a, b) { return xepC === 're' ? a.gia - b.gia : b.gia - a.gia; });
@@ -296,7 +300,8 @@ function hienCharm(lai) {
   var moi = r.slice(soCharmHien, soCharmHien + MOI); soCharmHien += moi.length;
   $('#dsCharm').insertAdjacentHTML('beforeend', moi.map(function (c) {
     return '<button class="the-charm' + (daGan(c) ? ' da' : '') + '" data-id="' + e(c.id) + '"><span class="h">' + hinh(c.anh, c.ten, 300) +
-      '<i class="dau-cong"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path class="cong" d="M12 6v12M6 12h12"/><path class="tick" d="M6 12.5l4 4 8-9"/></svg></i></span>' +
+      '<i class="dau-cong"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path class="cong" d="M12 6v12M6 12h12"/><path class="tick" d="M6 12.5l4 4 8-9"/></svg></i>' +
+      '<em class="so-gan">' + (soGan(c) > 1 ? '×' + soGan(c) : '') + '</em><i class="bot-charm" role="button" aria-label="Gỡ bớt một charm này" title="Gỡ bớt 1">−</i></span>' +
       '<b>' + e(c.ten) + '</b><small>' + gia(c.gia) + '</small></button>';
   }).join(''));
   if (!r.length) $('#dsCharm').innerHTML = '<p class="rong">Không có charm nào khớp.</p>';
@@ -306,17 +311,20 @@ function hienCharm(lai) {
 $('#dsCharm').addEventListener('click', function (ev) {
   var b = ev.target.closest('.the-charm'); if (!b) return;
   var c = TK.charm.filter(function (x) { return x.id === b.dataset.id; })[0];
-  if (daGan(c)) { boCharm(c); return; }
+  if (ev.target.closest('.bot-charm')) {   // gỡ bớt viên gắn sau cùng
+    var cuoi = chon.gan.filter(function (g) { return g.c === c; }).pop(); if (cuoi) boMot(cuoi); return;
+  }
   if (!chon.day) { baoTin('Chọn dây ngọc ở bước 01 trước nhé'); $('#dsDay').scrollIntoView({block: 'center'}); return; }
   if (chon.gan.length >= TOI_DA) { baoTin('Tối đa ' + TOI_DA + ' charm cho một chuỗi'); return; }
   if (cheDo === 'deo') cheDo = 'sua';
   var j = viTriTrong(vongDang);
   if (j < 0) { baoTin('Vòng ' + (vongDang + 1) + ' đã đầy'); return; }
   chon.gan.push({c: c, k: vongDang, j: j, moi: true}); dangChon = null;
-  b.classList.add('da'); ve();
+  danhDauDa(); ve();
   if (chon.vong > 1) baoTin('Đã gắn vào vòng ' + (vongDang + 1));
   if (innerWidth < 900) $('.tk-san').scrollIntoView({behavior: 'smooth', block: 'start'});
 });
+function boMot(g) { chon.gan = chon.gan.filter(function (x) { return x !== g; }); dangChon = null; danhDauDa(); ve(); }
 function boCharm(c) {
   chon.gan = chon.gan.filter(function (g) { return g.c !== c; }); dangChon = null;
   danhDauDa(); ve();
@@ -384,7 +392,7 @@ function docLai() {
   var n = soHat();
   (q.get('c') || '').split(',').forEach(function (s) {
     var p = s.split('@'), c = TK.charm.filter(function (x) { return x.id === decodeURIComponent(p[0]); })[0];
-    if (!c || daGan(c)) return;
+    if (!c) return;
     var vt = String(p[1] || '0'), k, j;
     if (vt.indexOf('.') >= 0) { k = +vt.split('.')[0]; j = +vt.split('.')[1]; } else { k = Math.floor(+vt / n); j = +vt % n; }   // link cũ: số thứ tự trên cả dây
     chon.gan.push({c: c, k: k || 0, j: j || 0});

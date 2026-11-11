@@ -503,7 +503,7 @@ section[id]{scroll-margin-top:68px}
 .the-charm .h{position:relative;display:block;aspect-ratio:1;border-radius:50%;overflow:hidden;background:var(--giay2);box-shadow:inset 0 0 0 1px var(--vien);transition:box-shadow .3s}
 .the-charm img{width:100%;height:100%;object-fit:cover;transition:scale .6s var(--muot)}
 .the-charm:hover img{scale:1.07}
-.dau-cong{position:absolute;right:4px;bottom:4px;width:26px;height:26px;border-radius:50%;background:var(--the);color:var(--muc);display:grid;place-items:center;box-shadow:0 4px 10px -4px rgba(0,0,0,.4);transition:background .3s,color .3s}
+.dau-cong{position:absolute;right:11%;bottom:11%;width:30px;height:30px;z-index:2;border-radius:50%;background:var(--the);color:var(--muc);display:grid;place-items:center;box-shadow:0 4px 10px -4px rgba(0,0,0,.4);transition:background .3s,color .3s}
 .dau-cong svg{width:14px;height:14px}
 .dau-cong .tick{display:none}
 .the-charm.da .h{box-shadow:0 0 0 2px var(--vang)}
@@ -777,3 +777,12 @@ section[id]{scroll-margin-top:68px}
 .tem-hero.roi .d>span{animation:temRa .45s cubic-bezier(.7,0,.84,0) both}
 @keyframes temVao{from{translate:0 105%;opacity:0}to{translate:0 0;opacity:1}}
 @keyframes temRa{to{translate:0 -105%;opacity:0}}
+
+/* tự thiết kế: một charm gắn được nhiều lần — số lượng + nút gỡ bớt */
+.the-charm .h{position:relative}
+.the-charm .so-gan{position:absolute;left:50%;top:7%;translate:-50% 0;z-index:2;min-width:26px;padding:3px 7px;border-radius:99px;background:var(--vang);color:#fff;font:600 12px/1 var(--sans);font-style:normal;text-align:center;box-shadow:0 2px 8px rgba(0,0,0,.18)}
+.the-charm .so-gan:empty{display:none}
+.the-charm .bot-charm{position:absolute;left:11%;bottom:11%;z-index:2;width:30px;height:30px;border-radius:50%;display:grid;place-items:center;background:rgba(255,255,255,.92);color:var(--muc);font:500 20px/1 var(--sans);font-style:normal;box-shadow:0 2px 8px rgba(0,0,0,.18);opacity:0;scale:.6;pointer-events:none;transition:opacity .4s,scale .4s var(--muot),background .3s,color .3s}
+.the-charm.da .bot-charm{opacity:1;scale:1;pointer-events:auto}
+.the-charm .bot-charm:hover{background:#b3473b;color:#fff}
+.the-charm.da .dau-cong .tick{display:none}.the-charm.da .dau-cong .cong{display:inline}
