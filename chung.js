@@ -69,7 +69,9 @@ if ((ND.camKet || []).length) $$('.cam-ket ul').forEach(function (ul) {
 
 /* ---------- liên hệ ---------- */
 function linkZalo() { return LIEN_HE.sdt ? 'https://zalo.me/' + LIEN_HE.sdt.replace(/\D/g, '') : '#lien-he'; }
-function linkFb() { return LIEN_HE.messenger ? 'https://m.me/' + LIEN_HE.messenger : '#lien-he'; }
+function laDienThoai() { return matchMedia('(pointer: coarse)').matches || /Android|iPhone|iPad/i.test(navigator.userAgent); }
+// điện thoại: m.me mở thẳng app Messenger · máy tính: m.me chuyển sang messenger.com bắt đăng nhập riêng → mở trang Facebook, khách bấm "Nhắn tin"
+function linkFb() { return !LIEN_HE.messenger ? '#lien-he' : laDienThoai() ? 'https://m.me/' + LIEN_HE.messenger : 'https://www.facebook.com/' + LIEN_HE.messenger; }
 $$('[data-zalo]').forEach(function (a) { a.href = linkZalo(); if (LIEN_HE.sdt) a.target = '_blank'; });
 $$('[data-fb]').forEach(function (a) { a.href = linkFb(); if (LIEN_HE.messenger) a.target = '_blank'; });
 /* ---------- chân trang (dựng chung cho mọi trang) ---------- */

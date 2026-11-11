@@ -482,7 +482,7 @@ function moHopGui(kenh) {
   try { coChiaSe = !!(navigator.canShare && navigator.canShare({files: [new File(['x'], 'a.png', {type: 'image/png'})]})); } catch (er) {}
   if (!hopGui) { hopGui = document.createElement('div'); hopGui.className = 'hop-gui'; document.body.appendChild(hopGui);
     hopGui.addEventListener('click', function (ev) { if (ev.target === hopGui || ev.target.closest('[data-dong]')) dongHopGui(); }); }
-  var mo = kenh === 'ms' ? linkFb() + (linkFb().indexOf('m.me/') > 0 ? '?text=' + encodeURIComponent(chu.slice(0, 900)) : '') : linkZalo(), ten = kenh === 'ms' ? 'Messenger' : 'Zalo';
+  var mo = kenh === 'ms' ? linkFb() : linkZalo(), ten = kenh === 'ms' ? 'Messenger' : 'Zalo';
   hopGui.innerHTML = '<div class="hop" role="dialog" aria-label="Gửi thiết kế cho Ngọc Trầm"><button class="dong" data-dong aria-label="Đóng">×</button>' +
     '<h3>Gửi thiết kế cho <em>Ngọc Trầm</em></h3>' +
     '<div class="anh-gui"><span>Đang tạo ảnh thiết kế…</span></div>' +
@@ -490,7 +490,7 @@ function moHopGui(kenh) {
     '<ol class="buoc-gui"><li><b>Tin nhắn thiết kế đã được chép sẵn.</b> <button class="lien" data-chep-tk>Chép lại</button></li>' +
     '<li>Lưu ảnh thiết kế: <a class="lien" data-tai href="#" download="thiet-ke-ngoc-tram.png">Tải ảnh</a></li>' +
     (dienThoai ? '<li>Mở ' + ten + ' Ngọc Trầm, <b>giữ ô chat → Dán</b> tin nhắn và gửi kèm ảnh.</li></ol>'
-      : '<li>Bấm nút bên dưới. ' + (kenh === 'ms' ? 'Trong Messenger' : 'Trên trang Zalo hiện ra, bấm nút xanh <b>“Nhắn tin”</b>, rồi trong khung chat') +
+      : '<li>Bấm nút bên dưới. ' + (kenh === 'ms' ? 'Trên trang Facebook Ngọc Trầm Store hiện ra, bấm nút <b>“Nhắn tin”</b>, rồi trong khung chat' : 'Trên trang Zalo hiện ra, bấm nút xanh <b>“Nhắn tin”</b>, rồi trong khung chat') +
         ' <b>dán tin nhắn</b> (' + (/Mac/.test(navigator.platform) ? '⌘V' : 'Ctrl+V') + ') và gửi kèm ảnh vừa tải.</li></ol>') +
     '<a class="nut ' + (coChiaSe ? '' : 'dac ') + (kenh === 'ms' ? 'ms' : 'zalo') + ' mo-kenh" href="' + mo + '" target="_blank" rel="noopener">Mở ' + ten + ' Ngọc Trầm</a>' +
     '<details class="xem-chu"><summary>Xem nội dung tin nhắn</summary><pre>' + e(chu) + '</pre></details></div>';
