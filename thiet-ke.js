@@ -74,6 +74,30 @@ function svgCharm(g, rc, sel) {
     '<circle r="' + rc + '" fill="none" stroke="#fff6dc" stroke-width=".8" opacity=".8"/>';
 }
 
+/* bản phác 2D (charm-ve.js) lồng vào vòng: S = cạnh khung, (x,y) = góc trên trái */
+function phac(c, x, y, S) {
+  if (!window.phacCharm) return '';
+  if (!c._phac) c._phac = phacCharm(c);
+  return c._phac.replace('<svg ', '<svg x="' + x.toFixed(1) + '" y="' + y.toFixed(1) + '" width="' + S.toFixed(1) + '" height="' + S.toFixed(1) + '" ');
+}
+function laTreo(g) { return g && g.c.xo === 'treo' && window.phacCharm; }
+/* charm trên vòng thiết kế theo kiểu xỏ: xuyen/ong thay chỗ 1 hạt, trục ngang theo dây; treo móc giữa 2 hạt, thõng ra ngoài */
+function svgCharmVong(g, r, sel) {
+  if (!window.phacCharm) return '<g class="noi-charm">' + svgCharm(g, r * 1.55, sel) + '</g>';
+  var n = soHat(), xo = g.c.xo, a, deg, S, p;
+  if (xo === 'treo') {
+    a = -Math.PI / 2 + (g.j + .5) * 2 * Math.PI / n; deg = a * 180 / Math.PI; S = r * 4.1;
+    p = [CX + R * Math.cos(a), CY + R * Math.sin(a)];
+    return '<g transform="translate(' + p[0].toFixed(1) + ' ' + p[1].toFixed(1) + ') rotate(' + (deg - 90).toFixed(1) + ')"><g class="noi-charm">' +
+      (sel ? '<circle cy="' + (S * .52).toFixed(1) + '" r="' + (S * .44).toFixed(1) + '" class="vong-chon" fill="none" stroke="#a8823a" stroke-width="1.2" stroke-dasharray="3 3"/>' : '') +
+      phac(g.c, -S / 2, -S * .05, S) + '</g></g>';
+  }
+  p = xyHat(g.j); a = -Math.PI / 2 + g.j * 2 * Math.PI / n; deg = a * 180 / Math.PI; S = r * (xo === 'ong' ? 3.1 : 2.9);
+  return '<g transform="translate(' + p[0].toFixed(1) + ' ' + p[1].toFixed(1) + ') rotate(' + (deg + 90).toFixed(1) + ')"><g class="noi-charm">' +
+    (sel ? '<circle r="' + (S * .48).toFixed(1) + '" class="vong-chon" fill="none" stroke="#a8823a" stroke-width="1.2" stroke-dasharray="3 3"/>' : '') +
+    phac(g.c, -S / 2, -S / 2, S) + '</g></g>';
+}
+
 /* ---------- vẽ ---------- */
 function ve(lanDau) {
   chuanHoa();
@@ -88,17 +112,18 @@ function veVong(lanDau) {
   var n = soHat(), r = rHat(), rc = r * 1.55, k = vongDang, h = '<defs>' + defsChung(rc) + '</defs>';
   h += '<circle cx="' + CX + '" cy="' + CY + '" r="' + R + '" fill="none" stroke="rgba(29,58,70,.18)" stroke-width="1.2"/>';
   for (var j = 0; j < n; j++) {
-    if (oDo(k, j)) continue;
+    var o0 = oDo(k, j); if (o0 && !laTreo(o0)) continue;
     var p = xyHat(j), d = lanDau ? ' style="animation-delay:' + (j * 18) + 'ms"' : '';
     h += '<g class="hat' + (lanDau ? ' moc' : '') + '"' + d + ' transform="translate(' + p[0].toFixed(1) + ' ' + p[1].toFixed(1) + ')">' + svgHat(r, (k * 5 + j * 7) % 3) + '</g>';
   }
+  var treo = '';
   cuaVong(k).forEach(function (g) {
-    var p = xyHat(g.j);
-    h += '<g class="charm-g' + (g === dangChon ? ' chon' : '') + (g.moi ? ' moi' : '') + '" data-o="' + g.k + '.' + g.j + '" transform="translate(' + p[0].toFixed(1) + ' ' + p[1].toFixed(1) + ')">' +
-      '<g class="noi-charm">' + svgCharm(g, rc, g === dangChon) + '</g></g>';
+    var s = '<g class="charm-g' + (g === dangChon ? ' chon' : '') + (g.moi ? ' moi' : '') + '" data-o="' + g.k + '.' + g.j + '">' + svgCharmVong(g, r, g === dangChon) + '</g>';
+    if (laTreo(g)) treo += s; else h += s;
     g.moi = false;
   });
-  $('#vong').innerHTML = h;
+  var mo = h.indexOf('</defs>') + 7;   // charm treo chèn ngay sau defs → khoen nằm dưới hạt, thân thõng ra ngoài
+  $('#vong').innerHTML = h.slice(0, mo) + treo + h.slice(mo);
   $('#nhanGiua').innerHTML = chon.day
     ? '<small>' + (chon.vong > 1 ? 'Vòng ' + (k + 1) + '/' + chon.vong + ' · ' : '') + n + ' hạt · ' + String(chon.day.co).replace('.', ',') + ' ly</small><b>' + e(chon.day.ten.replace(/\s*\d+([.,]\d+)? ly/, '')) + '</b><span>' + uoc(tong()) + '</span>'
     : '<small>Bắt đầu</small><b>Chọn dây ngọc</b><span>ở bước 01</span>';
@@ -147,7 +172,7 @@ function veTay() {
   var items = '';
   for (k = 0; k < L; k++) for (var j = 0; j < n; j++) {
     var g = oDo(k, j);
-    items += '<g class="t-hat" data-k="' + k + '" data-j="' + j + '"' + (g ? ' data-o="' + k + '.' + j + '"' : '') + '>' + (g ? svgCharm(g, rc, false) : svgHat(r, (k * 5 + j * 7) % 3)) + '</g>';
+    items += '<g class="t-hat" data-k="' + k + '" data-j="' + j + '"' + (g ? ' data-o="' + k + '.' + j + '"' : '') + '>' + (g ? (window.phacCharm ? phac(g.c, -r * 1.6, -r * (g.c.xo === 'treo' ? .6 : 1.6), r * 3.2) : svgCharm(g, rc, false)) : svgHat(r, (k * 5 + j * 7) % 3)) + '</g>';
   }
   $('#vong').innerHTML = '<defs>' + defsChung(rc) +
     '<linearGradient id="da" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#f3dac6"/><stop offset=".45" stop-color="#e7bfa3"/><stop offset="1" stop-color="#c9937a"/></linearGradient>' +

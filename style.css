@@ -874,3 +874,6 @@ section[id]{scroll-margin-top:68px}
   .dau .hieu img{width:38px;height:38px}
   .dau .phai .nut-tk{grid-column:3;grid-row:1;justify-self:end}
 }
+
+/* charm có khoen thõng ra ngoài vòng: không cắt ở mép khung */
+#vong{overflow:visible}
