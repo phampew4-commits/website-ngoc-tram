@@ -229,22 +229,22 @@
           else if (raCho || buoc === 2) c.hien = Math.max(0, c.hien - dt / 1.2);
           c.ra = !vao;
           c.e = c.hien * c.hien * (3 - 2 * c.hien);
-          c.lech = (c.lech || 0) + ((buoc === 2 ? .035 * Math.sin(tg * 1.4 + k * 2) : 0) - (c.lech || 0)) * Math.min(1, dt * 2);   // trượt trên dây, dừng êm
-          c.vt = c.cho + c.lech;
+
         });
         // xếp hạt + charm trên vòng theo chiều dài thật (charm chen giữa, đẩy hạt ra)
         var muc = [], i;
-        for (i = 0; i < n; i++) muc.push({ hat: i, rong: 2 * bChay * 1.02, vt: i / n });
+        for (i = 0; i < n; i++) muc.push({ hat: i, rong: 2 * bChay * 1.02, vt: i });
         var kc = bChay / b0;   // charm to nhỏ theo cỡ hạt
-        C.forEach(function (c) { if (c.hien > 0) muc.push({ charm: c, rong: c.g.userData.rong * kc * c.e, vt: c.vt }); });
+        C.forEach(function (c) { if (c.hien > 0) muc.push({ charm: c, rong: c.g.userData.rong * kc * c.e, vt: Math.round(c.cho * n) - .5 }); });
         muc.sort(function (a, b) { return a.vt - b.vt; });
         var L = 0; muc.forEach(function (m) { L += m.rong; });
         var BK = L / (Math.PI * 2), goc = 0;
         muc.forEach(function (m) {
           var a = (goc + m.rong / 2) / BK; goc += m.rong;
           tam.set(Math.cos(a) * BK, 0, Math.sin(a) * BK);
-          if (m.hat !== undefined) { var h = H[m.hat]; h.p.lerp(tam, Math.min(1, dt * 7)); h.on = true; h.a = a; }
-          else { m.charm.p.copy(tam); m.charm.a = a; }
+          var mu = Math.min(1, dt * 6);
+          if (m.hat !== undefined) { var h = H[m.hat]; if (h.s < .02) h.p.copy(tam); else h.p.lerp(tam, mu); h.a = a; }
+          else { if (m.charm.e < .02) m.charm.p.copy(tam); else m.charm.p.lerp(tam, mu); m.charm.a = Math.atan2(m.charm.p.z, m.charm.p.x); }
         });
         for (i = 0; i < MAX; i++) {
           var h = H[i], on = i < n;
