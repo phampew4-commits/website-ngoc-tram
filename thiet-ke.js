@@ -87,12 +87,12 @@ function laTreo(g) { return g && window.phacCharm && kieuXo(g.c) === 'treo'; }
    Mỗi charm chiếm đúng phần dây bằng bề ngang của nó (charm treo chỉ chiếm cái khoen ~3 ly),
    rồi cả vòng co lại cho vừa chu vi → không charm nào đè lên hạt. */
 var BO = null;   // {k: vòng, co: hệ số co, rh: bán kính hạt sau co, goc: {j: góc tâm ô}, ds: [mục]}
-var DOC = {'1941': 1, '18924': 1, '21660': 1};   // bản vẽ v3 nhìn ngang mà lỗ xỏ ở trên–dưới → dây chạy dọc ảnh, phải xoay 90°
+var DOC = {'1941': 1, '18924': 1, '21660': 1, '24041': 1, '23990': 1, '25389': 1, '16291': 1};   // hạt dẹt/vòng mà bản v3 vẽ dải nằm ngang: dây xuyên qua lỗ giữa → dải phải vuông góc với dây, xoay 90°
 function laDoc(c) { return !!(DOC[c.id] || DOC[c.ma]) && !!(window.V3 && (window.V3[c.id] || window.V3[c.ma])); }
 function hopCharm(c) { var H = window.V3_HOP || {}; return H[c.id] || H[c.ma] || [12, 12, 188, 188]; }   // khung hình thật trong ảnh (khung 200)
 function dayCharm(c, b) {   // bề dày charm (vuông góc với dây), ly
   var t = (c.ten || '').toLowerCase(), w = b[2] - b[0], h = b[3] - b[1], m = t.match(/(\d+(?:[.,]\d+)?)\s*(?:x\s*[\d.,]+\s*)?ly\b/);
-  if (/điếu/.test(t)) return 10;               // đĩa ngọc bình an ~11 ly, thanh khoen hai đầu kéo dài theo dây
+  if (/điếu/.test(t)) return 8;               // đĩa ngọc bình an ~11 ly, thanh khoen hai đầu kéo dài theo dây
   if (w / h > 2.5) return 5;                   // ống dài, mảnh
   if (m) return Math.min(14, Math.max(6, parseFloat(m[1].replace(',', '.'))));
   return 8.5;
@@ -100,7 +100,7 @@ function dayCharm(c, b) {   // bề dày charm (vuông góc với dây), ly
 function doCharm(g, pmm) {   // {dai: phần dây chiếm, S: cạnh ảnh, b: khung hình} — đơn vị khung vẽ 400, trước khi co
   var b = hopCharm(g.c), w = b[2] - b[0], h = b[3] - b[1];
   if (kieuXo(g.c) === 'treo') return {dai: 2.6 * pmm, S: 9.5 * pmm * 200 / Math.max(h, w * .8), b: b};   // mặt treo ~9,5 ly kể cả khoen (charm bè ngang thì tính theo bề ngang)
-  if (laDoc(g.c)) { var Td = 12 * pmm, Sd = Td * 200 / w; return {dai: Math.max(Td * .5, h * Sd / 200) * 1.02, S: Sd, b: b, doc: true}; }   // ảnh đứng: bề ngang ảnh vuông góc dây
+  if (laDoc(g.c)) { var Td = 8 * pmm, Sd = Td * 200 / w; return {dai: Math.max(Td * .5, h * Sd / 200) * 1.02, S: Sd, b: b, doc: true}; }   // ảnh đứng: bề ngang ảnh vuông góc dây
   var T = dayCharm(g.c, b) * pmm, S = T * 200 / h;
   return {dai: Math.max(T * .7, w * S / 200) * 1.02, S: S, b: b};
 }
