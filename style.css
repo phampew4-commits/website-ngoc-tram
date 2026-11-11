@@ -110,7 +110,7 @@ em{font-style:italic}
 .vong{position:absolute;left:50%;bottom:26px;translate:-50% 0;width:104px;height:104px}
 .vong svg{width:100%;height:100%;animation:quay 22s linear infinite}
 @keyframes quay{to{rotate:360deg}}
-.vong text{font:500 8.4px var(--sans);letter-spacing:.36em;fill:#fff;text-transform:uppercase}
+.vong text{font:500 8.4px var(--sans);letter-spacing:.2em;fill:#fff;text-transform:uppercase}   /* textLength giãn chữ vừa khít đúng 1 vòng (chu vi 2π·38 ≈ 238) */
 .vong .mui{position:absolute;inset:0;margin:auto;width:1px;height:30px;overflow:hidden}
 .vong .mui::before{content:"";position:absolute;inset:0;background:#fff;animation:roi 2s var(--muot) infinite}
 @keyframes roi{0%{translate:0 -100%}100%{translate:0 200%}}

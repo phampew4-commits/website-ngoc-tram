@@ -223,8 +223,12 @@
     while (v && v.cung) v = R[v.cung];
     return v;
   }
-  window.kieuXo = function (c) { var v = rieng(c); return (v && v.xo) || c.xo || 'treo'; };
+  function v3(c) { var V = window.V3 || {}; return V[c.id] ? c.id : V[c.ma] ? c.ma : ''; }   // bản vẽ v3 (Figma → charm-v3/<mã>.webp)
+  window.kieuXo = function (c) { var m = v3(c); if (m) return window.V3[m]; var v = rieng(c); return (v && v.xo) || c.xo || 'treo'; };
   window.phacCharm = function (c) {
+    var m3 = v3(c);
+    if (m3) return '<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><image href="charm-v3/' + encodeURIComponent(m3) + '.webp?v=' + (window.V3_PHIEN || 1) +
+      '" width="200" height="200" style="filter:drop-shadow(0 2px 2px rgba(43,29,14,.28))"/></svg>';
     var da = c.da || '', kl = c.kl || 'vang', d = DA[da], k = KL[kl] || KL.vang, hinh = VE[c.hinh] ? c.hinh : 'mat';
     var P = { D: 'url(#pd-' + (da || 'x') + ')', K: 'url(#pk-' + kl + ')', oD: d ? d[2] : k[3], oK: k[3], da: !!d, kim: true };
     var rg = rieng(c);

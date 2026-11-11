@@ -27,7 +27,8 @@ function uoc(n) { return '≈ ' + gia(Math.round(n / 10000) * 10000); }   // ch
 function cuaVong(k) { return chon.gan.filter(function (g) { return g.k === k; }); }
 function oDo(k, j) { return chon.gan.filter(function (g) { return g.k === k && g.j === j; })[0]; }
 function rHat() { return R * Math.sin(Math.PI / soHat()) * 1.02; }
-function xyHat(j) { var n = soHat(), a = -Math.PI / 2 + j * 2 * Math.PI / n; return [CX + R * Math.cos(a), CY + R * Math.sin(a)]; }
+function gocHat(j) { return BO && BO.k === vongDang && BO.goc[j] !== undefined ? BO.goc[j] : -Math.PI / 2 + j * 2 * Math.PI / soHat(); }
+function xyHat(j) { var a = gocHat(j); return [CX + R * Math.cos(a), CY + R * Math.sin(a)]; }
 function viTriTrong(k) {   // chỗ trống của vòng k, ưu tiên phía trước (đáy vòng), xen kẽ trái – phải
   var n = soHat(), goc = Math.round(n / 2);
   for (var t = 0; t < n; t++) { var j = (goc + (t % 2 ? -1 : 1) * Math.ceil(t / 2) * 2 + n * 4) % n; if (!oDo(k, j)) return j; }
@@ -82,21 +83,53 @@ function phac(c, x, y, S) {
 }
 function laTreo(g) { return g && window.phacCharm && kieuXo(g.c) === 'treo'; }
 /* charm trên vòng thiết kế theo kiểu xỏ: xuyen/ong thay chỗ 1 hạt, trục ngang theo dây; treo móc giữa 2 hạt, thõng ra ngoài */
-function svgCharmVong(g, r, sel) {
-  if (!window.phacCharm) return '<g class="noi-charm">' + svgCharm(g, r * 1.55, sel) + '</g>';
-  var n = soHat(), xo = kieuXo(g.c), a, deg, S, p, co = chon.day ? chon.day.co : 6;
-  r = r * Math.min(1.6, Math.max(1, 6 / co));   // charm thật ~8–12 ly: hạt nhỏ thì charm không teo theo
-  if (xo === 'treo') {
-    a = -Math.PI / 2 + (g.j + .5) * 2 * Math.PI / n; deg = a * 180 / Math.PI; S = r * 4.1;
-    p = [CX + R * Math.cos(a), CY + R * Math.sin(a)];
-    return '<g transform="translate(' + p[0].toFixed(1) + ' ' + p[1].toFixed(1) + ') rotate(' + (deg - 90).toFixed(1) + ')"><g class="noi-charm">' +
-      (sel ? '<circle cy="' + (S * .52).toFixed(1) + '" r="' + (S * .44).toFixed(1) + '" class="vong-chon" fill="none" stroke="#a8823a" stroke-width="1.2" stroke-dasharray="3 3"/>' : '') +
-      phac(g.c, -S / 2, -S * .05, S) + '</g></g>';
+/* ---------- bố cục vòng theo bề rộng thật trên dây ----------
+   Mỗi charm chiếm đúng phần dây bằng bề ngang của nó (charm treo chỉ chiếm cái khoen ~3 ly),
+   rồi cả vòng co lại cho vừa chu vi → không charm nào đè lên hạt. */
+var BO = null;   // {k: vòng, co: hệ số co, rh: bán kính hạt sau co, goc: {j: góc tâm ô}, ds: [mục]}
+var DOC = {'1941': 1, '18924': 1, '21660': 1};   // bản vẽ v3 nhìn ngang mà lỗ xỏ ở trên–dưới → dây chạy dọc ảnh, phải xoay 90°
+function laDoc(c) { return !!(DOC[c.id] || DOC[c.ma]) && !!(window.V3 && (window.V3[c.id] || window.V3[c.ma])); }
+function hopCharm(c) { var H = window.V3_HOP || {}; return H[c.id] || H[c.ma] || [12, 12, 188, 188]; }   // khung hình thật trong ảnh (khung 200)
+function dayCharm(c, b) {   // bề dày charm (vuông góc với dây), ly
+  var t = (c.ten || '').toLowerCase(), w = b[2] - b[0], h = b[3] - b[1], m = t.match(/(\d+(?:[.,]\d+)?)\s*(?:x\s*[\d.,]+\s*)?ly\b/);
+  if (/điếu/.test(t)) return 11;               // đĩa ngọc bình an ~11 ly, thanh khoen hai đầu kéo dài theo dây
+  if (w / h > 2.5) return 6;                   // ống dài, mảnh
+  if (m) return Math.min(14, Math.max(6, parseFloat(m[1].replace(',', '.'))));
+  return 10;
+}
+function doCharm(g, pmm) {   // {dai: phần dây chiếm, S: cạnh ảnh, b: khung hình} — đơn vị khung vẽ 400, trước khi co
+  var b = hopCharm(g.c), w = b[2] - b[0], h = b[3] - b[1];
+  if (kieuXo(g.c) === 'treo') return {dai: 3.2 * pmm, S: 13 * pmm * 200 / h, b: b};   // mặt treo dài ~13 ly kể cả khoen
+  if (laDoc(g.c)) { var Td = 12 * pmm, Sd = Td * 200 / w; return {dai: Math.max(Td * .5, h * Sd / 200) * 1.02, S: Sd, b: b, doc: true}; }   // ảnh đứng: bề ngang ảnh vuông góc dây
+  var T = dayCharm(g.c, b) * pmm, S = T * 200 / h;
+  return {dai: Math.max(T * .7, w * S / 200) * 1.02, S: S, b: b};
+}
+function boCuc(k) {
+  var n = soHat(), r = rHat(), co0 = chon.day ? chon.day.co : 6, pmm = 2 * r / co0, ds = [], j, g;
+  for (j = 0; j < n; j++) {
+    g = oDo(k, j);
+    if (g && !laTreo(g)) { ds.push({j: j, g: g, m: doCharm(g, pmm)}); continue; }
+    ds.push({j: j, hat: true, dai: 2 * r});
+    if (g) ds.push({j: j, g: g, treo: true, m: doCharm(g, pmm)});
   }
-  p = xyHat(g.j); a = -Math.PI / 2 + g.j * 2 * Math.PI / n; deg = a * 180 / Math.PI; S = r * (xo === 'ong' ? 3.1 : 2.9);
-  return '<g transform="translate(' + p[0].toFixed(1) + ' ' + p[1].toFixed(1) + ') rotate(' + (deg + 90).toFixed(1) + ')"><g class="noi-charm">' +
-    (sel ? '<circle r="' + (S * .48).toFixed(1) + '" class="vong-chon" fill="none" stroke="#a8823a" stroke-width="1.2" stroke-dasharray="3 3"/>' : '') +
-    phac(g.c, -S / 2, -S / 2, S) + '</g></g>';
+  var tong = ds.reduce(function (s, x) { return s + (x.m ? x.m.dai : x.dai); }, 0), co = 2 * Math.PI * R / tong, goc = {};
+  var a = -Math.PI / 2 - (ds[0].m ? ds[0].m.dai : ds[0].dai) * co / 2 / R;   // ô 0 nằm chính giữa phía trên
+  ds.forEach(function (x) { var d = (x.m ? x.m.dai : x.dai) * co / R; x.a = a + d / 2; a += d; if (!x.treo) goc[x.j] = x.a; });
+  BO = {k: k, co: co, rh: r * Math.min(co, 1.15), goc: goc, ds: ds, pmm: pmm * co};
+  return BO;
+}
+function svgCharmVong(g, x, sel) {
+  if (!window.phacCharm) { var p0 = xyHat(g.j); return '<g transform="translate(' + p0[0].toFixed(1) + ' ' + p0[1].toFixed(1) + ')"><g class="noi-charm">' + svgCharm(g, BO.rh * 1.55, sel) + '</g></g>'; }
+  var S = x.m.S * BO.co, b = x.m.b, p = [CX + R * Math.cos(x.a), CY + R * Math.sin(x.a)], deg = x.a * 180 / Math.PI, ox, oy, xoay;
+  if (x.treo) {   // khoen (mép trên khung hình) nằm trên dây, thân thõng ra ngoài vòng
+    ox = -(b[0] + b[2]) / 400 * S; oy = -b[1] / 200 * S - 1.2 * BO.pmm; xoay = deg - 90;
+  } else {        // tâm khung hình nằm trên dây, trục ngang của ảnh theo chiều dây
+    ox = -(b[0] + b[2]) / 400 * S; oy = -(b[1] + b[3]) / 400 * S; xoay = deg + (x.m.doc ? 180 : 90);
+  }
+  var cx = ox + (b[0] + b[2]) / 400 * S, cy = oy + (b[1] + b[3]) / 400 * S, rv = Math.max(b[2] - b[0], b[3] - b[1]) / 400 * S + 4;
+  return '<g transform="translate(' + p[0].toFixed(1) + ' ' + p[1].toFixed(1) + ') rotate(' + xoay.toFixed(1) + ')"><g class="noi-charm">' +
+    (sel ? '<circle cx="' + cx.toFixed(1) + '" cy="' + cy.toFixed(1) + '" r="' + rv.toFixed(1) + '" class="vong-chon" fill="none" stroke="#a8823a" stroke-width="1.2" stroke-dasharray="3 3"/>' : '') +
+    phac(g.c, ox, oy, S) + '</g></g>';
 }
 
 /* ---------- vẽ ---------- */
@@ -112,15 +145,15 @@ function veVong(lanDau) {
   dungTu = false;
   var n = soHat(), r = rHat(), rc = r * 1.55, k = vongDang, h = '<defs>' + defsChung(rc) + '</defs>';
   h += '<circle cx="' + CX + '" cy="' + CY + '" r="' + R + '" fill="none" stroke="rgba(29,58,70,.18)" stroke-width="1.2"/>';
-  for (var j = 0; j < n; j++) {
-    var o0 = oDo(k, j); if (o0 && !laTreo(o0)) continue;
-    var p = xyHat(j), d = lanDau ? ' style="animation-delay:' + (j * 18) + 'ms"' : '';
-    h += '<g class="hat' + (lanDau ? ' moc' : '') + '"' + d + ' transform="translate(' + p[0].toFixed(1) + ' ' + p[1].toFixed(1) + ')">' + svgHat(r, (k * 5 + j * 7) % 3) + '</g>';
-  }
-  var treo = '';
-  cuaVong(k).forEach(function (g) {
-    var s = '<g class="charm-g' + (g === dangChon ? ' chon' : '') + (g.moi ? ' moi' : '') + '" data-o="' + g.k + '.' + g.j + '">' + svgCharmVong(g, r, g === dangChon) + '</g>';
-    if (laTreo(g)) treo += s; else h += s;
+  var bo = boCuc(k), treo = '';
+  bo.ds.forEach(function (x) {
+    if (x.hat) {
+      var p = xyHat(x.j), d = lanDau ? ' style="animation-delay:' + (x.j * 18) + 'ms"' : '';
+      h += '<g class="hat' + (lanDau ? ' moc' : '') + '"' + d + ' transform="translate(' + p[0].toFixed(1) + ' ' + p[1].toFixed(1) + ')">' + svgHat(bo.rh, (k * 5 + x.j * 7) % 3) + '</g>';
+      return;
+    }
+    var g = x.g, s = '<g class="charm-g' + (g === dangChon ? ' chon' : '') + (g.moi ? ' moi' : '') + '" data-o="' + g.k + '.' + g.j + '">' + svgCharmVong(g, x, g === dangChon) + '</g>';
+    if (x.treo) treo += s; else h += s;
     g.moi = false;
   });
   var mo = h.indexOf('</defs>') + 7;   // charm treo chèn ngay sau defs → khoen nằm dưới hạt, thân thõng ra ngoài
@@ -244,8 +277,9 @@ $('#bongCharm').addEventListener('change', function (ev) {
   var svg = $('#vong'), keo = null;
   function jTuChuot(ev) {
     var r = svg.getBoundingClientRect(), x = (ev.clientX - r.left) / r.width * 400 - CX, y = (ev.clientY - r.top) / r.height * 400 - CY;
-    var a = Math.atan2(y, x) + Math.PI / 2, n = soHat();
-    return ((Math.round(a / (2 * Math.PI) * n) % n) + n) % n;
+    var a = Math.atan2(y, x), n = soHat(), tot = 0, kc = 9;
+    for (var j = 0; j < n; j++) { var d = Math.abs(((a - gocHat(j)) % (2 * Math.PI) + 3 * Math.PI) % (2 * Math.PI) - Math.PI); if (d < kc) { kc = d; tot = j; } }
+    return tot;
   }
   svg.addEventListener('pointerdown', function (ev) {
     if (cheDo === 'deo') { dungTu = true; keo = {x: ev.clientX, xoay: xoay, tay: true}; svg.setPointerCapture(ev.pointerId); ev.preventDefault(); return; }
