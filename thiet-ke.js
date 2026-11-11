@@ -479,7 +479,7 @@ function taoAnhTk() {
 var hopGui = null, anhGui = null;
 function moHopGui(kenh) {
   var chu = tinNhan(), coChiaSe = false, dienThoai = matchMedia('(pointer: coarse)').matches || /Android|iPhone|iPad/i.test(navigator.userAgent);
-  try { coChiaSe = !!(navigator.canShare && navigator.canShare({files: [new File(['x'], 'a.png', {type: 'image/png'})]})); } catch (er) {}
+  try { coChiaSe = dienThoai && !!(navigator.canShare && navigator.canShare({files: [new File(['x'], 'a.png', {type: 'image/png'})]})); } catch (er) {}   // máy tính: bảng chia sẻ không có Zalo/Messenger → ẩn
   if (!hopGui) { hopGui = document.createElement('div'); hopGui.className = 'hop-gui'; document.body.appendChild(hopGui);
     hopGui.addEventListener('click', function (ev) { if (ev.target === hopGui || ev.target.closest('[data-dong]')) dongHopGui(); }); }
   var mo = kenh === 'ms' ? linkFb() : linkZalo(), ten = kenh === 'ms' ? 'Messenger' : 'Zalo';
@@ -586,14 +586,34 @@ function docLai() {
 document.addEventListener('click', function (ev) {
   var b = ev.target.closest('#luuTk'); if (!b || !chon.day) return;
   if (!KHACH.user) { luu(); return KHACH.canDangNhap(); }
-  var ten = prompt('Đặt tên cho thiết kế này:', chon.day.ten.replace(/\s*\d+([.,]\d+)? ly/, '') + ' · ' + chon.vong + ' vòng');
-  if (ten === null) return;
-  b.disabled = true;
-  KHACH.luuThietKe({ten: ten.trim() || 'Thiết kế', hash: location.hash.slice(1), gia: Math.round(tong() / 10000) * 10000,
-                    moTa: chon.vong + ' vòng · ' + chon.gan.length + ' charm'})
-    .then(function () { baoTin('Đã lưu — xem lại trong Tài khoản'); })
-    .catch(function () { baoTin('Chưa lưu được, thử lại nhé'); }).then(function () { b.disabled = false; });
+  moHopLuu(b);
 });
+// hộp đặt tên & lưu thiết kế (thay hộp prompt mặc định của trình duyệt)
+var hopLuu = null;
+function moHopLuu(nut) {
+  if (!hopLuu) { hopLuu = document.createElement('div'); hopLuu.className = 'hop-gui hop-luu'; document.body.appendChild(hopLuu);
+    hopLuu.addEventListener('click', function (ev) { if (ev.target === hopLuu || ev.target.closest('[data-huy]')) dongHopLuu(); }); }
+  var goiY = chon.day.ten.replace(/\s*\d+([.,]\d+)? ly/, '') + ' · ' + chon.vong + ' vòng';
+  hopLuu.innerHTML = '<form class="hop" role="dialog" aria-label="Lưu thiết kế"><button type="button" class="dong" data-huy aria-label="Đóng">×</button>' +
+    '<div class="luu-dau"><svg viewBox="0 0 400 400" aria-hidden="true">' + $('#vong').innerHTML + '</svg>' +
+    '<div><h3>Lưu <em>thiết kế</em></h3><small>' + e(chon.day.ten) + ' · ' + chon.vong + ' vòng · ' + chon.gan.length + ' charm<br>' + uoc(tong()) + '</small></div></div>' +
+    '<label class="o-ten"><span>Đặt tên cho thiết kế</span><input name="ten" maxlength="60" value="' + e(goiY) + '" autocomplete="off"></label>' +
+    '<p class="goi-y-gui" style="text-align:left">Thiết kế được lưu vào Tài khoản của bạn — mở lại và chỉnh tiếp bất cứ lúc nào.</p>' +
+    '<div class="nut-luu"><button type="button" class="nut" data-huy>Huỷ</button><button type="submit" class="nut dac">Lưu thiết kế</button></div></form>';
+  hopLuu.classList.add('mo'); document.documentElement.classList.add('khoa-cuon');
+  var f = hopLuu.querySelector('form'), o = f.ten; setTimeout(function () { o.focus(); o.select(); }, 80);
+  f.onsubmit = function (ev) {
+    ev.preventDefault();
+    var gui = f.querySelector('[type=submit]'); gui.disabled = true; gui.textContent = 'Đang lưu…'; nut.disabled = true;
+    KHACH.luuThietKe({ten: o.value.trim() || 'Thiết kế', hash: location.hash.slice(1), gia: Math.round(tong() / 10000) * 10000,
+                      moTa: chon.vong + ' vòng · ' + chon.gan.length + ' charm'})
+      .then(function () { dongHopLuu(); baoTin('Đã lưu — xem lại trong Tài khoản'); })
+      .catch(function () { gui.disabled = false; gui.textContent = 'Lưu thiết kế'; baoTin('Chưa lưu được, thử lại nhé'); })
+      .then(function () { nut.disabled = false; });
+  };
+}
+function dongHopLuu() { if (hopLuu) hopLuu.classList.remove('mo'); document.documentElement.classList.remove('khoa-cuon'); }
+addEventListener('keydown', function (ev) { if (ev.key === 'Escape') dongHopLuu(); });
 
 /* ---------- điện thoại: vòng thu nhỏ nổi góc màn hình khi đang chọn charm (khỏi phải kéo lên xem) ---------- */
 var mini = document.createElement('button'), ngoaiSan = false;

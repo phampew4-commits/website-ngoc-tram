@@ -895,3 +895,14 @@ section[id]{scroll-margin-top:68px}
 .hop-gui .nut.dac.zalo{background:#0068ff;border-color:#0068ff}.hop-gui .nut.dac.ms{background:#0a7cff;border-color:#0a7cff}
 .xem-chu{margin-top:12px;font-size:12.5px;color:var(--mo)}.xem-chu pre{white-space:pre-wrap;font:12px/1.5 var(--sans);background:var(--the);border-radius:8px;padding:10px;margin:8px 0 0;user-select:text}
 html.khoa-cuon{overflow:hidden}
+
+/* hộp lưu thiết kế */
+.hop-luu .hop{width:min(400px,100%)}
+.luu-dau{display:flex;gap:14px;align-items:center;margin-bottom:16px}
+.luu-dau svg{width:84px;height:84px;flex:none;border-radius:50%;background:radial-gradient(circle,#fbf7f0 0,#efe5d3 75%)}
+.luu-dau h3{margin:0 0 4px}.luu-dau small{font-size:12.5px;line-height:1.5;color:var(--mo)}
+.o-ten{display:grid;gap:6px;margin-bottom:8px}
+.o-ten span{font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--mo)}
+.o-ten input{font:400 16px var(--sans);padding:12px 14px;border-radius:10px;border:1px solid var(--vien);background:#fff;color:var(--chu);outline:none;transition:border-color .25s,box-shadow .25s}
+.o-ten input:focus{border-color:var(--vang);box-shadow:0 0 0 3px rgba(168,130,58,.15)}
+.nut-luu{display:grid;grid-template-columns:1fr 1.4fr;gap:10px}.nut-luu .nut{justify-content:center}
