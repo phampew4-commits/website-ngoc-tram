@@ -102,6 +102,11 @@ function doCharm(g, pmm) {   // {dai: phần dây chiếm, S: cạnh ảnh, b: k
   if (kieuXo(g.c) !== 'treo' && !laDoc(g.c) && !/điếu/i.test(g.c.ten || '')) pmm *= CO_CHARM;   // charm treo & điếu đã thu nhỏ trước → giữ nguyên
   var b = hopCharm(g.c), w = b[2] - b[0], h = b[3] - b[1];
   if (kieuXo(g.c) === 'treo') return {dai: 2.6 * pmm, S: 9.5 * pmm * 200 / Math.max(h, w * .8), b: b};   // mặt treo ~9,5 ly kể cả khoen (charm bè ngang thì tính theo bề ngang)
+  if (/chặn/i.test(g.c.ten || '')) {   // chặn: nhỏ hơn hạt chuỗi ~2,5 ly (thường 2–3 ly), theo cỡ hạt đang chọn
+    var P = Math.max(3, (chon.day ? chon.day.co : 6) - 2.5) * pmm / (kieuXo(g.c) !== 'treo' && !laDoc(g.c) && !/điếu/i.test(g.c.ten || '') ? CO_CHARM : 1);
+    if (laDoc(g.c)) { var Sc = P * 200 / w; return {dai: Math.max(P * .4, h * Sc / 200) * 1.04, S: Sc, b: b, doc: true}; }
+    var Sn = P * 200 / h; return {dai: Math.max(P * .4, w * Sn / 200) * 1.04, S: Sn, b: b};
+  }
   if (laDoc(g.c)) { var Td = 8 * pmm, Sd = Td * 200 / w; return {dai: Math.max(Td * .5, h * Sd / 200) * 1.02, S: Sd, b: b, doc: true}; }   // ảnh đứng: bề ngang ảnh vuông góc dây
   var T = dayCharm(g.c, b) * pmm, S = T * 200 / h;
   return {dai: Math.max(T * .7, w * S / 200) * 1.02, S: S, b: b};
