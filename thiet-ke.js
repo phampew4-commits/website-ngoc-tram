@@ -80,11 +80,12 @@ function phac(c, x, y, S) {
   if (!c._phac) c._phac = phacCharm(c);
   return c._phac.replace('<svg ', '<svg x="' + x.toFixed(1) + '" y="' + y.toFixed(1) + '" width="' + S.toFixed(1) + '" height="' + S.toFixed(1) + '" ');
 }
-function laTreo(g) { return g && g.c.xo === 'treo' && window.phacCharm; }
+function laTreo(g) { return g && window.phacCharm && kieuXo(g.c) === 'treo'; }
 /* charm trên vòng thiết kế theo kiểu xỏ: xuyen/ong thay chỗ 1 hạt, trục ngang theo dây; treo móc giữa 2 hạt, thõng ra ngoài */
 function svgCharmVong(g, r, sel) {
   if (!window.phacCharm) return '<g class="noi-charm">' + svgCharm(g, r * 1.55, sel) + '</g>';
-  var n = soHat(), xo = g.c.xo, a, deg, S, p;
+  var n = soHat(), xo = kieuXo(g.c), a, deg, S, p, co = chon.day ? chon.day.co : 6;
+  r = r * Math.min(1.6, Math.max(1, 6 / co));   // charm thật ~8–12 ly: hạt nhỏ thì charm không teo theo
   if (xo === 'treo') {
     a = -Math.PI / 2 + (g.j + .5) * 2 * Math.PI / n; deg = a * 180 / Math.PI; S = r * 4.1;
     p = [CX + R * Math.cos(a), CY + R * Math.sin(a)];
@@ -172,7 +173,7 @@ function veTay() {
   var items = '';
   for (k = 0; k < L; k++) for (var j = 0; j < n; j++) {
     var g = oDo(k, j);
-    items += '<g class="t-hat" data-k="' + k + '" data-j="' + j + '"' + (g ? ' data-o="' + k + '.' + j + '"' : '') + '>' + (g ? (window.phacCharm ? phac(g.c, -r * 1.6, -r * (g.c.xo === 'treo' ? .6 : 1.6), r * 3.2) : svgCharm(g, rc, false)) : svgHat(r, (k * 5 + j * 7) % 3)) + '</g>';
+    items += '<g class="t-hat" data-k="' + k + '" data-j="' + j + '"' + (g ? ' data-o="' + k + '.' + j + '"' : '') + '>' + (g ? (window.phacCharm ? phac(g.c, -r * 1.6, -r * (kieuXo(g.c) === 'treo' ? .6 : 1.6), r * 3.2) : svgCharm(g, rc, false)) : svgHat(r, (k * 5 + j * 7) % 3)) + '</g>';
   }
   $('#vong').innerHTML = '<defs>' + defsChung(rc) +
     '<linearGradient id="da" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#f3dac6"/><stop offset=".45" stop-color="#e7bfa3"/><stop offset="1" stop-color="#c9937a"/></linearGradient>' +

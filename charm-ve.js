@@ -9,7 +9,8 @@
     lucde: ['#d4fbe2', '#2fc46c', '#056b36'], lambang: ['#effffb', '#8bd9c8', '#2f8379'], trang: ['#ffffff', '#e7eff1', '#a3bcc2'],
     bich: ['#c6eccf', '#3f9a5f', '#1b5534'], dasac: ['#f6efff', '#c9b6e8', '#78a987'], garnet: ['#ffb3bd', '#c4283f', '#560818'],
     tour: ['#ffd6e5', '#e46b9a', '#86204e'], trai: ['#ffffff', '#f4ede2', '#c4b59f'], thachanh: ['#f3fff7', '#bfe6cd', '#5b9473'],
-    xanh: ['#dcefff', '#5b9de0', '#1d4b94'], kimcuong: ['#ffffff', '#eaf2ff', '#93a7c0']
+    xanh: ['#dcefff', '#5b9de0', '#1d4b94'], kimcuong: ['#ffffff', '#eaf2ff', '#93a7c0'],
+    vang: ['#fff3c2', '#f0b43a', '#a5620a'], toc: ['#eefae8', '#8fc48a', '#3e6e44'], bichnhat: ['#e6f8c8', '#8fcf6a', '#3f7a30']
   };
   var KL = { vang: ['#fff6c4', '#f6cb3e', '#d99a10', '#86580a'], bac: ['#ffffff', '#e4e8ec', '#a6aeb7', '#59616a'] };
 
@@ -217,9 +218,20 @@
   };
   var ONG = { lu: 1, ong: 1, chan: 1, dieu: 1, kimcang: 1 };
 
+  function rieng(c) {   // bản vẽ riêng (charm-ve-rieng.js), theo id rồi theo mã
+    var R = window.VE_RIENG || {}, v = R[c.id] || R[c.ma];
+    while (v && v.cung) v = R[v.cung];
+    return v;
+  }
+  window.kieuXo = function (c) { var v = rieng(c); return (v && v.xo) || c.xo || 'treo'; };
   window.phacCharm = function (c) {
     var da = c.da || '', kl = c.kl || 'vang', d = DA[da], k = KL[kl] || KL.vang, hinh = VE[c.hinh] ? c.hinh : 'mat';
     var P = { D: 'url(#pd-' + (da || 'x') + ')', K: 'url(#pk-' + kl + ')', oD: d ? d[2] : k[3], oK: k[3], da: !!d, kim: true };
+    var rg = rieng(c);
+    if (rg && rg.kl && KL[rg.kl]) { kl = rg.kl; k = KL[kl]; P.K = 'url(#pk-' + kl + ')'; P.oK = k[3]; if (!d) P.oD = k[3]; }   // màu kim loại xem từ ảnh
+    if (rg && rg.da && DA[rg.da]) { da = rg.da; d = DA[da]; P.D = 'url(#pd-' + da + ')'; P.oD = d[2]; }
+    if (rg && rg.s) return '<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">' + defs(da || 'x', kl) + '<g filter="url(#pb)">' +
+      rg.s.replace(/\{D\}/g, P.D).replace(/\{K\}/g, P.K).replace(/\{oD\}/g, P.oD).replace(/\{oK\}/g, P.oK) + '</g></svg>';
     var than = VE[hinh](P), xo = c.xo || 'treo', h;
     if (xo === 'treo') {
       // khoen ở đỉnh (100,10); thân thu lại, treo ngay dưới khoen
