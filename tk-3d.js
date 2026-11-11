@@ -223,16 +223,20 @@
 
         // charm: bước 3 rơi vào lần lượt; bước khác bay lên ẩn đi; trượt nhẹ trên dây
         C.forEach(function (c, k) {
-          var muc = buoc === 2 && tg > .25 + c.tre ? 1 : 0;
-          c.hien += (muc - c.hien) * Math.min(1, dt * (muc ? 3.2 : 4));
-          if (c.hien < .002) c.hien = 0;
-          c.vt = c.cho + (buoc === 2 ? .035 * Math.sin(tg * 1.4 + k * 2) : 0);
+          // tiến độ tuyến tính + làm mượt (smoothstep): vào 0,8s; ra 1,2s, lần lượt từng charm (charm cuối ra trước)
+          var vao = buoc === 2 && tg > .25 + c.tre, raCho = buoc !== 2 && tg > (2 - k) * .22;
+          if (vao) c.hien = Math.min(1, c.hien + dt / .8);
+          else if (raCho || buoc === 2) c.hien = Math.max(0, c.hien - dt / 1.2);
+          c.ra = !vao;
+          c.e = c.hien * c.hien * (3 - 2 * c.hien);
+          c.lech = (c.lech || 0) + ((buoc === 2 ? .035 * Math.sin(tg * 1.4 + k * 2) : 0) - (c.lech || 0)) * Math.min(1, dt * 2);   // trượt trên dây, dừng êm
+          c.vt = c.cho + c.lech;
         });
         // xếp hạt + charm trên vòng theo chiều dài thật (charm chen giữa, đẩy hạt ra)
         var muc = [], i;
         for (i = 0; i < n; i++) muc.push({ hat: i, rong: 2 * bChay * 1.02, vt: i / n });
         var kc = bChay / b0;   // charm to nhỏ theo cỡ hạt
-        C.forEach(function (c) { if (c.hien > 0) muc.push({ charm: c, rong: c.g.userData.rong * kc * c.hien, vt: c.vt }); });
+        C.forEach(function (c) { if (c.hien > 0) muc.push({ charm: c, rong: c.g.userData.rong * kc * c.e, vt: c.vt }); });
         muc.sort(function (a, b) { return a.vt - b.vt; });
         var L = 0; muc.forEach(function (m) { L += m.rong; });
         var BK = L / (Math.PI * 2), goc = 0;
@@ -254,10 +258,16 @@
         C.forEach(function (c) {
           c.g.visible = c.hien > 0;
           if (!c.g.visible) return;
-          var e = c.hien, roi = (1 - e) * (1 - e);
-          c.g.position.set(c.p.x, c.p.y + roi * 4, c.p.z);
-          c.g.rotation.set(0, -c.a - Math.PI / 2, roi * 2.5);   // trục charm dọc theo dây
-          c.g.scale.setScalar((.6 + .4 * e) * kc);
+          var e = c.e, roi = (1 - e) * (1 - e);
+          if (c.ra) {   // rời đi: nhấc lên nhẹ, nghiêng chút, nhỏ dần rồi tan
+            c.g.position.set(c.p.x, c.p.y + (1 - e) * 1.4, c.p.z);
+            c.g.rotation.set(0, -c.a - Math.PI / 2, (1 - e) * .6);
+            c.g.scale.setScalar(e * kc);
+          } else {      // rơi vào: từ trên cao xuống, xoay nhẹ cho tới khi khớp dây
+            c.g.position.set(c.p.x, c.p.y + roi * 4, c.p.z);
+            c.g.rotation.set(0, -c.a - Math.PI / 2, roi * 2.5);   // trục charm dọc theo dây
+            c.g.scale.setScalar((.6 + .4 * e) * kc);
+          }
         });
         day.scale.setScalar(BK); bong.scale.setScalar(BK * 2.25);
 
