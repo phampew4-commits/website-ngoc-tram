@@ -119,6 +119,14 @@
       "link": ""
     },
     "heroAnh": [],
+    "heroCheDo": "ngaunhien",
+    "heroLoai": [
+      "chuoi",
+      "nhan",
+      "khuyen",
+      "matday"
+    ],
+    "heroSo": 4,
     "van": {
       "hero.nho": "Từ 2015 · Jade & Agarwood",
       "hero.tieu": "Ngọc đẹp, chọn\n*từng món* cho\n*riêng bạn*",

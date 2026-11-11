@@ -34,8 +34,12 @@ function dungHero() {
     $$('#chieu figure').forEach(function (f, j) { f.classList.toggle('on', j === i); });
     $$('#tienTrinh button').forEach(function (b, j) { b.classList.remove('on'); if (j === i) { void b.offsetWidth; b.classList.add('on'); } });
     var x = cac[i];
-    $('#temHero').href = '#sp/' + encodeURIComponent(khoa(x));
-    $('#temHero').innerHTML = '<small>Mã ' + e(x.ma) + ' · ' + LOAI[x.loai].ngan + '</small><b>' + e(x.ten.replace(/ mix charm.*/i, '')) + '</b>' + gia(x.gia);
+    var tem = $('#temHero'), dong = function (s) { return '<span class="d"><span>' + s + '</span></span>'; };
+    var moi = '<small>' + dong('Mã ' + e(x.ma) + ' · ' + LOAI[x.loai].ngan) + '</small><b>' + dong(e(x.ten.replace(/ mix charm.*/i, ''))) + '</b>' + dong(gia(x.gia));
+    var dat = function () { tem.href = '#sp/' + encodeURIComponent(khoa(x)); tem.innerHTML = moi; tem.classList.remove('roi'); void tem.offsetWidth; tem.classList.add('vao'); };
+    clearTimeout(tem._hen);
+    if (GIAM || !tem.innerHTML) dat();                      // lần đầu / giảm chuyển động: hiện luôn
+    else { tem.classList.remove('vao'); tem.classList.add('roi'); tem._hen = setTimeout(dat, 450); }   // chữ cũ trượt lên rồi chữ mới trồi lên
     clearTimeout(hen); if (!GIAM) hen = setTimeout(function () { toi(i + 1); }, THOI_GIAN);
   }
   $('#tienTrinh').onclick = function (ev) { var b = ev.target.closest('button'); if (b) toi([].indexOf.call(b.parentNode.children, b)); };

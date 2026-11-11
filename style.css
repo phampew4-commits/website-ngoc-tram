@@ -766,3 +766,14 @@ section[id]{scroll-margin-top:68px}
 /* khung xem trước trong app: viền khối đang sửa, hiện mọi chữ ngay */
 .xem-truoc .dang-sua{outline:3px dashed var(--vang2);outline-offset:-6px}
 .xem-truoc [data-hien],.xem-truoc .dong-chu>span{opacity:1!important;translate:none!important}
+
+/* nhãn món ở đầu trang: chữ cũ trượt lên, chữ mới trồi lên từng dòng khi đổi ảnh */
+.tem-hero .d{display:block;overflow:hidden;padding-bottom:.08em}
+.tem-hero .d>span{display:inline-block}
+.tem-hero.vao .d>span{animation:temVao 1s cubic-bezier(.16,1,.3,1) both}
+.tem-hero.vao small .d>span{animation-delay:.05s}
+.tem-hero.vao b .d>span{animation-delay:.16s}
+.tem-hero.vao>.d>span{animation-delay:.28s}
+.tem-hero.roi .d>span{animation:temRa .45s cubic-bezier(.7,0,.84,0) both}
+@keyframes temVao{from{translate:0 105%;opacity:0}to{translate:0 0;opacity:1}}
+@keyframes temRa{to{translate:0 -105%;opacity:0}}
