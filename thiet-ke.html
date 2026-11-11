@@ -1,0 +1,122 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="robots" content="noindex">
+<meta name="referrer" content="no-referrer">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Tự thiết kế chuỗi · Ngọc Trầm Store</title>
+<meta name="description" content="Ngọc Trầm Store – chuỗi phỉ thuý mix charm vàng, nhẫn, khuyên tai, mặt dây phỉ thuý. Mỗi món một mã, ảnh thật, giá rõ ràng.">
+<meta property="og:title" content="Ngọc Trầm Store">
+<meta property="og:description" content="Phỉ thuý & trang sức vàng — mỗi món một mã, ảnh thật, giá rõ ràng.">
+<meta property="og:image" content="logo.png">
+<meta name="theme-color" content="#14262e">
+<link rel="icon" href="hoa.png">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+Display:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Be+Vietnam+Pro:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css?v=36">
+</head>
+
+<body class="trang-trong">
+
+<header class="dau" id="dau">
+  <div class="khung">
+    <a class="hieu" href="index.html"><img src="hoa.png" alt=""><b>Ngọc Trầm</b></a>
+    <nav class="menu" id="menu">
+      <a href="index.html#noi-bat">Nổi bật</a>
+      <a href="index.html#bo-suu-tap">Bộ sưu tập</a>
+      <a href="index.html#san-pham">Sản phẩm</a>
+      <a href="thiet-ke.html">Tự thiết kế</a>
+      <a href="index.html#cau-chuyen">Câu chuyện</a>
+      <a href="index.html#hoi-dap">Hỏi đáp</a>
+    </nav>
+    <div class="phai">
+      <a href="#" data-zalo>Zalo</a>
+      <a href="#lien-he">Liên hệ</a>
+      <button class="mo-menu" id="moMenu" aria-label="Mở menu"><i></i><i></i></button>
+    </div>
+  </div>
+</header>
+
+<main class="tk" id="tk">
+  <div class="khung">
+    <div class="tk-dau">
+      <span class="nho" data-hien>Xưởng phối chuỗi</span>
+      <h1 class="tieu-de"><span class="dong-chu"><span>Tự thiết kế <em>chuỗi của bạn</em></span></span></h1>
+      <p data-hien>Chọn dây ngọc, số vòng quấn và cỡ tay, rồi gắn charm vàng vào đúng vị trí bạn thích. Kéo charm trên vòng để đổi chỗ — xong gửi thiết kế cho Ngọc Trầm xâu giúp bạn.</p>
+    </div>
+
+    <div class="tk-luoi">
+      <!-- SÂN KHẤU -->
+      <div class="tk-san">
+        <div class="tab-vong" id="tabVong"></div>
+        <div class="san-trong">
+          <svg id="vong" viewBox="0 0 400 400" aria-label="Hình chuỗi đang thiết kế"></svg>
+          <div class="nhan-giua" id="nhanGiua"></div>
+          <div class="bong-charm" id="bongCharm" hidden></div>
+        </div>
+        <div class="cong-cu">
+          <button data-lam="deu"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="8"/><circle cx="12" cy="4" r="1.6" fill="currentColor"/><circle cx="19" cy="15.5" r="1.6" fill="currentColor"/><circle cx="5" cy="15.5" r="1.6" fill="currentColor"/></svg>Xếp đều</button>
+          <button data-lam="gom"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="8"/><circle cx="12" cy="20" r="1.6" fill="currentColor"/><circle cx="8.2" cy="19" r="1.6" fill="currentColor"/><circle cx="15.8" cy="19" r="1.6" fill="currentColor"/></svg>Gom phía trước</button>
+          <button data-lam="xoa"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M5 7h14M10 7V5h4v2M7 7l1 12h8l1-12"/></svg>Bỏ hết charm</button>
+          <button data-lam="link"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M10 14a4 4 0 005.7 0l3-3a4 4 0 00-5.7-5.7l-1 1M14 10a4 4 0 00-5.7 0l-3 3a4 4 0 005.7 5.7l1-1"/></svg>Chép link</button>
+        </div>
+        <p class="goi-y goi-sua">Mẹo: bấm vào charm trên vòng để chọn, kéo để đổi vị trí. Chuỗi nhiều vòng: thiết kế từng vòng ở các tab phía trên.</p>
+        <p class="goi-y goi-deo">Kéo ngang trên hình để xoay tay, xem charm ở mọi phía.</p>
+      </div>
+
+      <!-- BẢNG CHỌN -->
+      <div class="tk-bang">
+        <section class="buoc-tk">
+          <header><span class="so-buoc">01</span><h2>Chọn dây ngọc</h2></header>
+          <div class="ds-day" id="dsDay"></div>
+        </section>
+
+        <section class="buoc-tk">
+          <header><span class="so-buoc">02</span><h2>Số vòng &amp; cỡ tay</h2><b class="gt" id="gtTay">15 cm</b></header>
+          <div class="so-vong" id="soVong"></div>
+          <input type="range" id="coTay" min="12" max="20" step="0.5" value="15" aria-label="Cỡ cổ tay (cm)">
+          <div class="vach"><span>12 cm</span><span>Đo sát cổ tay, cửa hàng cộng thêm độ rộng khi xâu</span><span>20 cm</span></div>
+        </section>
+
+        <section class="buoc-tk">
+          <header><span class="so-buoc">03</span><h2>Gắn charm</h2><b class="gt" id="demCharm">0 charm</b></header>
+          <div class="loc-charm">
+            <div class="chip-nhom" id="chipNhom"></div>
+            <div class="tim"><input id="timCharm" type="search" placeholder="Tìm charm…" aria-label="Tìm charm">
+              <select id="xepCharm" aria-label="Sắp xếp"><option value="re">Giá thấp trước</option><option value="mac">Giá cao trước</option></select></div>
+          </div>
+          <div class="ds-charm" id="dsCharm"></div>
+          <div class="them"><button class="nut" id="themCharm">Xem thêm charm</button></div>
+        </section>
+
+        <section class="tom-tat" id="tomTat"></section>
+      </div>
+    </div>
+  </div>
+</main>
+<div class="thanh-mua tk-thanh" id="thanhTk"></div>
+
+
+<footer class="lh" id="lien-he">
+  <div class="tren">
+    <img class="hoa-nen" src="hoa.png" alt="">
+    <span class="nho" data-hien>Liên hệ</span>
+    <h2 class="tieu-de">
+      <span class="dong-chu"><span>Cần tư vấn?</span></span>
+      <span class="dong-chu"><span><em>Nhắn cho Ngọc Trầm.</em></span></span>
+    </h2>
+    <p data-hien>Gửi mã sản phẩm hoặc ảnh mẫu bạn thích, cửa hàng sẽ tìm và phối giúp bạn.</p>
+    <div class="hang" data-hien>
+      <a class="nut dac" href="#" data-zalo style="background:#0068ff;border-color:#0068ff">Nhắn Zalo</a>
+      <a class="nut sang" href="#" data-fb>Messenger</a>
+    </div>
+  </div>
+  <div id="chanTrang"></div>
+</footer>
+<div class="thong-bao" id="thongBao"></div>
+
+<script src="chung.js?v=36"></script>
+<script src="thiet-ke.js?v=36"></script>
+</body>
+</html>

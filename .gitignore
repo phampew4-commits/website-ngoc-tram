@@ -1,0 +1,6 @@
+# không đưa lên web
+index_ban*.html
+xuat_du_lieu.py
+.DS_Store
+__pycache__/
+.claude/
