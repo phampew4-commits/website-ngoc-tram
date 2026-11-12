@@ -60,7 +60,7 @@ function dungTrang(x) {
         '<span class="nho" data-hien>' + loai.ten + ' · ' + e(nhanSp(x)) + '</span>' +
         '<h1 class="tieu-de"><span class="dong-chu"><span>' + e(x.ten) + '</span></span></h1>' +
         '<div class="ma-ct" data-hien><span>Mã ' + e(x.ma) + '</span><span class="chip' + (/bán/i.test(tt) ? ' ban' : '') + '">' + e(tt) + '</span></div>' +
-        '<div class="gia-sp" data-hien><b>' + gia(x.gia) + '</b><small>Giá bán lẻ · mỗi món chỉ có một</small></div>' +
+        '<div class="gia-sp" data-hien><b>' + gia(x.gia) + '</b><small>' + (x.gia ? 'Giá bán lẻ · mỗi món chỉ có một' : 'Nhắn shop để được báo giá') + '</small></div>' +
         '<div class="hang-mua" data-hien>' +
           '<a class="nut dac zalo" href="' + linkZalo() + '" target="_blank" data-chep="' + e(x.ma) + '">Hỏi mua qua Zalo</a>' +
           '<a class="nut" href="' + linkFb() + '" target="_blank" data-chep="' + e(x.ma) + '">Nhắn Messenger</a>' +

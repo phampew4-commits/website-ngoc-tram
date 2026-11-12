@@ -30,7 +30,7 @@ function soHat() {           // hạt MỖI vòng: chu vi = cỡ tay + 1,5 cm đ
 function tongHat() { return soHat() * chon.vong; }
 function giaDay(d, v) { d = d || chon.day; return !d ? 0 : d.gia1 ? d.gia1 * (v || chon.vong) : Math.round(d.gia * (v || chon.vong) / VONG_GIA / 1000) * 1000; }   // dây trơn: giá 1 vòng × số vòng
 function tong() { return giaDay() + chon.gan.reduce(function (s, g) { return s + g.c.gia; }, 0); }
-function uoc(n) { return '≈ ' + gia(Math.round(n / 10000) * 10000); }   // chỉ dùng cho TỔNG giá ước tính
+function uoc(n) { var lh = chon.gan.some(function (g) { return !g.c.gia; }); return (n ? '≈ ' + gia(Math.round(n / 10000) * 10000) : '') + (lh ? (n ? ' + ' : '') + 'charm liên hệ giá' : ''); }   // TỔNG ước tính; charm chưa có giá lẻ → "liên hệ", không bao giờ dùng giá sỉ
 function cuaVong(k) { return chon.gan.filter(function (g) { return g.k === k; }); }
 function oDo(k, j) { return chon.gan.filter(function (g) { return g.k === k && g.j === j; })[0]; }
 function rHat() { return R * Math.sin(Math.PI / soHat()) * 1.02; }

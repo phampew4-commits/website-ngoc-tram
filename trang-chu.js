@@ -172,7 +172,7 @@ function moCt(x) {
     '<span class="nho">' + LOAI[x.loai].ten + ' · ' + e(nhanSp(x)) + '</span>' +
     '<h3>' + e(x.ten) + '</h3>' +
     '<div class="ma-ct"><span>Mã ' + e(x.ma) + '</span><span class="chip' + (/bán/i.test(tt) ? ' ban' : '') + '">' + e(tt) + '</span></div>' +
-    '<div class="gia-ct">' + gia(x.gia) + '</div><small>Giá bán lẻ</small>' +
+    '<div class="gia-ct">' + gia(x.gia) + '</div><small>' + (x.gia ? 'Giá bán lẻ' : 'Nhắn shop để được báo giá') + '</small>' +
     (x.mo_ta ? '<p class="mt">' + e(x.mo_ta) + '</p>' : '') +
     '<div class="hang"><a class="nut dac" style="background:#0068ff;border-color:#0068ff" href="' + linkZalo() + '" target="_blank" data-chep="' + e(x.ma) + '">Hỏi mua qua Zalo</a>' +
     '<a class="nut" href="' + linkFb() + '" target="_blank" data-chep="' + e(x.ma) + '">Nhắn Messenger</a></div>' +
