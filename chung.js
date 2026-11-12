@@ -17,7 +17,7 @@ var GIAM = matchMedia('(prefers-reduced-motion: reduce)').matches;
 function $(s) { return document.querySelector(s); }
 function $$(s) { return [].slice.call(document.querySelectorAll(s)); }
 function e(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function (x) { return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[x]; }); }
-function anh(id, w) { return 'https://lh3.googleusercontent.com/d/' + id + '=w' + (w || 600); }
+function anh(id, w) { return /[\/.]/.test(id) ? id : 'https://lh3.googleusercontent.com/d/' + id + '=w' + (w || 600); }   // id Drive · hoặc đường dẫn ảnh trên web (day-tron/…)
 function gia(n) { return n ? n.toLocaleString('vi-VN') + 'đ' : 'Liên hệ'; }
 function khoa(x) { return x.id || x.ma; }
 function boDau(s) { return String(s).normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/đ/g, 'd').replace(/Đ/g, 'D').toLowerCase(); }

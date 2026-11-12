@@ -21,7 +21,7 @@ function soHat() {           // hạt MỖI vòng: chu vi = cỡ tay + 1,5 cm đ
   return Math.max(16, Math.round((chon.tay + 1.5) * 10 / co));
 }
 function tongHat() { return soHat() * chon.vong; }
-function giaDay(d, v) { d = d || chon.day; return d ? Math.round(d.gia * (v || chon.vong) / VONG_GIA / 1000) * 1000 : 0; }
+function giaDay(d, v) { d = d || chon.day; return !d ? 0 : d.gia1 ? d.gia1 * (v || chon.vong) : Math.round(d.gia * (v || chon.vong) / VONG_GIA / 1000) * 1000; }   // dây trơn: giá 1 vòng × số vòng
 function tong() { return giaDay() + chon.gan.reduce(function (s, g) { return s + g.c.gia; }, 0); }
 function uoc(n) { return '≈ ' + gia(Math.round(n / 10000) * 10000); }   // chỉ dùng cho TỔNG giá ước tính
 function cuaVong(k) { return chon.gan.filter(function (g) { return g.k === k; }); }
