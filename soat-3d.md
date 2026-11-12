@@ -26,10 +26,10 @@ Ký hiệu: ✅ đã sửa (đã chụp lại so ảnh) · ⏳ chưa sửa (đ�
 | Hạt đậu 26417, 26417~YXLixy | 3 hạt đậu đã phồng tách rõ. | ✅ |
 | Túi tiền ngọc 23139 | Đã sửa thành túi ngọc tạc tròn dày, ngồi trên khay vàng, có 4 chấu. | ✅ |
 | Đài sen 26266 | Đã sửa thành khối ngọc băng dày, trong; 6 hạt sen lồi. | ✅ |
-| Lưng hồ lô 25784/25787 (lưới đồng tiền chạm lộng) | Lưng vẫn trơn. | ⏳ |
+| Lưng hồ lô 25784/25787 (lưới đồng tiền chạm lộng) | Đã thay lưng trơn bằng lưới đồng tiền lộng, thấy ngọc qua lỗ. | ✅ |
 | Tỳ hưu 23138 | Ngọc còn thấp so với ảnh. Đã nâng khối ngọc cao hơn. | ✅ |
 | Di Lặc A55891, tỳ hưu CHUAMA-ALtsCz | Mặt ngọc lốm đốm. Đã bỏ màu ảnh: A55891 thành ngọc vàng mật ong, CHUAMA-ALtsCz thành ngọc băng tím nhạt; nét chạm giữ bằng vân nổi (còn mờ). | ✅ (một phần) |
-| Lưng các hạt ngọc 23786, 23788, 24190, 23779, 23774, 25375 | Lưng thật là lưới vàng chạm lộng. Bản 3D vẫn là tấm trơn. | ⏳ |
+| Lưng các hạt ngọc 23786, 23788, 24190, 23779, 23774, 25375 | Đã thay bằng lưới vàng lộng đúng hoa văn từng mẫu: 4 vòng đan (23786), 5 vòng tròn (23788), hoa 8 cánh (24190), hoa 4 cánh (23779), 4 thuỳ + hoa giữa (23774), khung + gân cánh bướm (25375). | ✅ |
 | ~~Chùm nho 25798~~ | Xem ảnh lớn thì đúng 3 quả. Bản 3D đúng, lúc đầu đếm nhầm. | — |
 
 ## C. Lỗi chất liệu (ảnh hưởng nhiều charm)
@@ -49,9 +49,9 @@ Ký hiệu: ✅ đã sửa (đã chụp lại so ảnh) · ⏳ chưa sửa (đ�
 | 25869 | Đã đổi đá tròn thành đá giác hình trái tim. | ✅ |
 | 23880 thỏi vàng | Đã nâng gù giữa và thêm lỗ 2 đầu. Ở góc nhìn ngang gù vẫn khó thấy. | ✅ (một phần) |
 | 23943 ngựa bập bênh, 23958 kì lân, 23999 ngựa cõng túi, 24114 mèo, B1124 hồ ly, 16400 chú tiểu | Trông như thú bóng bay ghép quả trứng. Đã đúc LIỀN KHỐI; ngựa mập chân ngắn đầu to như ảnh, khăn yên 23999 nổi ra; mèo tai tam giác. Chi tiết bờm/yên/vảy còn đơn giản. | ✅ (một phần) |
-| B0529 ngựa men, 24043 cá chép | Chưa làm lại (B0529 dáng tạm ổn; cá chép là lưới vảy lộng). | ⏳ |
+| B0529 ngựa men, 24043 cá chép | B0529 đúc liền khối, chấm đỏ bám đúng mặt thân; đầu cá chép có môi chu, đường mang, hốc mắt. | ✅ |
 | 25843 nơ | Hai quai nơ như quả trứng, lưng lộ nan dây. Đã đúc liền khối, đuôi nơ dày, hết nan dây; nếp gấp tai nơ còn mờ. | ✅ (một phần) |
-| 23908, 22706 | Hoa văn bề mặt quá mờ. | ⏳ |
-| 16481 bướm | Khoen là quai cong liền khối. Hàng thật là khoen tròn rời. | ⏳ |
+| 23908, 22706 | Hoa văn quá mờ. 23908: 9 mắt dzi thành vòng tròn nổi + chấm giữa; 22706: mặt chạm búa lấp lánh. | ✅ |
+| 16481 bướm | Soát lại: khoen dùng hệ khoen nhỏ + khoen lớn chung như mọi charm treo, đúng kiểu hàng thật — không sửa. | — |
 | 23855, BS26, 23849, 23794, 23879 | Nhìn ngang tưởng 2 tấm tách rời — soát lại: đó là thành chạm lộng (hàng thật cũng lộng), không sửa. | — |
-| 23971 cầu bướm | Vòng cổ 2 đầu hơi to. | ⏳ |
+| 23971 cầu bướm | Đã thu nhỏ vòng cổ 2 đầu. | ✅ |
