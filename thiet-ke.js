@@ -150,9 +150,22 @@ function svgCharmVong(g, x, sel) {
 function ve(lanDau) {
   chuanHoa();
   $('.tk-san').classList.toggle('deo', cheDo === 'deo');
-  if (cheDo === 'deo') veTay(); else veVong(lanDau);
+  if (window.V3D) ve3d(); else if (cheDo === 'deo') veTay(); else veVong(lanDau);
   dungTabVong(); bong(); tomTat(); luu(); capMini();
 }
+/* vòng 3D (vong-3d.js): thiet-ke.js giữ dữ liệu, V3D chỉ vẽ theo trạng thái */
+function ve3d() {
+  V3D.ve({cheDo: cheDo, vongDang: vongDang, L: chon.vong, n: soHat(), co: chon.day ? chon.day.co : 8,
+          mau: chon.day ? chon.day.mau : ['#e4dfd0', '#a49f8c'], gan: chon.gan, chon: cheDo === 'sua' ? dangChon : null});
+  chon.gan.forEach(function (g) { g.moi = false; });
+  nhanGiua();
+}
+addEventListener('vong3d', function () {
+  V3D.khi.chon = function (g) { dangChon = g && dangChon !== g ? g : null; ve(); };
+  V3D.khi.doi = function (g, j) { doiCho(g, g.k, j); };
+  V3D.khi.khung = function () { if (dangChon && cheDo === 'sua') datBong(); };
+  if (TK.day.length) ve(true);
+});
 
 /* chế độ thiết kế: chỉ vẽ vòng đang chọn */
 function veVong(lanDau) {
@@ -172,7 +185,11 @@ function veVong(lanDau) {
   });
   var mo = h.indexOf('</defs>') + 7;   // charm treo chèn ngay sau defs → khoen nằm dưới hạt, thân thõng ra ngoài
   $('#vong').innerHTML = h.slice(0, mo) + treo + h.slice(mo);
-  $('#nhanGiua').innerHTML = chon.day
+  nhanGiua();
+}
+function nhanGiua() {
+  var n = soHat(), k = vongDang;
+  $('#nhanGiua').innerHTML = cheDo === 'deo' ? '' : chon.day
     ? '<small>' + (chon.vong > 1 ? 'Vòng ' + (k + 1) + '/' + chon.vong + ' · ' : '') + n + ' hạt · ' + String(chon.day.co).replace('.', ',') + ' ly</small><b>' + e(chon.day.ten.replace(/\s*\d+([.,]\d+)? ly/, '')) + '</b><span>' + uoc(tong()) + '</span>'
     : '<small>Bắt đầu</small><b>Chọn dây ngọc</b><span>ở bước 01</span>';
 }
@@ -257,13 +274,20 @@ function tuXoay() {   // xoay chậm tự động cho tới khi khách tự kéo
 function bong() {
   var b = $('#bongCharm'), g = dangChon;
   if (!g || cheDo !== 'sua' || chon.gan.indexOf(g) < 0) { b.hidden = true; return; }
-  var p = xyHat(g.j), k = $('#vong').getBoundingClientRect().width / 400;
   b.hidden = false;
+  var bt = window.V3D && V3D.bien ? V3D.bien(g.c.id) : null;
   b.innerHTML = '<b>' + e(g.c.ten) + '</b><span>' + gia(g.c.gia) + ' · ' + tenVt(g) + '</span>' +
+    (bt ? '<div class="mau-charm">' + bt.map(function (m, i) { return '<button data-mau="' + e(m.k) + '" class="' + ((g.mau || bt[0].k) === m.k ? 'on' : '') + '">' + e(m.ten) + '</button>'; }).join('') + '</div>' : '') +
     '<div><button data-dich="-1" aria-label="Dời sang trái">‹</button><button data-dich="1" aria-label="Dời sang phải">›</button>' +
     (chon.vong > 1 ? '<select data-sang aria-label="Chuyển sang vòng khác"><option value="">Sang vòng…</option>' +
       Array.from({length: chon.vong}, function (_, i) { return i === g.k ? '' : '<option value="' + i + '">Vòng ' + (i + 1) + '</option>'; }).join('') + '</select>' : '') +
     '<button data-bo>Bỏ</button></div>';
+  datBong();
+}
+function datBong() {   // chỉ đặt lại vị trí bong bóng (3D: gọi mỗi khung hình vì vòng xoay / charm lướt)
+  var b = $('#bongCharm'), g = dangChon; if (!g || b.hidden) return;
+  if (window.V3D) { var v = V3D.viTri(g); if (!v) return; b.style.left = v[0].toFixed(1) + 'px'; b.style.top = v[1].toFixed(1) + 'px'; b.className = 'bong-charm ' + (v[2] ? 'duoi' : 'tren'); return; }
+  var p = xyHat(g.j), k = $('#vong').getBoundingClientRect().width / 400;
   b.style.left = p[0] * k + 'px'; b.style.top = p[1] * k + 'px';
   b.className = 'bong-charm ' + (p[1] > CY ? 'tren' : 'duoi');
 }
@@ -277,6 +301,7 @@ $('#bongCharm').addEventListener('click', function (ev) {
   var d = ev.target.closest('[data-dich]'), n = soHat();
   if (d) doiCho(g, g.k, (g.j + +d.dataset.dich + n) % n);
   if (ev.target.closest('[data-bo]')) boMot(g);
+  var m = ev.target.closest('[data-mau]'); if (m) { g.mau = m.dataset.mau; ve(); }   // charm có nhiều màu: đổi màu ngay trên vòng 3D
 });
 $('#bongCharm').addEventListener('change', function (ev) {
   var s = ev.target.closest('[data-sang]'), g = dangChon; if (!s || !g || s.value === '') return;
@@ -415,6 +440,7 @@ $('.cong-cu').addEventListener('click', function (ev) {
 });
 
 /* ---------- tóm tắt + gửi ---------- */
+function tenMau(g) { var bt = window.V3D && V3D.bien ? V3D.bien(g.c.id) : null, m = bt && bt.filter(function (x) { return x.k === g.mau; })[0]; return m ? m.ten : g.mau; }
 function thuTu() { return chon.gan.slice().sort(function (a, b) { return a.k - b.k || a.j - b.j; }); }
 function tinNhan() {
   var n = soHat(), L = chon.vong;
@@ -422,7 +448,7 @@ function tinNhan() {
     '• Dây: ' + chon.day.ten + ' (mã ' + chon.day.ma + ')\n' +
     '• Kiểu: quấn ' + L + ' vòng · cỡ tay ' + String(chon.tay).replace('.', ',') + ' cm (~' + n * L + ' hạt, ' + n + ' hạt/vòng)\n' +
     '• Giá dây ' + L + ' vòng: ' + gia(giaDay()) + '\n' +
-    (chon.gan.length ? '• Charm (đếm hạt theo chiều kim đồng hồ từ khoá' + (L > 1 ? ', vòng 1 là vòng sát bàn tay' : '') + '):\n' + thuTu().map(function (g) { return '   – ' + tenVt(g) + ': ' + g.c.ma + ' ' + g.c.ten + ' (' + gia(g.c.gia) + ')'; }).join('\n') + '\n' : '• Không gắn charm\n') +
+    (chon.gan.length ? '• Charm (đếm hạt theo chiều kim đồng hồ từ khoá' + (L > 1 ? ', vòng 1 là vòng sát bàn tay' : '') + '):\n' + thuTu().map(function (g) { return '   – ' + tenVt(g) + ': ' + g.c.ma + ' ' + g.c.ten + (g.mau ? ' – ' + tenMau(g) : '') + ' (' + gia(g.c.gia) + ')'; }).join('\n') + '\n' : '• Không gắn charm\n') +
     '• Tổng ước tính: ' + uoc(tong()) + ' (nhờ shop báo giá chính xác)\n' +
     'Xem thiết kế: ' + location.href;
 }
@@ -451,6 +477,8 @@ function chepCu(s) { try { var a = document.createElement('textarea'); a.value =
 function anhDataUrl(u) { return fetch(u).then(function (r) { return r.blob(); }).then(function (b) { return new Promise(function (ok) { var f = new FileReader(); f.onload = function () { ok(f.result); }; f.readAsDataURL(b); }); }); }
 // ảnh thiết kế 1080×1350: vòng đang thiết kế + tóm tắt
 function taoAnhTk() {
+  if (window.V3D) return new Promise(function (ok, loi) { var c3 = V3D.anh(), w = c3.width, h = c3.height;   // vòng 3D: chụp thẳng khung vẽ
+    ghepAnh(c3, 860 * Math.min(1, w / h), 860 * Math.min(1, h / w), ok, loi); });
   var cu = cheDo; if (cu === 'deo') { cheDo = 'sua'; veVong(); }
   var svg = $('#vong').cloneNode(true); if (cu === 'deo') { cheDo = cu; ve(); }
   svg.querySelectorAll('.vong-chon').forEach(function (x) { x.remove(); });
@@ -459,13 +487,19 @@ function taoAnhTk() {
   return Promise.all(anh.map(function (i) { return anhDataUrl(i.getAttribute('href')).then(function (d) { i.setAttribute('href', d); }).catch(function () {}); })).then(function () {
     return new Promise(function (ok, loi) {
       var im = new Image(), url = URL.createObjectURL(new Blob([new XMLSerializer().serializeToString(svg)], {type: 'image/svg+xml'}));
-      im.onload = function () {
+      im.onload = function () { URL.revokeObjectURL(url); ghepAnh(im, 860, 860, ok, loi); };
+      im.onerror = function () { URL.revokeObjectURL(url); loi(); };
+      im.src = url;
+    });
+  });
+}
+function ghepAnh(im, iw, ih, ok, loi) {   // khung 1080×1350: hình vòng + tên dây, cỡ, danh sách charm, tổng ước tính
         var W = 1080, H = 1350, c = document.createElement('canvas'), x = c.getContext('2d'); c.width = W; c.height = H;
         x.fillStyle = '#f6f0e6'; x.fillRect(0, 0, W, H);
         x.fillStyle = '#a8823a'; x.font = '500 26px "Be Vietnam Pro", sans-serif'; x.textAlign = 'center'; x.fillText('NGỌC TRẦM · THIẾT KẾ CHUỖI', W / 2, 78);
         var g = x.createRadialGradient(W / 2, 520, 60, W / 2, 520, 470); g.addColorStop(0, '#fbf7f0'); g.addColorStop(1, '#efe5d3');
         x.fillStyle = g; x.beginPath(); x.arc(W / 2, 520, 440, 0, 7); x.fill();
-        x.drawImage(im, W / 2 - 430, 90, 860, 860); URL.revokeObjectURL(url);
+        x.drawImage(im, W / 2 - iw / 2, 520 - ih / 2, iw, ih);
         x.fillStyle = '#1d3a46'; x.font = '400 46px "Noto Serif Display", Georgia, serif';
         x.fillText(chon.day.ten, W / 2, 1010, W - 120);
         x.font = '400 28px "Be Vietnam Pro", sans-serif'; x.fillStyle = '#5b6b70';
@@ -477,11 +511,6 @@ function taoAnhTk() {
         x.fillStyle = '#a8823a'; x.font = '500 40px "Noto Serif Display", Georgia, serif'; x.fillText('Tổng ước tính ' + uoc(tong()), W / 2, 1250);
         x.fillStyle = '#8a8070'; x.font = '400 22px "Be Vietnam Pro", sans-serif'; x.fillText('Ảnh thiết kế từ web Ngọc Trầm Store · giá chính xác cửa hàng báo lại', W / 2, 1300, W - 120);
         c.toBlob(function (b) { b ? ok(b) : loi(); }, 'image/png');
-      };
-      im.onerror = function () { URL.revokeObjectURL(url); loi(); };
-      im.src = url;
-    });
-  });
 }
 var hopGui = null, anhGui = null;
 function moHopGui(kenh) {
@@ -528,7 +557,7 @@ addEventListener('keydown', function (ev) { if (ev.key === 'Escape') dongHopGui(
 function luu() {
   if (!chon.day) return;
   var h = 'd=' + encodeURIComponent(chon.day.ma) + '&t=' + chon.tay + '&v=' + chon.vong +
-    (chon.gan.length ? '&c=' + thuTu().map(function (g) { return encodeURIComponent(g.c.id) + '@' + g.k + '.' + g.j; }).join(',') : '');
+    (chon.gan.length ? '&c=' + thuTu().map(function (g) { return encodeURIComponent(g.c.id) + '@' + g.k + '.' + g.j + (g.mau ? '~' + encodeURIComponent(g.mau) : ''); }).join(',') : '');
   history.replaceState(null, '', '#' + h);
   try { localStorage.setItem('nt-thiet-ke', h); } catch (er) {}
 }
@@ -543,9 +572,9 @@ function docLai() {
   (q.get('c') || '').split(',').forEach(function (s) {
     var p = s.split('@'), c = TK.charm.filter(function (x) { return x.id === decodeURIComponent(p[0]); })[0];
     if (!c) return;
-    var vt = String(p[1] || '0'), k, j;
+    var vt = String(p[1] || '0').split('~'), mau = vt[1] ? decodeURIComponent(vt[1]) : '', k, j; vt = vt[0];
     if (vt.indexOf('.') >= 0) { k = +vt.split('.')[0]; j = +vt.split('.')[1]; } else { k = Math.floor(+vt / n); j = +vt % n; }   // link cũ: số thứ tự trên cả dây
-    chon.gan.push({c: c, k: k || 0, j: j || 0});
+    chon.gan.push(mau ? {c: c, k: k || 0, j: j || 0, mau: mau} : {c: c, k: k || 0, j: j || 0});
   });
 }
 
@@ -602,7 +631,7 @@ function moHopLuu(nut) {
     hopLuu.addEventListener('click', function (ev) { if (ev.target === hopLuu || ev.target.closest('[data-huy]')) dongHopLuu(); }); }
   var goiY = chon.day.ten.replace(/\s*\d+([.,]\d+)? ly/, '') + ' · ' + chon.vong + ' vòng';
   hopLuu.innerHTML = '<form class="hop" role="dialog" aria-label="Lưu thiết kế"><button type="button" class="dong" data-huy aria-label="Đóng">×</button>' +
-    '<div class="luu-dau"><svg viewBox="0 0 400 400" aria-hidden="true">' + $('#vong').innerHTML + '</svg>' +
+    '<div class="luu-dau">' + (window.V3D ? '<img src="' + anhNho(240) + '" alt="">' : '<svg viewBox="0 0 400 400" aria-hidden="true">' + $('#vong').innerHTML + '</svg>') +
     '<div><h3>Lưu <em>thiết kế</em></h3><small>' + e(chon.day.ten) + ' · ' + chon.vong + ' vòng · ' + chon.gan.length + ' charm<br>' + uoc(tong()) + '</small></div></div>' +
     '<label class="o-ten"><span>Đặt tên cho thiết kế</span><input name="ten" maxlength="60" value="' + e(goiY) + '" autocomplete="off"></label>' +
     '<p class="goi-y-gui" style="text-align:left">Thiết kế được lưu vào Tài khoản của bạn — mở lại và chỉnh tiếp bất cứ lúc nào.</p>' +
@@ -625,11 +654,19 @@ addEventListener('keydown', function (ev) { if (ev.key === 'Escape') dongHopLuu(
 /* ---------- điện thoại: vòng thu nhỏ nổi góc màn hình khi đang chọn charm (khỏi phải kéo lên xem) ---------- */
 var mini = document.createElement('button'), ngoaiSan = false;
 mini.type = 'button'; mini.className = 'vong-mini'; mini.setAttribute('aria-label', 'Xem chuỗi đang thiết kế');
-mini.innerHTML = '<svg viewBox="0 0 400 400" aria-hidden="true"></svg><b></b>';
+mini.innerHTML = '<svg viewBox="0 0 400 400" aria-hidden="true"></svg><img alt="" hidden><b></b>';
 document.body.appendChild(mini);
+function anhNho(w) {   // ảnh chụp vòng 3D thu nhỏ (dataURL)
+  var c3 = V3D.anh(), c = document.createElement('canvas'), h = Math.round(w * c3.height / c3.width); c.width = w; c.height = h;
+  c.getContext('2d').drawImage(c3, 0, 0, w, h); return c.toDataURL('image/png');
+}
+var henMini = 0;
 function capMini() {
   if (!mini) return;
-  mini.querySelector('svg').innerHTML = $('#vong').innerHTML;
+  if (window.V3D) {   // chỉ chụp khi vòng thu nhỏ đang hiện, gom các lần đổi liên tiếp
+    mini.querySelector('svg').style.display = 'none';
+    clearTimeout(henMini); if (ngoaiSan && innerWidth < 900) henMini = setTimeout(function () { var im = mini.querySelector('img'); im.hidden = false; im.src = anhNho(200); }, 250);
+  } else mini.querySelector('svg').innerHTML = $('#vong').innerHTML;
   var n = cuaVong(vongDang).length;
   mini.querySelector('b').textContent = (chon.vong > 1 ? 'Vòng ' + (vongDang + 1) + ' · ' : '') + n + ' charm';
   mini.classList.toggle('hien', ngoaiSan && !!chon.day && innerWidth < 900);

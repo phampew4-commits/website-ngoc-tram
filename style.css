@@ -906,3 +906,18 @@ html.khoa-cuon{overflow:hidden}
 .o-ten input{font:400 16px var(--sans);padding:12px 14px;border-radius:10px;border:1px solid var(--vien);background:#fff;color:var(--chu);outline:none;transition:border-color .25s,box-shadow .25s}
 .o-ten input:focus{border-color:var(--vang);box-shadow:0 0 0 3px rgba(168,130,58,.15)}
 .nut-luu{display:grid;grid-template-columns:1fr 1.4fr;gap:10px}.nut-luu .nut{justify-content:center}
+
+/* vòng chuỗi 3D (vong-3d.js) — có 3D thì ẩn hình SVG 2D */
+.tk-san.co-3d #vong{display:none}
+.vong-3d{position:absolute;inset:0;width:100%;height:100%;display:block;touch-action:none;cursor:grab;z-index:1;border-radius:inherit}
+.san-trong.keo-3d .vong-3d{cursor:grabbing}
+.tk-san.co-3d .nhan-giua{z-index:2}
+.tk-san.co-3d.deo .vong-3d{cursor:ew-resize}
+.vong-mini img{width:100px;height:100px;display:block;object-fit:contain}
+.luu-dau img{width:84px;height:84px;flex:none;border-radius:50%;object-fit:contain;background:radial-gradient(circle,#fbf7f0 0,#efe5d3 75%)}
+.bong-charm .mau-charm{flex-wrap:wrap}
+.bong-charm .mau-charm button{flex:1 1 auto;padding:6px 8px}
+.bong-charm .mau-charm button.on{background:var(--vang2);border-color:var(--vang2);color:var(--dem)}
+.tk-san.co-3d .nhan-giua{justify-content:flex-start;padding:7% 18% 0}
+.tk-san.co-3d .nhan-giua b{display:none}
+.tk-san.co-3d .nhan-giua span{font-size:clamp(16px,1.7vw,20px);margin-top:6px}

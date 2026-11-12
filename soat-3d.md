@@ -76,4 +76,51 @@ Cách soát: mỗi bảng 2 charm, đủ 4 ảnh thật cỡ lớn cạnh 4 góc
 
 **Chưa sửa (còn lệch nhỏ hoặc cần dựng lại nhiều):**
 - Giữ nguyên vì user đã chốt dáng trước đó: 24010 (2 trăng khuyết), 24106 (bông sen), 25820 (cua).
-- Còn lệch: 24030 (chữ Thọ tròn khác mẫu), 24142 (mây lửa chưa đúng dáng bất đối xứng), 25783 (đá trong khay là vòng liền, thật là 8 viên rời), 25811 / 25814 / 23776 / CHUAMA-8VBuMl (lưng chưa lộng), 25820 / 25874 (chi tiết), 9438 (đầu rồng còn sơ sài), 23868 (dáng khánh), 23947 (cánh chưa lộng), 23968 (bánh xe đáy), 19805 (độ lộng), 23880 (hoa văn mờ).
+- Danh sách còn lệch ở đây đã sửa hết trong đợt 6 (xem dưới), trừ 25820 giữ dáng cua user đã chốt.
+
+---
+
+## Đợt 6: sửa nốt các charm còn lệch của đợt 5
+
+Mỗi charm so lại với 4 ảnh thật cỡ lớn. Cả 242 charm vẫn dựng được, không lỗi, không charm nào chậm quá 0,5 giây.
+
+| Mã | Đã sửa | |
+|---|---|---|
+| 25814 hồ lô lục đế | Dựng lại liền khối. Mặt trước có gân nổi chạy song song theo viền, bầu trên dồn về chóp nhọn. Đá to hơn, có viền ổ. Lưng chạm vảy sóng, sau đá có ổ tròn lõm. | ✅ |
+| 25811 khánh ngọc trai | Lưng lộng theo ảnh: hoa 6 cánh giọt ở giữa, vòng tròn bao, 16 nan toả ra mép, vòng sóng 8 thuỳ. | ✅ |
+| 23776 cỏ 4 lá | Lưng mở 4 ô tim thấy mặt sau đá đúng màu, viền ống quanh ô, giữa có lỗ tròn. | ✅ |
+| CHUAMA-8VBuMl | Lưng chỉ còn khung viền và 1 thanh giằng, nhìn thấy ngọc. Sửa luôn lỗi vân ngọc mặt sau bị lặp li ti (áp cho mọi lưng lộng). | ✅ |
+| 25783 hồ lô băng | Bỏ vòng đá liền. Nay 2 bên mỗi bên 3 viên rời trong ổ, hồ lô giữ bằng 4 chấu. | ✅ |
+| 24030 chữ Thọ | Vẽ lại chữ đúng mẫu: trục đứng, 3 thanh ngang thành ô #, 4 móc cung ôm vành, đầu móc gập vào. | ✅ |
+| 24142 mây lửa | 5 cánh lửa xoáy cùng chiều (bất đối xứng), mỗi cánh phồng có viền hạt riêng. Khe lộng lưỡi liềm giữa các cánh, đuôi lửa chữ S lên khoen. | ✅ |
+| 9438 rồng tròn | Đầu rồng tạc liền khối nằm ngang trên đỉnh vòng: mõm dài hếch, mũi, hàm, mắt lồi, gờ mày, sừng, bờm vuốt sau, râu. | ✅ |
+| 23868 khánh garnet | Dáng khoá mây 8 thuỳ gần vuông (trước là dáng nơ bướm). 2 vòng pavé, gờ chỉ trong mép, núm đỉnh đặt đúng chỗ lõm. | ✅ |
+| 23947 bướm men hồng | Cánh chạm lộng: khung chỉ vàng, ô bầu dục đính đá, đầu cánh men hồng sọc gân vàng có chấm xanh, khe hở thủng. Lưng khoét lỗ. | ✅ |
+| 25874 bàn tính | Ô giữa rộng, có trục dọc và 2 thanh ngang 4 hạt dẹt. Trên dưới là 2 bông sen 5 cánh giọt phủ đá. Lưng khắc viền cánh sen. | ✅ |
+| 19805 chặn hoa văn | Lộng khoảng một nửa như ảnh: chỉ còn dây vàng cuộn C/S nối nhau và đai mép. | ✅ |
+| 23968 hồ lô quả | Bầu dưới thuôn, đáy cắt phẳng có mặt ngó sen 9 lỗ và kim cương. Cuống cong móc, dây hạt buộc eo và cổ. | ✅ |
+| 23880 thỏi vàng | Gò giữa cao hơn, có rãnh vòng bầu dục và gờ. | ✅ |
+
+Còn lại nhỏ, chưa sửa: 23880 lỗ xỏ 2 đầu chưa lộ rõ khi nhìn thẳng đầu thỏi. 25820 giữ dáng cua đã chốt.
+
+---
+
+## Đợt 7: đá và ngọc tạc trông sần sùi, vẹo vọ (user 12/11)
+
+Nguyên nhân:
+- Vân nổi lấy từ ảnh chụp dán lên mặt đá. Ảnh có cả bóng sáng, sợi tóc, nền, nên mặt đá lốm đốm.
+- Dáng dò bằng mắt trên ảnh chụp nghiêng, nối từng lát cắt, nên khối méo và lệch 2 bên.
+- Lưới dựng khối còn bậc răng cưa nhỏ.
+- Chất đá đục như sáp, sợi tóc to như sợi mì.
+
+Đã sửa:
+- **Tạc lại đối xứng, mặt đánh bóng trơn** cho 4 dáng dùng chung (đủ 19 charm):
+  - Tỳ hưu (3641, 22654, 4064, 26101): đầu to, 2 tai, 3 gờ bờm cuộn, mắt lồi, mũi; eo cổ; 2 bầu mông tách bởi rãnh sống lưng; đuôi cuộn; 4 chân thu dưới bụng. 4064 đầu khối vuông khắc ngấn.
+  - Hồ ly (3031, 24980, 24980~X51SyH, 5179, 377): thân tròn, khối mặt cáo chữ V liền thân, 2 tai nhọn, mắt xếch, mũi, 2 chân trước, đuôi ôm quanh đáy.
+  - Hồ ly chúa (15102, 22313, 23057): dáng giọt, lọn đuôi tròn đều 2 mép, mặt cáo dài nổi, lớp đuôi chạm chéo.
+  - Túi tiền (9674, 22312, 9675, 16079, 9680, 9680~p1kr3L): bụng tròn, dây buộc cổ, miệng 3 múi xoè rộng, đồng xu lỗ vuông hoặc gân toả.
+- Bỏ vân ảnh dán trên đá tạc. Với ngọc chạm còn dùng vân ảnh (23138, 25782, 23772, A55891, CHUAMA-ALtsCz), ảnh vân đã làm mịn (bản gốc lưu ở scratchpad) và giảm độ nổi.
+- Lưới khối được làm mượt (Taubin, không co khối), pháp tuyến tính lại từ SDF, nên mặt bóng đều.
+- Chất đá trong hơn. Vàng chanh và vàng cam ra màu vàng mật, bã mía trong có sợi vàng rõ, sợi tóc mảnh hơn.
+
+Bảng so: charm-renders/soat-3d/anh/lan7-*.jpg. Cả 242 charm vẫn dựng không lỗi.

@@ -262,6 +262,7 @@ window.taoCharm3D = function (THREE) {
     var m = new THREE.Mesh(geo, new THREE.MeshStandardMaterial({ color: 0xf2c25a, metalness: 1, roughness: .28, alphaMap: t, alphaTest: .5, side: THREE.DoubleSide })); m.position.z = z; g.add(m);
     var m2 = m.clone(); m2.position.z = z + .22; g.add(m2);   /* lưới có bề dày */
     var nen = new THREE.Mesh(new THREE.ShapeGeometry(new THREE.Shape(vienTu(function (u, v) { return fOut(u, v) + .25; }, 0, 0, 160)), 1), ngoc ? (function () { var q = ngoc.clone(); q.side = THREE.DoubleSide; return q; })() : new THREE.MeshStandardMaterial({ color: 0x3a2e1a, roughness: .7, side: THREE.DoubleSide }));
+    (function (gg) { var pp = gg.attributes.position, uu = []; for (var i = 0; i < pp.count; i++) uu.push((pp.getX(i) + R) / (2 * R), (pp.getY(i) + R) / (2 * R)); gg.setAttribute('uv', new THREE.Float32BufferAttribute(uu, 2)); })(nen.geometry);
     nen.position.z = zNgoc === undefined ? z + .9 : zNgoc; g.add(nen);   /* mặt sau viên ngọc thấy qua lỗ */
     return g; }
   var HV = {   /* hoa văn lưng lộng theo ảnh lưng thật */
@@ -304,14 +305,22 @@ window.taoCharm3D = function (THREE) {
   }
   function holoKhoi(o) {   // hồ lô vàng đúc khối (tiện tròn 2 bầu): vân nổi, đai kim cương, đá gắn bầu dưới, bánh xe đáy; treo ở đỉnh hoặc ở eo
     var k = o.k || 1, g = new THREE.Group(), th = new THREE.Group(), pts = [], i, rt = o.bauTren || 2.1;
-    function f2(r, y) { return hop(tron(r, y, 0, -2.1, 3.1), tron(r, y, 0, 2.5, rt), 1.1); }
+    function f2(r, y) { if (o.qua) return Math.max(hop(oval(2.25, 3.0)(r, y + 1.9), tron(r, y, 0, 2.15, 1.3), .9), -(y + 4.55)); return hop(tron(r, y, 0, -2.1, 3.1), tron(r, y, 0, 2.5, rt), 1.1); }   /* o.qua (23968): bầu dưới thuôn dài, đáy cắt phẳng */
     function bk(y) { var lo = 0, hi = 6; for (var q = 0; q < 24; q++) { var m = (lo + hi) / 2; if (f2(m, y) < 0) lo = m; else hi = m; } return lo; }
     for (i = 0; i <= 64; i++) { var a = -PI / 2 + i / 64 * PI, lo = 0, hi = 9; for (var q = 0; q < 24; q++) { var m = (lo + hi) / 2; if (f2(Math.cos(a) * m, Math.sin(a) * m) < 0) lo = m; else hi = m; } pts.push(new V2(Math.max(0, Math.cos(a) * lo), Math.sin(a) * lo)); }
     var ob = tienTron(pts, o.vl || VL.vang, 88);
     if (o.xoan) { var p = ob.g.attributes.position; for (i = 0; i < p.count; i++) { var x = p.getX(i), y = p.getY(i), z = p.getZ(i), s = 1 + .07 * Math.sin(7 * Math.atan2(z, x) + y * 1.4); p.setX(i, x * s); p.setZ(i, z * s); } }
     th.add(xongTien(ob, o.lapU || 2));
     if (o.long) th.add(xongTien(tienTron(pts.map(function (q) { return new V2(q.x * .8, q.y * .92); }), VL.vangMo, 64), 1));   /* soát đợt 5: lõi trong cho hồ lô chỉ vàng lộng */
-    var dinh = 2.5 + rt, cuong = new THREE.Mesh(new THREE.CylinderGeometry(.22, .55, 1.3, 20), VL.vang); cuong.position.y = dinh + .35; if (o.khoenEo) cuong.rotation.z = -.35; th.add(cuong);
+    var dinh = 2.5 + rt, cuong;
+    if (o.qua) { dinh = 3.45; cuong = new THREE.Mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3([new THREE.Vector3(0, 3.1, 0), new THREE.Vector3(.15, 3.9, 0), new THREE.Vector3(.75, 4.5, 0), new THREE.Vector3(1.35, 4.6, 0), new THREE.Vector3(1.6, 4.2, 0)]), 30, .42, 12), VL.vangMo); th.add(cuong);   /* cuống cong móc (ảnh 1, 2) */
+      var dn = new THREE.Mesh(new THREE.SphereGeometry(.42, 12, 10), VL.vangMo); dn.position.set(1.6, 4.2, 0); th.add(dn);
+      [[.45, .2], [3.0, .14]].forEach(function (q) { th.add(vongHat(bk(q[0]) + .05, q[0], q[1], VL.vang)); });   /* dây hạt buộc eo + cổ */
+      var mat = new THREE.Mesh(new THREE.CircleGeometry(bk(-4.5) - .05, 48), (function () { var c = document.createElement('canvas'); c.width = c.height = 256; var x = c.getContext('2d'); x.fillStyle = '#f2c25a'; x.fillRect(0, 0, 256, 256); x.fillStyle = '#4a3410';
+        for (var j = 0; j < 9; j++) { var a = j / 9 * PI * 2; x.save(); x.translate(128 + Math.cos(a) * 72, 128 + Math.sin(a) * 72); x.rotate(a); x.beginPath(); x.ellipse(0, 0, 34, 17, 0, 0, 7); x.fill(); x.restore(); } x.beginPath(); x.arc(128, 128, 22, 0, 7); x.fill();
+        var t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; return new THREE.MeshStandardMaterial({ map: t, metalness: .85, roughness: .45 }); })());
+      mat.rotation.x = PI / 2; mat.position.y = -4.56; th.add(mat); var kcq = new THREE.Mesh(kcGeo(.36), VL.kc); kcq.rotation.x = PI / 2; kcq.position.y = -4.6; th.add(kcq); }   /* đáy phẳng: mặt ngó sen 9 lỗ bầu dục + kim cương giữa */
+    else { cuong = new THREE.Mesh(new THREE.CylinderGeometry(.22, .55, 1.3, 20), VL.vang); cuong.position.y = dinh + .35; if (o.khoenEo) cuong.rotation.z = -.35; th.add(cuong); }
     if (o.dai) { th.add(vongHat(bk(.55) + .15, .55, .36, VL.kc, true)); var d1 = khoen(bk(.55) + .1, .16, VL.vang); d1.rotation.x = PI / 2; d1.position.y = 1.0; th.add(d1); var d2 = d1.clone(); d2.position.y = .1; th.add(d2); }
     if (o.kcBau) for (i = 0; i < 16; i++) { var yy = -2.1 + 3.0 * (1 - (i + .5) / 16 * 2) * .8, rr = bk(yy), aa = i * 2.39996, dd = new THREE.Mesh(kcGeo(.36), VL.kc); dd.position.set(Math.cos(aa) * rr * .98, yy, Math.sin(aa) * rr * .98); th.add(dd); }
     if (o.daDuoi) { var R0 = bk(-2.2), be = khoen(1.0, .2, VL.vang); be.position.set(0, -2.2, R0 - .05); th.add(be);
@@ -327,14 +336,23 @@ window.taoCharm3D = function (THREE) {
     g.rotation.z = PI / 2; var b2 = new THREE.Group(); g.scale.setScalar(k); b2.add(g);
     return { g: b2, rong: 10.6 * k, xo: 'ong', cao: 6.4 * k, dungXem: true };   /* soát đợt 5: xem gần dựng đứng (bầu nhỏ trên) */
   }
-  function holoGon(o) {   // hồ lô vàng dập nổi: mỗi bầu có gân tròn đồng tâm, viên đá giữa bầu dưới
-    var k = o.k || 1, g = new THREE.Group(), f = hinhHoLo(.9), cy = -.45, vk = vienTu(f, 0, cy, 140);
-    var de = khoi(vk, 0, cy, hoSo(.9, .3), VL.vang); g.add(de);
-    g.add(vom(vk, 0, cy, 1.5, VL.vang, function (x, y) { return 1 + .15 * Math.cos(f(x, y) * 7); }));
-    var be = khoen(.98, .2, VL.vang); be.position.set(0, -2.07, 1.5); g.add(be);
-    var v = vien(.86, VL[o.da || 'lucde'], .7); v.position.set(0, -2.07, 1.5); g.add(v);
-    var nh = new THREE.Mesh(new THREE.ConeGeometry(.5, 1.1, 18), VL.vang); nh.position.set(0, 4.75, -.3); g.add(nh);
-    var cao = mocDon(g, 5.1), bao = new THREE.Group(); g.scale.setScalar(k); bao.add(g); bao.userData.khoa = g.userData.khoa;
+  function holoGon(o) {   // 25814 hồ lô vàng dập nổi (soát 12/11 đợt 6, xem 4 ảnh): gân nổi chạy song song theo viền cả 2 bầu (bầu trên dồn về chóp nhọn hình giọt), đá giữa bầu dưới có viền ổ; lưng chạm vảy sóng (seigaiha) + ổ tròn lõm sau đá
+    var k = o.k || 1, g = new THREE.Group(), fG = hinhHoLo(.9), SY = -2.07, RD = 1.0, R0 = .78;
+    function f2(x, y) { return S3.hop(fG(x, y), Math.max(Math.abs(x) * .9 + (y - 5.05) * .45, 3.4 - y), .5); }   /* bầu trên có chóp nhọn */
+    function ss(a, b, t) { t = Math.min(1, Math.max(0, (t - a) / (b - a))); return t * t * (3 - 2 * t); }
+    function mat(x, y) { var d2 = f2(x, y), w = Math.min(1, -d2 / 1.7), r = Math.hypot(x, y - SY);
+      return .45 + .5 * Math.sqrt(Math.max(0, w * (2 - w))) + .13 * (.5 + .5 * Math.cos(2 * PI * d2 / .52)) * ss(.08, .3, -d2) * ss(RD + .15, RD + .45, r); }
+    function vay(x, y) { var h = R0 / 2, j0 = Math.floor((y - R0) / h), j1 = Math.floor(y / h);
+      for (var j = j0; j <= j1; j++) { var off = (j & 1) ? R0 : 0, i = Math.round((x - off) / (2 * R0)), cx = i * 2 * R0 + off, cyv = j * h, r = Math.hypot(x - cx, y - cyv);
+        if (y >= cyv && r < R0) { var q = r / (R0 / 3), t = (q - Math.round(q)) * R0 / 3; return ranh(t, .045, .07); } }
+      return 0; }
+    function lung(x, y) { var r = Math.hypot(x, y - SY); return .45 - (r < RD + .45 ? .14 - ranh(r - .55, .08, .06) : vay(x, y)) + ranh(r - RD - .45, .09, .07); }
+    function f(x, y, z) { var a = f2(x, y), dz = z >= 0 ? z - mat(x, y) : -z - lung(x, y), rr = .3;
+      return Math.hypot(Math.max(a + rr, 0), Math.max(dz * .8 + rr, 0)) + Math.min(Math.max(a + rr, dz * .8 + rr), 0) - rr; }
+    g.add(khoiTac(f, [-3.4, -5.6, -.8, 3.4, 5.3, 1.3], VL.vang, 130, 'holoGon'));
+    var zm = mat(0, SY + RD + .3), be = khoen(RD + .1, .17, VL.vang); be.position.set(0, SY, zm - .05); g.add(be);
+    var v = vien(RD, VL[o.da || 'lucde'], .75); v.position.set(0, SY, zm - .2); g.add(v);
+    var cao = mocDon(g, 5.15), bao = new THREE.Group(); g.scale.setScalar(k); bao.add(g); bao.userData.khoa = g.userData.khoa;
     return { g: bao, rong: 1.6 * k, xo: 'treo', cao: (cao + 6) * k };
   }
   function holoLa(o) {   // hồ lô vàng dạng lá mỏng (tấm chạm vân) hoặc chỉ là vành rỗng
@@ -518,12 +536,16 @@ window.taoCharm3D = function (THREE) {
       return r + .17 * (gd - .55) * f - .1 * Math.exp(-Math.pow(y / .1, 2)); }, hai(VL.vangMo)));
     return { g: ongNam(g), rong: 2 * H, xo: 'ong', cao: 2 * Rq };
   };
-  var vanXoan = vai(1024, 512, function (c, w, h) {   /* hoa văn chạm lộng hạt 19805: trắng = vàng, đen = khoét thủng → còn lại các dải vàng cuộn xoắn */
-    c.fillStyle = '#fff'; c.fillRect(0, 0, w, h); c.strokeStyle = '#000'; c.fillStyle = '#000'; c.lineCap = 'round';
-    for (var col = 0; col < 8; col++) for (var row = 0; row < 3; row++) { var cx = (col + .5 + (row % 2) * .5) * w / 8, cy = h * (.2 + row * .3), sx = (col + row) % 2 ? -1 : 1;
-      [-w, 0, w].forEach(function (dx) { c.lineWidth = 21; c.beginPath(); for (var t = 0; t <= 1.0001; t += .015) { var an = t * PI * 3.0, rr = 7 + 50 * t; c.lineTo(dx + cx + sx * Math.cos(an) * rr, cy + Math.sin(an) * rr * .85); } c.stroke();   /* lỗ xoắn ốc */
-        c.lineWidth = 22; c.beginPath(); c.arc(dx + cx - sx * 52, cy + (row % 2 ? 44 : -44), 24, 0, PI * 1.4); c.stroke();   /* lỗ hình chữ C giữa các cuộn */
-        c.beginPath(); c.ellipse(dx + cx + sx * 58, cy + (row % 2 ? -30 : 30), 12, 22, sx * .6, 0, PI * 2); c.fill(); }); } });
+  var vanXoan = vai(1024, 512, function (c, w, h) {   /* hoa văn hạt 19805 (soát đợt 6: ảnh thật lộng ~ 1/2): nền đen = khoét, chỉ vẽ dây vàng cuộn xoắn C/S nối nhau + 2 đai mép quanh lỗ xỏ */
+    c.fillStyle = '#000'; c.fillRect(0, 0, w, h); c.strokeStyle = '#fff'; c.fillStyle = '#fff'; c.lineCap = 'round';
+    c.fillRect(0, 0, w, 16); c.fillRect(0, h - 16, w, 16);
+    for (var col = 0; col < 7; col++) for (var row = 0; row < 3; row++) { var cx = (col + .5 + (row % 2) * .5) * w / 7, cy = h * (.2 + row * .3), sx = (col + row) % 2 ? -1 : 1;
+      [-w, 0, w].forEach(function (dx) { c.lineWidth = 17; c.beginPath(); for (var t = 0; t <= 1.0001; t += .015) { var an = t * PI * 2.6, rr = 8 + 46 * t; c.lineTo(dx + cx + sx * Math.cos(an) * rr, cy + Math.sin(an) * rr * .85); } c.stroke();   /* dây cuộn xoắn */
+        c.beginPath(); c.moveTo(dx + cx + sx * 54, cy); c.bezierCurveTo(dx + cx + sx * 80, cy + 40, dx + cx + sx * 60, cy + 70, dx + cx + sx * 75, cy + (row < 2 ? h * .3 - 46 : 80)); c.stroke();   /* đuôi S nối cuộn dưới */
+        c.beginPath(); c.arc(dx + cx - sx * 50, cy + (row % 2 ? 42 : -42), 20, 0, PI * 1.3); c.stroke();   /* chữ C nhỏ */
+        c.beginPath(); c.moveTo(dx + cx, cy - 46); c.lineTo(dx + cx + sx * 20, cy - h * .15); c.stroke(); }); }
+    c.lineWidth = 12; [h * .05, h * .95].forEach(function (y) { c.beginPath(); for (var x = 0; x <= w; x += 8) c.lineTo(x, y + Math.sin(x / w * PI * 14) * 10); c.stroke(); });   /* dây sóng nối đai mép */
+  });
   vanXoan.colorSpace = THREE.NoColorSpace; vanXoan.generateMipmaps = false; vanXoan.minFilter = THREE.LinearFilter;   /* giữ lỗ khoét sắc nét khi nhìn nhỏ */
   DS['19805'] = function () {   /* chặn hoa văn (xem 4 ảnh): hạt tròn chạm lộng, khoét hình xoắn cuộn chữ C/S, vàng satin; 2 lỗ xỏ có cổ tròn */
     var R = 2.75, t0 = .38, g = new THREE.Group();
@@ -754,12 +776,22 @@ window.taoCharm3D = function (THREE) {
 
   DS['23776'] = function () {   /* cỏ 4 lá tourmaline (xem 4 ảnh): khung vàng 4 lá, mỗi lá 1 viên tourmaline cabochon trái tim khác màu (xanh đậm, đỏ, vàng, nâu mật), viền hạt quanh từng viên, giữa kim cương nhỏ; thành bên khoét trái tim; xỏ ngang */
     var g = new THREE.Group(), i, f = coLa(4, 2.45, .72, 1.5, 1.3, 0), vk = vienTu(function (x, y) { return f(x, y) - .1; }, 0, 0, 240), T = 3.6;   /* khung nhỏ hơn: nhìn trước chỉ thấy 4 viên tim viền hạt */
-    var de = khoi(vk, 0, 0, hoSo(T, .35), VL.vang); de.position.z = T / 2 - .6; g.add(de);
-    var mau = [0x1f4a2c, 0xc21e46, 0xf2b52c, 0xc77a1f];
+    var de = khoi(vk, 0, 0, hoSo(T, .35), VL.vang, true); de.position.z = T / 2 - .6; g.add(de);
+    var mau = [0x1f4a2c, 0xc21e46, 0xf2b52c, 0xc77a1f], zL = -T / 2 - .6, RL = 5.2, cv = document.createElement('canvas'); cv.width = cv.height = 1024; var cx2 = cv.getContext('2d'), KL = 1024 / (2 * RL);   /* lưng thật (ảnh 2): 4 ô trái tim mở thấy mặt sau đá, giữa 1 lỗ tròn nhỏ */
+    function XL(u) { return (u + RL) * KL; } function YL(v) { return (RL - v) * KL; }
+    cx2.fillStyle = '#000'; cx2.fillRect(0, 0, 1024, 1024); cx2.fillStyle = '#fff'; cx2.beginPath(); vk.forEach(function (q, j) { cx2[j ? 'lineTo' : 'moveTo'](XL(q.x), YL(q.y)); }); cx2.fill(); cx2.fillStyle = '#000';
+    cx2.beginPath(); cx2.arc(XL(0), YL(0), .3 * KL, 0, 7); cx2.fill();
+    var cvm = document.createElement('canvas'); cvm.width = cvm.height = 512; var cm = cvm.getContext('2d'); cm.scale(.5, .5);   /* mặt sau 4 viên đá (màu đá, thấy qua ô tim) */
     for (i = 0; i < 4; i++) { var an = i * PI / 2 + PI / 2, tim = timDuong(2.15).map(function (q) { var c = Math.cos(an - PI / 2), s = Math.sin(an - PI / 2); return new V2(q.x * c - (q.y + 1.0) * s + Math.cos(an) * 2.55 * 0, q.x * s + (q.y + 1.0) * c); });
       tim = tim.map(function (q) { return new V2(q.x + Math.cos(an) * 1.75, q.y + Math.sin(an) * 1.75); });
       var cx = Math.cos(an) * 2.75, cy = Math.sin(an) * 2.75, v = vom(tim, cx, cy, 1.5, da(mau[i], vanMay, .12, .38)); v.position.z = T / 2 - .55; g.add(v);
-      g.add(chuoiHat(tim.map(function (q) { return new V2(cx + (q.x - cx) * 1.1, cy + (q.y - cy) * 1.1); }), .17, VL.vang, T / 2 - .45)); }
+      g.add(chuoiHat(tim.map(function (q) { return new V2(cx + (q.x - cx) * 1.1, cy + (q.y - cy) * 1.1); }), .17, VL.vang, T / 2 - .45));
+      cx2.beginPath(); tim.forEach(function (q, j) { cx2[j ? 'lineTo' : 'moveTo'](XL(cx + (q.x - cx) * .8), YL(cy + (q.y - cy) * .8)); }); cx2.fill();
+      g.add(ongVien(tim.map(function (q) { return new V2(cx + (q.x - cx) * .8, cy + (q.y - cy) * .8); }), .13, VL.vang, zL - .02)); cm.fillStyle = '#' + new THREE.Color([0x2d5a3a, 0xb0203f, 0xe8b030, 0xb8701c][i]).getHexString(); cm.beginPath(); tim.forEach(function (q, j) { cm[j ? 'lineTo' : 'moveTo'](XL(cx + (q.x - cx) * .9), YL(cy + (q.y - cy) * .9)); }); cm.fill(); }
+    var tL = new THREE.CanvasTexture(cv); tL.colorSpace = THREE.NoColorSpace; tL.generateMipmaps = false; tL.minFilter = THREE.LinearFilter;
+    var tM = new THREE.CanvasTexture(cvm); tM.colorSpace = THREE.SRGBColorSpace; var sau = new THREE.Mesh(new THREE.PlaneGeometry(2 * RL, 2 * RL), new THREE.MeshStandardMaterial({ map: tM, alphaTest: .5, roughness: .25, metalness: 0, side: THREE.DoubleSide })); sau.position.z = zL + .55; g.add(sau);
+    var gL = new THREE.PlaneGeometry(2 * RL, 2 * RL), lp = new THREE.Mesh(gL, new THREE.MeshStandardMaterial({ color: 0xf2c25a, metalness: 1, roughness: .28, alphaMap: tL, alphaTest: .5, side: THREE.DoubleSide })); lp.position.z = zL; g.add(lp);
+    var lp2 = lp.clone(); lp2.position.z = zL + .25; g.add(lp2);   /* lưng có bề dày */
     g.add(hangKc(.3, [[0, 0, T / 2 - .3, 0, 0, 1]]));
     [-1, 1].forEach(function (sg) { var l = new THREE.Mesh(new THREE.CircleGeometry(.55, 20), VL.toi); l.rotation.y = sg * PI / 2; l.position.set(sg * 4.55, 0, -.6 + .0); g.add(l); });
     return { g: g, rong: 9, xo: 'xuyen', cao: 9.5 };
@@ -912,15 +944,52 @@ window.taoCharm3D = function (THREE) {
     [-1, 1].forEach(function (sg) { var gr = c.createLinearGradient(X(sg * 2.2), Y(1.6), X(sg * 4.2), Y(3.3)); gr.addColorStop(0, '#fbe6ea'); gr.addColorStop(1, '#f07ea0'); c.fillStyle = gr;
       c.beginPath(); c.ellipse(X(sg * 3.1), Y(2.3), 1.5 * k, .75 * k, sg * -.75, 0, 7); c.fill();
       c.fillStyle = '#4fbf4a'; c.beginPath(); c.ellipse(X(sg * 2.2), Y(1.1), .35 * k, .25 * k, 0, 0, 7); c.fill(); }); });
-  DS['23947'] = function () {   /* bướm bạc phủ vàng (xem 4 ảnh): cánh trên nhọn chếch lên, đầu cánh men hồng + chấm xanh, trong cánh đính kim cương; cánh dưới vàng khoét chấm; lưng có ống xỏ ngang → xỏ qua ống sau lưng */
-    var f = hinhBuom(.95, { tren: [2.6, 1.4, 2.9, 1.5, .7], duoi: [1.7, -1.45, 1.5, 1.2, -.4] }), g = new THREE.Group(), i;
-    var vk = vienTu(f, 0, 0, 240), mt = khoi(vk, 0, 0, hoSo(1.0, .25), new THREE.MeshPhysicalMaterial({ map: menBuomHong, metalness: .55, roughness: .3, clearcoat: .8 })); mt.position.z = .5; g.add(mt);
-    var ds = []; [-1, 1].forEach(function (sg) { for (i = 0; i < 4; i++) ds.push([sg * (1.2 + i * .55), .9 + i * .38, .62, 0, 0, 1]); ds.push([sg * .95, -1.1, .62, 0, 0, 1]); }); g.add(hangKc(.24, ds));
-    [-1, 1].forEach(function (sg) { [[1.6, -1.7], [2.1, -1.2]].forEach(function (p) { var l = new THREE.Mesh(new THREE.CircleGeometry(.2, 12), VL.toi); l.position.set(sg * p[0], p[1], .52); g.add(l); }); });
-    var than = new THREE.Mesh(new THREE.CapsuleGeometry(.4, 2.6, 6, 12), VL.vang); than.position.z = .45; than.scale.z = .6; g.add(than);
-    var ong = new THREE.Mesh(new THREE.CylinderGeometry(1.0, 1.0, 3.0, 28, 1, true), hai(VL.vang)); ong.rotation.z = PI / 2; ong.position.z = -1.0; g.add(ong);   /* ống xỏ sau lưng */
+  DS['23947'] = function () {   /* bướm bạc phủ vàng (soát đợt 6, xem 4 ảnh): cánh chạm LỘNG — khung chỉ vàng theo mép; cánh trên: ô bầu dục đính 4 kim cương ở gốc, đầu cánh men hồng sọc gân vàng + chấm xanh, giữa là khe hở; cánh dưới: ô bầu dục 1 viên + 2 lỗ tròn; lưng tấm vàng khoét lỗ, ống xỏ ngang sau lưng */
+    var K = .95, TR = [2.6 * K, 1.4 * K, .7], DU = [1.7 * K, -1.45 * K], f = hinhBuom(K, { tren: [2.6, 1.4, 2.9, 1.5, .7], duoi: [1.7, -1.45, 1.5, 1.2, -.4] }), g = new THREE.Group(), i, W = 10;
+    var vk = vienTu(f, 0, 0, 260), ca = Math.cos(TR[2]), sa = Math.sin(TR[2]);
+    function uv(x, y) { var dx = x - TR[0], dy = y - TR[1]; return [dx * ca + dy * sa, -dx * sa + dy * ca]; }
+    function ve(mode) { var S = 1024, cv = document.createElement('canvas'); cv.width = cv.height = S; var c = cv.getContext('2d'), k = S / W;
+      function X(x) { return (x / W + .5) * S; } function Y(y) { return (.5 - y / W) * S; }
+      var VANG = mode === 'c' ? '#f2c25a' : '#fff', NEN = mode === 'm' ? '#000' : (mode === 'c' ? '#f2c25a' : '#000');
+      c.fillStyle = mode === 'c' ? '#f2c25a' : '#000'; c.fillRect(0, 0, S, S); c.lineCap = c.lineJoin = 'round';
+      function duong(pts) { c.beginPath(); pts.forEach(function (q, j) { c[j ? 'lineTo' : 'moveTo'](X(q.x), Y(q.y)); }); c.closePath(); }
+      function elV(cx, cy, a, b, t) { c.beginPath(); c.ellipse(X(cx), Y(cy), a * k, b * k, -t, 0, 7); }
+      [-1, 1].forEach(function (sg) {
+        /* men đầu cánh trên: vùng u > .45 trong hình */
+        c.save(); duong(vk); c.clip(); c.beginPath();
+        var P = []; for (var t = -1.6; t <= 1.6; t += .05) { var u = .45, v = t; P.push([TR[0] + u * ca - v * sa, TR[1] + u * sa + v * ca]); }
+        var u2 = 3.5; P.push([TR[0] + u2 * ca - 1.6 * sa, TR[1] + u2 * sa + 1.6 * ca], [TR[0] + u2 * ca + 1.6 * sa, TR[1] + u2 * sa - 1.6 * ca]);
+        P.forEach(function (q, j) { c[j ? 'lineTo' : 'moveTo'](X(sg * q[0]), Y(q[1])); }); c.closePath();
+        if (mode === 'c') { c.save(); c.clip(); for (var j = -6; j <= 6; j++) { c.fillStyle = j % 2 ? '#f6a3bb' : '#fde8ee'; c.beginPath(); var v0 = j * .28, v1 = v0 + .28; [[.4, v0], [3.4, v0 * 1.6], [3.4, v1 * 1.6], [.4, v1]].forEach(function (q, m) { var xx = TR[0] + q[0] * ca - q[1] * sa, yy = TR[1] + q[0] * sa + q[1] * ca; c[m ? 'lineTo' : 'moveTo'](X(sg * xx), Y(yy)); }); c.fill(); }
+          c.fillStyle = '#3fbf3a'; var gx = TR[0] + 1.2 * ca + 1.05 * sa, gy = TR[1] + 1.2 * sa - 1.05 * ca; elV(sg * gx, gy, .32, .2, sg * .3); c.fill(); c.restore(); }
+        else { c.fillStyle = mode === 'm' ? '#000' : '#fff'; c.fill(); }
+        c.restore();
+        /* gân vàng trong men */
+        c.strokeStyle = VANG; c.lineWidth = .14 * k; [-.75, 0, .75].forEach(function (v) { c.beginPath(); c.moveTo(X(sg * (TR[0] + .45 * ca - v * sa)), Y(TR[1] + .45 * sa + v * ca)); c.lineTo(X(sg * (TR[0] + 3 * ca - v * 1.5 * sa)), Y(TR[1] + 3 * sa + v * 1.5 * ca)); c.stroke(); });
+        c.lineWidth = .2 * k; c.beginPath(); for (var t2 = -1.6; t2 <= 1.6; t2 += .05) { var xx = TR[0] + .45 * ca - t2 * sa, yy = TR[1] + .45 * sa + t2 * ca; c[t2 > -1.6 ? 'lineTo' : 'moveTo'](X(sg * xx), Y(yy)); } c.stroke();
+        /* ô bầu dục gốc cánh trên + cánh dưới (nền vàng đính đá) */
+        c.fillStyle = VANG; elV(sg * 1.62, .82, 1.05, .52, sg * .55); c.fill(); elV(sg * 1.25, -1.05, .62, .48, -sg * .4); c.fill();
+        c.strokeStyle = VANG; c.lineWidth = .16 * k; elV(sg * 1.62, .82, 1.25, .7, sg * .55); c.stroke(); elV(sg * 1.25, -1.05, .82, .66, -sg * .4); c.stroke();
+        /* cánh dưới phía ngoài: tấm vàng có 2 lỗ tròn */
+        c.save(); duong(vk); c.clip(); c.fillStyle = VANG; c.beginPath(); c.moveTo(X(sg * 1.5), Y(-.3)); c.lineTo(X(sg * 3.6), Y(-.3)); c.lineTo(X(sg * 3.6), Y(-3.5)); c.lineTo(X(sg * .3), Y(-3.5)); c.lineTo(X(sg * .3), Y(-1.9)); c.closePath(); c.fill(); c.restore();
+        c.fillStyle = mode === 'c' ? '#3a2a10' : '#000'; [[1.75, -1.85], [2.25, -1.3]].forEach(function (q) { c.beginPath(); c.arc(X(sg * q[0]), Y(q[1]), .2 * k, 0, 7); c.fill(); });
+      });
+      c.fillStyle = VANG; elV(0, -.2, .55, 2.3, 0); c.fill();   /* thân */
+      c.strokeStyle = VANG; c.lineWidth = .32 * k; duong(vk); c.stroke();   /* khung mép */
+      var t3 = new THREE.CanvasTexture(cv); t3.colorSpace = mode === 'c' ? THREE.SRGBColorSpace : THREE.NoColorSpace; return t3; }
+    var A = ve('a'), M = ve('m'), Cm = ve('c');
+    var vl = new THREE.MeshPhysicalMaterial({ map: Cm, alphaMap: A, alphaTest: .5, metalnessMap: M, metalness: 1, roughness: .3, clearcoat: .5, side: THREE.DoubleSide });
+    g.add(matPhang(vk, W, vl, .5)); var m2 = matPhang(vk, W, vl, .32); g.add(m2);
+    g.add(thanhVien(vienTu(function (x, y) { return f(x, y) + .05; }, 0, 0, 260), .9, VL.vang, 1));   /* thành mép */
+    var lung = vanLong(function (c, w, h) { var X = function (x) { return (x / W + .5) * w; }, Y = function (y) { return (.5 - y / W) * h; }; c.beginPath(); vk.forEach(function (q, j) { c[j ? 'lineTo' : 'moveTo'](X(q.x), Y(q.y)); }); c.closePath(); c.fill(); c.fillStyle = '#000';
+      [-1, 1].forEach(function (sg) { [[2.5, 1.9, .55, .2, .7], [3.3, 2.4, .4, .16, .7], [1.6, .75, .3, .18, .5], [2.1, 1.15, .25, .16, .5]].forEach(function (q) { c.beginPath(); c.ellipse(X(sg * q[0]), Y(q[1]), q[2] * w / W, q[3] * w / W, -sg * q[4], 0, 7); c.fill(); }); [[1.75, -1.85], [2.25, -1.3], [1.2, -1.1]].forEach(function (q) { c.beginPath(); c.arc(X(sg * q[0]), Y(q[1]), .2 * w / W, 0, 7); c.fill(); }); }); });
+    var vlL = longVang(lung); vlL.side = THREE.FrontSide; g.add(matPhang(vk, W, vlL, -.45, true));   /* lưng khoét lỗ (ảnh 3) — chỉ mặt ngoài, nhìn trước qua khe thấy thủng */
+    var ds = []; [-1, 1].forEach(function (sg) { for (i = 0; i < 4; i++) { var tt = (i - 1.5) * .5; ds.push([sg * (1.62 + Math.cos(.55) * tt), .82 + Math.sin(.55) * tt, .62, 0, 0, 1]); } ds.push([sg * 1.25, -1.05, .62, 0, 0, 1]); }); g.add(hangKc(.22, ds));
+    var than = new THREE.Mesh(new THREE.CapsuleGeometry(.42, 2.6, 6, 12), VL.vang); than.position.z = .55; than.scale.z = .6; g.add(than);
+    var ong = new THREE.Mesh(new THREE.CylinderGeometry(1.0, 1.0, 3.0, 28, 1, true), hai(VL.vang)); ong.rotation.z = PI / 2; ong.position.z = -1.45; g.add(ong);   /* ống xỏ sau lưng */
     return { g: g, rong: 9.5, xo: 'xuyen', cao: 7.5 };
   };
+
   DS['23952'] = function () {   /* bướm chạm lộng bạc phủ vàng (xem 4 ảnh): bướm bằng dây vàng cuộn mây (cánh trên có râu cuộn, cánh dưới xoắn), giữa ổ kim cương; khoen → treo */
     var g = new THREE.Group();
     function day(pts) { [-1, 1].forEach(function (sg) { var c = new THREE.CatmullRomCurve3(pts.map(function (p) { return new V3(sg * p[0], p[1], 0); })), m = new THREE.Mesh(new THREE.TubeGeometry(c, 60, .46, 8), VL.vang); m.scale.z = .6; g.add(m); }); }   /* soát đợt 5: bản dây dày như ảnh */
@@ -1531,12 +1600,23 @@ window.taoCharm3D = function (THREE) {
   DS['9438'] = function () {   /* rồng tròn (xem 3 ảnh): vòng tròn dày là thân rồng phủ vảy, đầu rồng có sừng/bờm ở đỉnh vòng; dây xỏ qua lòng vòng */
     var g = new THREE.Group(), R = 3.3, vl = new THREE.MeshStandardMaterial({ color: 0xf2c25a, metalness: 1, roughness: .38, bumpMap: vanVayRong, bumpScale: 2.2 });
     var t = new THREE.Mesh(new THREE.TorusGeometry(R, 1.05, 24, 80), vl); g.add(t);
-    var dau = new THREE.Group(), so = new THREE.Mesh(new THREE.SphereGeometry(1.35, 20, 14), VL.vangNham); so.scale.set(1.6, .9, 1.1); dau.add(so);
-    [-1, 1].forEach(function (sg) { var s1 = new THREE.Mesh(new THREE.ConeGeometry(.3, 1.6, 8), VL.vang); s1.position.set(sg * .8, .9, -.2); s1.rotation.z = -sg * .7; dau.add(s1);
-      for (var k = 0; k < 3; k++) { var b = new THREE.Mesh(new THREE.TorusGeometry(.35, .14, 6, 12, PI * 1.4), VL.vang); b.position.set(sg * (1.3 + k * .4), .5 - k * .1, -.3); dau.add(b); }
-      var mt = new THREE.Mesh(new THREE.SphereGeometry(.2, 8, 6), VL.toi); mt.position.set(sg * .55, .2, 1.05); dau.add(mt); });
-    var mom = new THREE.Mesh(new THREE.SphereGeometry(.6, 14, 10), VL.vangNham); mom.position.set(0, -.3, 1.2); mom.scale.set(1.4, .8, 1); dau.add(mom);
-    dau.scale.setScalar(1.35); dau.position.y = R + .9; g.add(dau);
+    /* soát đợt 6: đầu rồng tạc liền khối nằm ngang trên đỉnh vòng (ảnh 1, 3): mõm dài hếch sang phải, mũi cuộn, hàm dưới, mắt lồi, gờ mày; 2 sừng + bờm nhọn vuốt ra sau trái; râu cuộn dưới mõm */
+    function ong2(x, y, z, A, B, ra, rb) { var px = x - A[0], py = y - A[1], pz = z - A[2], dx = B[0] - A[0], dy = B[1] - A[1], dz = B[2] - A[2], h = Math.max(0, Math.min(1, (px * dx + py * dy + pz * dz) / (dx * dx + dy * dy + dz * dz))); return Math.hypot(px - dx * h, py - dy * h, pz - dz * h) - (ra + (rb - ra) * h); }
+    var Y = R + .55;
+    function fd(x, y, z) { var az = Math.abs(z), d = S3.elip(x, y, z, -.35, Y + .35, 0, 1.25, .8, .95);
+      d = S3.hop(d, ong2(x, y, z, [.2, Y + .3, 0], [1.85, Y + .2, 0], .62, .45), .45);   /* mõm */
+      d = S3.hop(d, S3.elip(x, y, z, 2.05, Y + .45, 0, .48, .42, .55), .3);   /* mũi hếch */
+      d = S3.hop(d, ong2(x, y, z, [.1, Y - .25, 0], [1.6, Y - .35, 0], .4, .26), .3);   /* hàm dưới */
+      d = S3.hop(d, S3.cau(x, y, az, .45, Y + .85, .5, .3), .15);   /* mắt lồi */
+      d = S3.hop(d, ong2(x, y, az, [.0, Y + 1.0, .45], [.9, Y + 1.12, .42], .2, .14), .2);   /* gờ mày */
+      d = S3.hop(d, ong2(x, y, az, [-.55, Y + 1.0, .35], [-1.9, Y + 1.85, .5], .26, .1), .25);   /* sừng */
+      for (var i = 0; i < 3; i++) { var y0 = Y + .85 - i * .45; d = S3.hop(d, ong2(x, y, az, [-1.0, y0, .3], [-2.4 - i * .15, y0 + .6 - i * .3, .5], .42, .14), .3); }   /* bờm nhọn */
+      d = S3.hop(d, ong2(x, y, az, [1.5, Y - .3, .3], [2.0, Y - .75, .55], .14, .09), .15);   /* râu */
+      d = S3.tru(d, S3.cau(x, y, az, 2.25, Y + .55, .25, .13), .08);   /* lỗ mũi */
+      d = S3.tru(d, ong2(x, y, z, [.5, Y - .02, 0], [2.4, Y - .02, 0], .07, .07), .06);   /* đường miệng */
+      return d; }
+    var dau = khoiTac(fd, [-3.2, Y - 1.3, -1.5, 2.8, Y + 2.5, 1.5], VL.vangNham, 96, '9438dau'), dg = new THREE.Group(); dg.add(dau); dg.position.y = R; dau.position.y = -R; dg.scale.setScalar(1.3); g.add(dg);
+    [-1, 1].forEach(function (sg) { var mt = new THREE.Mesh(new THREE.SphereGeometry(.14, 10, 8), VL.toi); mt.position.set(.55, Y + .87 - R, sg * .74); dg.add(mt); });
     var b2 = new THREE.Group(); g.rotation.y = PI / 2 - .7; b2.add(g); return { g: b2, rong: 2.8, xo: 'ong', cao: 2 * R + 3.3, dung: true };   /* vòng xỏ dây qua lòng, hơi nghiêng cho thấy mặt + đầu rồng */
   };
 
@@ -1544,7 +1624,7 @@ window.taoCharm3D = function (THREE) {
   var VIEN_ANH = {"25782": {"c": [0.195, -0.116], "r": [3.634, 3.628, 3.613, 3.593, 3.574, 3.554, 3.53, 3.501, 3.467, 3.43, 3.386, 3.326, 3.241, 3.122, 2.976, 2.824, 2.691, 2.584, 2.504, 2.454, 2.426, 2.404, 2.384, 2.367, 2.353, 2.345, 2.349, 2.364, 2.387, 2.414, 2.446, 2.481, 2.518, 2.561, 2.62, 2.706, 2.812, 2.92, 3.019, 3.121, 3.243, 3.387, 3.543, 3.691, 3.807, 3.88, 3.912, 3.921, 3.923, 3.921, 3.912, 3.88, 3.807, 3.691, 3.543, 3.387, 3.243, 3.121, 3.019, 2.92, 2.812, 2.706, 2.62, 2.561, 2.518, 2.481, 2.446, 2.414, 2.387, 2.364, 2.349, 2.345, 2.353, 2.367, 2.384, 2.404, 2.426, 2.454, 2.504, 2.584, 2.691, 2.824, 2.976, 3.122, 3.241, 3.326, 3.386, 3.43, 3.467, 3.501, 3.53, 3.554, 3.574, 3.593, 3.613, 3.628]}, "23138": {"c": [0.359, -0.34], "r": [4.092, 4.084, 4.059, 4.022, 3.976, 3.919, 3.842, 3.739, 3.622, 3.501, 3.373, 3.23, 3.076, 2.926, 2.789, 2.666, 2.554, 2.449, 2.352, 2.27, 2.206, 2.16, 2.126, 2.105, 2.096, 2.097, 2.111, 2.149, 2.216, 2.304, 2.4, 2.498, 2.595, 2.695, 2.805, 2.93, 3.07, 3.225, 3.386, 3.539, 3.667, 3.768, 3.847, 3.907, 3.948, 3.971, 3.983, 3.988, 3.99, 3.988, 3.983, 3.971, 3.948, 3.907, 3.847, 3.768, 3.667, 3.539, 3.386, 3.225, 3.07, 2.93, 2.805, 2.695, 2.595, 2.498, 2.4, 2.304, 2.216, 2.149, 2.111, 2.097, 2.096, 2.105, 2.126, 2.16, 2.206, 2.27, 2.352, 2.449, 2.554, 2.666, 2.789, 2.926, 3.076, 3.23, 3.373, 3.501, 3.622, 3.739, 3.842, 3.919, 3.976, 4.022, 4.059, 4.084]}, "23772": {"c": [0.132, 0.217], "r": [2.629, 2.634, 2.648, 2.672, 2.706, 2.75, 2.805, 2.868, 2.938, 3.019, 3.112, 3.215, 3.331, 3.46, 3.596, 3.733, 3.857, 3.955, 4.01, 4.01, 3.963, 3.899, 3.84, 3.781, 3.707, 3.618, 3.526, 3.444, 3.372, 3.305, 3.239, 3.178, 3.119, 3.055, 2.985, 2.923, 2.884, 2.872, 2.884, 2.918, 2.979, 3.062, 3.157, 3.246, 3.316, 3.367, 3.4, 3.42, 3.426, 3.42, 3.4, 3.367, 3.316, 3.246, 3.157, 3.062, 2.979, 2.918, 2.884, 2.872, 2.884, 2.923, 2.985, 3.055, 3.119, 3.178, 3.239, 3.305, 3.372, 3.444, 3.526, 3.618, 3.707, 3.781, 3.84, 3.899, 3.963, 4.01, 4.01, 3.955, 3.857, 3.733, 3.596, 3.46, 3.331, 3.215, 3.112, 3.019, 2.938, 2.868, 2.805, 2.75, 2.706, 2.672, 2.648, 2.634]}};
   function vienAnh(ma) { var d = VIEN_ANH[ma], N = d.r.length; return function (x, y) { var dx = x - d.c[0], dy = y - d.c[1], t = Math.atan2(dy, dx); if (t < 0) t += PI * 2; var u = t / (PI * 2) * N, i = Math.floor(u) % N, q = u - Math.floor(u); return Math.hypot(dx, dy) - (d.r[i] * (1 - q) + d.r[(i + 1) % N] * q); }; }
   var _tl = null;
-  function ngocAnh(ma) { _tl = _tl || new THREE.TextureLoader(); var t = _tl.load('charm-anh/' + ma + '.webp'), b = _tl.load('charm-anh/' + ma + '-noi.webp'); t.colorSpace = THREE.SRGBColorSpace; b.colorSpace = THREE.NoColorSpace; t.anisotropy = 4;
+  function ngocAnh(ma) { _tl = _tl || new THREE.TextureLoader(); var t = _tl.load('charm-anh/' + ma + '.webp'), b = _tl.load('charm-anh/' + ma + '-noi.webp?v=7');   /* đợt 7: vân nổi đã làm mịn (bỏ lốm đốm ảnh) */ t.colorSpace = THREE.SRGBColorSpace; b.colorSpace = THREE.NoColorSpace; t.anisotropy = 4;
     var m = da(0xffffff, t, .05, .16); m.bumpMap = b; m.bumpScale = 2.2; m.roughness = .12; return m; }
   function docDay(g, dai) {   /* charm xỏ DỌC (user: mọi charm xỏ đều xỏ dọc): bỏ lỗ ngang cũ, khoét lỗ ở 2 đầu trục dài y rồi đặt nằm theo dây */
     g.children.slice().forEach(function (m) { if (m.material === VL.toi) g.remove(m); });
@@ -1774,6 +1854,12 @@ window.taoCharm3D = function (THREE) {
     var top = dinhY(p); var cao = moc(g, top - .2); return { g: g, rong: 1.6, xo: 'treo', cao: cao + top + 5 };
   };
   var lungHoaTim = lungLong(function (c) { c.strokeStyle = '#fff'; c.lineWidth = .4; c.beginPath(); c.arc(0, 0, 4.4, 0, 7); c.stroke(); for (var k = 0; k < 4; k++) { c.save(); c.rotate(k * PI / 2); c.beginPath(); c.ellipse(0, 1.3, .8, 1.3, 0, 0, 7); c.stroke(); c.restore(); } for (k = 0; k < 12; k++) { c.save(); c.rotate(k * PI / 6); c.beginPath(); c.moveTo(0, 2.8); c.lineTo(0, 4.4); c.stroke(); c.restore(); } });
+  var lungHoa6 = lungLong(function (c) {   /* 25811 lưng thật (ảnh 1): hoa 6 cánh giọt ở giữa, vòng tròn bao, 16 nan toả ra mép, 1 vòng sóng 8 thuỳ ở giữa nan */
+    c.strokeStyle = '#fff'; c.lineWidth = .36; function song(rr, a0) { c.beginPath(); for (var i = 0; i <= 160; i++) { var a = i / 160 * PI * 2, r = rr + .5 * Math.pow(Math.abs(Math.cos(4 * a + PI / 8)), .7); c[i ? 'lineTo' : 'moveTo'](Math.cos(a) * r, Math.sin(a) * r); } c.closePath(); c.stroke(); }
+    song(4.25); song(3.45); c.beginPath(); c.arc(0, 0, 2.6, 0, 7); c.stroke();
+    for (var k = 0; k < 16; k++) { var a = (k + .5) / 16 * PI * 2; c.beginPath(); c.moveTo(Math.cos(a) * 2.6, Math.sin(a) * 2.6); c.lineTo(Math.cos(a) * 4.9, Math.sin(a) * 4.9); c.stroke(); }
+    for (k = 0; k < 6; k++) { c.save(); c.rotate(k * PI / 3); c.beginPath(); c.moveTo(0, .25); c.bezierCurveTo(1.15, 1.0, .75, 2.35, 0, 2.35); c.bezierCurveTo(-.75, 2.35, -1.15, 1.0, 0, .25); c.stroke(); c.restore(); }
+    c.beginPath(); c.arc(0, 0, .35, 0, 7); c.stroke(); });
   DS['25811'] = function () {   /* nút hoa ngọc trai (xem kĩ 4 ảnh): dáng hoa 8 thuỳ đo từ ảnh; mép là 2 dây hạt (milgrain) nổi; giữa viền và ổ ngọc là vòng dây lộng cuộn chữ C/S (khe hở thật); ngọc trai to ổ trơn hơi lệch; lưng lộng hoa 4 cánh; thành lỗ đồng xu; xỏ qua 2 sườn */
     var fH = cungHoa(8, 4.55, .5, PI / 8), T = 3.6, PX = 0, PY = 0, RP = 2.85;   /* 8 thuỳ đều, đối xứng — ảnh chụp nghiêng nên viền đo bị méo */
     function vh(co) { return vienTu(function (x, y) { return fH(x, y) + co; }, 0, 0, 240); }
@@ -1785,7 +1871,7 @@ window.taoCharm3D = function (THREE) {
     for (var k = 0; k < 16; k++) { var a = (k + .5) / 16 * PI * 2; xoanDay(g, Math.cos(a) * (RP + 1.0), Math.sin(a) * (RP + 1.0), .08, .38, 1.1, a, k % 2 ? 1 : -1, .09, T / 2 - .45); }   /* cuộn nhỏ trong lòng */
     [RP + .3, RP + .55].forEach(function (rr, i) { g.add(chuoiHat(vienTu(function (x, y) { return Math.hypot(x, y) - rr; }, 0, 0, 80), i ? .12 : .15, VL.vang, T / 2 - .15)); });   /* 2 vòng dây hạt quanh ổ ngọc */
     oTrai(g, PX, PY, RP, T / 2 - .4);
-    var lung = new THREE.Mesh(new THREE.ShapeGeometry(new THREE.Shape(vh(.1)), 2), longVang(lungHoaTim)); var ps = lung.geometry.attributes.position, uv = []; for (var i = 0; i < ps.count; i++) uv.push(ps.getX(i) / 11 + .5, ps.getY(i) / 11 + .5); lung.geometry.setAttribute('uv', new THREE.Float32BufferAttribute(uv, 2));
+    var lung = new THREE.Mesh(new THREE.ShapeGeometry(new THREE.Shape(vh(.1)), 2), longVang(lungHoa6)); var ps = lung.geometry.attributes.position, uv = []; for (var i = 0; i < ps.count; i++) uv.push(ps.getX(i) / 11 + .5, ps.getY(i) / 11 + .5); lung.geometry.setAttribute('uv', new THREE.Float32BufferAttribute(uv, 2));
     lung.rotation.y = PI; lung.position.z = -T / 2; g.add(lung);
     var xs = p.map(function (q) { return q.x; }); [-1, 1].forEach(function (sg) { var l = new THREE.Mesh(new THREE.CircleGeometry(.6, 18), VL.toi); l.rotation.y = sg * PI / 2; l.position.x = sg > 0 ? Math.max.apply(null, xs) + .02 : Math.min.apply(null, xs) - .02; g.add(l); });
     return { g: g, rong: Math.max.apply(null, xs) - Math.min.apply(null, xs), xo: 'xuyen', cao: 10, uoc: 9.5 };
@@ -1929,18 +2015,26 @@ window.taoCharm3D = function (THREE) {
     return { g: g, rong: 8.4, xo: 'xuyen', cao: 8, uoc: 7.5 };
   };
 
-  DS['25874'] = function () {   /* bàn tính (xem 4 ảnh): khung chữ nhật bo góc dày; đai trên + đai dưới là 3 cánh sen phủ đá trắng; giữa rỗng: 2 trục dọc xâu hạt bàn tính (2 hạt trên, 2 hạt dưới mỗi trục) + thanh ngang; lưng khắc cánh sen; khoen + khoá lò xo → treo */
-    var g = new THREE.Group(), W = 2.4, H = 4.4, T = 2.0, i;
+  DS['25874'] = function () {   /* bàn tính (soát đợt 6, xem 4 ảnh): khung chữ nhật bo góc dày; trên + dưới là bông sen 5 cánh hình giọt (cánh giữa cao, mũi hướng lên) viền chỉ vàng, lòng đính đá; giữa là ô rỗng rộng: 1 trục dọc giữa + 2 thanh ngang, mỗi thanh 2 hạt bàn tính dẹt; lưng khắc viền cánh sen; khoen + khoá lò xo → treo */
+    var g = new THREE.Group(), W = 2.4, H = 4.4, T = 2.0, i, WX = 1.8, WY = 1.45;
     function cn(dx, dy, r) { return vienTu(function (x, y) { return Math.hypot(Math.max(Math.abs(x) - dx, 0), Math.max(Math.abs(y) - dy, 0)) - r; }, 0, 0, 160); }
-    g.add(tamLo(cn(W - .7, H - .7, .7), cn(W - 1.25, H - 2.2, .25), T, VL.vang));   /* khung + lòng rỗng giữa */
-    [-1, 1].forEach(function (sg) { var y0 = sg * (H - 1.0);
-      [[-1.05, 0], [0, .2], [1.05, 0]].forEach(function (q) { var la = new THREE.Mesh(new THREE.SphereGeometry(.65, 20, 14), VL.vang); la.scale.set(.85, 1.15, .4); la.position.set(q[0], y0 + sg * q[1], T / 2); la.rotation.z = -q[0] * .5 * sg; if (sg < 0) la.rotation.z += PI; g.add(la);
-        var ds = []; for (var k = 0; k < 4; k++) { var a = k / 4 * PI * 2; ds.push([q[0] + Math.cos(a) * .3, y0 + sg * q[1] + Math.sin(a) * .42, T / 2 + .25, 0, 0, 1]); } g.add(hangKc(.15, ds)); }); });   /* cánh sen phủ đá */
-    [-.6, .6].forEach(function (x) { var tr = new THREE.Mesh(new THREE.CylinderGeometry(.11, .11, 2 * H - 4.2, 8), VL.vang); tr.position.set(x, 0, 0); g.add(tr);
-      [-1.1, -.55, .55, 1.1].forEach(function (y) { var h = new THREE.Mesh(new THREE.SphereGeometry(.38, 16, 10), VL.vang); h.scale.y = .62; h.position.set(x, y + (y > 0 ? -.1 : .1), 0); g.add(h); }); });
-    var ngang = new THREE.Mesh(new THREE.BoxGeometry(2 * W - 2.4, .32, .5), VL.vang); g.add(ngang);
+    g.add(tamLo(cn(W - .7, H - .7, .7), cn(WX - .25, WY - .25, .25), T, VL.vang));   /* khung + ô rỗng giữa */
+    function giot(cx, cy, w, h, an) { var P = [], c = Math.cos(an), s2 = Math.sin(an); for (var j = 0; j < 48; j++) { var t = j / 48 * PI * 2, u = h * Math.cos(t) * .5 + h * .1, v = w * Math.sin(t) * Math.pow(Math.sin(t / 2), 1.2); P.push(new V2(cx + u * c - v * s2, cy + u * s2 + v * c)); } return P; }   /* cánh giọt: mũi ở góc an */
+    var CANH = [[0, .35, .85, 2.0, PI / 2], [-1.05, .05, .7, 1.5, PI / 2 + .55], [1.05, .05, .7, 1.5, PI / 2 - .55], [-1.75, -.4, .5, 1.0, PI / 2 + 1.15], [1.75, -.4, .5, 1.0, PI / 2 - 1.15]];
+    [H - 2.4, -(H - 1.35)].forEach(function (y0) { var ds = [];
+      CANH.forEach(function (q) { var P = giot(q[0], y0 + q[1], q[2], q[3], q[4]), cx = q[0] + Math.cos(q[4]) * q[3] * .1, cy = y0 + q[1] + Math.sin(q[4]) * q[3] * .1;
+        var la = khoi(P, cx, cy, hoSo(.3, .1), VL.vang); la.position.z = T / 2 + .3; g.add(la); g.add(ongVien(P, .07, VL.vang, T / 2 + .3));
+        for (var gx = -2; gx <= 2; gx++) for (var gy = -3; gy <= 3; gy++) { var px = cx + gx * .44 + (gy & 1) * .22, py = cy + gy * .38, inn = false; for (var a3 = 0, b3 = P.length - 1; a3 < P.length; b3 = a3++) { if ((P[a3].y > py) !== (P[b3].y > py) && px < (P[b3].x - P[a3].x) * (py - P[a3].y) / (P[b3].y - P[a3].y) + P[a3].x) inn = !inn; }
+          var dmin = 9; P.forEach(function (pp) { dmin = Math.min(dmin, Math.hypot(pp.x - px, pp.y - py)); }); if (inn && dmin > .24) ds.push([px, py, T / 2 + .34, 0, 0, 1]); }   /* phủ kín đá (pavé) */
+        var Pl = P.map(function (p2) { return new V2(p2.x, p2.y); }); var lv = ongVien(Pl, .06, VL.vang, -T / 2 - .02); g.add(lv); });   /* lưng khắc viền cánh */
+      g.add(hangKc(.21, ds)); });
+    var truc = new THREE.Mesh(new THREE.BoxGeometry(.38, 2 * WY, .55), VL.vang); g.add(truc);   /* trục dọc giữa */
+    [-.62, .62].forEach(function (y) { var th = new THREE.Mesh(new THREE.CylinderGeometry(.1, .1, 2 * WX, 10), VL.vang); th.rotation.z = PI / 2; th.position.y = y; g.add(th);
+      [-.95, .95].forEach(function (x) { var h2 = new THREE.Mesh(new THREE.SphereGeometry(.45, 18, 12), VL.vang); h2.scale.set(.6, 1, 1); h2.position.set(x, y, 0); g.add(h2);
+        var vh = khoen(.36, .06, VL.vang); vh.rotation.y = PI / 2; vh.position.set(x, y, 0); g.add(vh); }); });   /* hạt bàn tính dẹt xâu thanh ngang */
     var cao = moc(g, H); return { g: g, rong: 1.6, xo: 'treo', cao: cao + H };
   };
+
   DS['20308'] = function () {   /* bàn tính treo nhỏ (xem 4 ảnh): tấm vàng — đầu là mây như ý 3 thuỳ có cuộn, thân chữ nhật với 2 ô khoét, mỗi ô 2 cột hạt bàn tính (3 hạt) + thanh ngang; khoen trên mây → treo */
     var g = new THREE.Group(), T = 1.1, i;
     var f = function (x, y) { var d = Math.max(Math.abs(x) - 1.75, Math.abs(y + 1.0) - 1.7); [[-1.05, 1.0, .75], [0, 1.45, .8], [1.05, 1.0, .75]].forEach(function (q) { d = hop(d, tron(x, y, q[0], q[1], q[2]), .3); }); return d; };
@@ -1996,6 +2090,15 @@ window.taoCharm3D = function (THREE) {
     l([[0, -215], [0, 215]]); l([[-150, 0], [150, 0]]);
     [-1, 1].forEach(function (sy) { l([[-105, sy * 186], [105, sy * 186]]);
       [-1, 1].forEach(function (sx) { l([[sx * 46, sy * 56], [sx * 168, sy * 56], [sx * 168, sy * 132], [sx * 96, sy * 132]]); l([[sx * 46, sy * 0], [sx * 46, sy * 56]]); }); });
+  }
+  function veTho2(c, w, h, lw) {   /* 24030 chữ Thọ tròn đúng ảnh (soát đợt 6): trục đứng; 3 thanh ngang (giữa chạm vành, trên/dưới ngắn) + 2 thanh đứng ngắn tạo ô #; 4 móc cung tròn ôm theo vành, đầu móc gập vuông vào trong */
+    var cx = w / 2, cy = h / 2, s = w * .4; c.lineWidth = lw; c.lineCap = 'butt'; c.lineJoin = 'miter';
+    function l(pts) { c.beginPath(); pts.forEach(function (q, i) { c[i ? 'lineTo' : 'moveTo'](cx + q[0] * s, cy + q[1] * s); }); c.stroke(); }
+    l([[0, -1.2], [0, 1.2]]); l([[-.7, -.23], [.7, -.23]]); l([[-1.2, 0], [1.2, 0]]); l([[-.7, .23], [.7, .23]]);
+    [-1, 1].forEach(function (sx) { l([[sx * .36, -.23], [sx * .36, .23]]);
+      [-1, 1].forEach(function (sy) { var r = .74, a1 = Math.atan2(sy * .23, sx * .7), a2 = Math.atan2(sy * .7, sx * .2), d = Math.atan2(Math.sin(a2 - a1), Math.cos(a2 - a1)), pts = [];
+        for (var i = 0; i <= 24; i++) { var a = a1 + d * i / 24; pts.push([Math.cos(a) * r, Math.sin(a) * r]); }
+        pts.push([sx * .2, sy * .44], [sx * .45, sy * .44], [sx * .45, sy * .36]); l(pts); }); });
   }
   function matTrong(R, ve, wRim) { return vanLong(function (c, w, h) { c.save(); c.beginPath(); c.arc(w / 2, h / 2, w / 2 - 2, 0, 7); c.clip(); ve(c, w, h); c.restore(); c.lineWidth = wRim || 34; c.beginPath(); c.arc(w / 2, h / 2, w / 2 - (wRim || 34) / 2, 0, 7); c.stroke(); }); }
   function thanhTrong(kieu) { return vanLong(function (c, w, h) {   /* thành hạt trống (512 × 512, quấn 1 vòng × lap): 2 đai trên dưới + cửa sổ */
@@ -2118,7 +2221,7 @@ window.taoCharm3D = function (THREE) {
 
   DS['CHUAMA-ALtsCz'] = function () {   /* xuyên tỳ hưu (xem 4 ảnh): tỳ hưu ngọc băng trắng xanh nằm (MẶT NGỌC LẤY TỪ ẢNH THẬT), dáng gối chữ nhật bo tròn đối xứng; giỏ vàng: viền thừng trên + dưới, thành khoét ô dài + lỗ tròn, 4 chấu góc; lỗ xỏ ở 2 ĐẦU (xỏ dọc) */
     var g = new THREE.Group(), HX = 4.4, HY = 3.3, D = 4.4;
-    var ngoc = ngocAnh('CHUAMA-ALtsCz'); ngoc.map = null; ngoc.color.set(0xb4c2e4); ngoc.bumpScale = 6; ngoc.transmission = .3; ngoc.thickness = 2.5; ngoc.needsUpdate = true;   /* soát: bỏ màu ảnh lốm đốm → ngọc băng tím nhạt trong, nét chạm tỳ hưu bằng vân nổi */ [ngoc.bumpMap].forEach(function (t) { t.wrapS = t.wrapT = THREE.ClampToEdgeWrapping; t.repeat.set(1, .82); t.offset.set(-.034, .09); });   /* ảnh chụp nghiêng → giãn chiều cao cho đúng tỉ lệ thật */
+    var ngoc = ngocAnh('CHUAMA-ALtsCz'); ngoc.map = null; ngoc.color.set(0xb4c2e4); ngoc.bumpScale = 4; ngoc.transmission = .3; ngoc.thickness = 2.5; ngoc.needsUpdate = true;   /* soát: bỏ màu ảnh lốm đốm → ngọc băng tím nhạt trong, nét chạm tỳ hưu bằng vân nổi */ [ngoc.bumpMap].forEach(function (t) { t.wrapS = t.wrapT = THREE.ClampToEdgeWrapping; t.repeat.set(1, .82); t.offset.set(-.034, .09); });   /* ảnh chụp nghiêng → giãn chiều cao cho đúng tỉ lệ thật */
     function cn(dx, dy, r, n) { return vienTu(function (x, y) { return Math.hypot(Math.max(Math.abs(x) - dx, 0), Math.max(Math.abs(y) - dy, 0)) - r; }, 0, 0, n || 200); }
     var vk = cn(HX - 1.6, HY - 1.6, 1.6, 240);
     var v = vom(vk, 0, 0, 1.8, ngoc, null, 50); v.position.z = .6; g.add(v);
@@ -2707,7 +2810,7 @@ window.taoCharm3D = function (THREE) {
 
   DS['24030'] = function () {   /* chữ Thọ treo (xem 4 ảnh): tấm tròn vàng phun cát chạm lộng chữ Thọ tròn (圆寿) thủng 2 mặt, viền tròn dày; khoen hàn đỉnh + khoen lớn */
     var g = new THREE.Group(), R = 3.4, T = .9, p = vienTu(function (x, y) { return Math.hypot(x, y) - R; }, 0, 0, 120);
-    var tr = longMo(matTrong(R, function (c, w, h) { veTho(c, w, h, 30); }, 40));
+    var tr = longMo(matTrong(R, function (c, w, h) { veTho2(c, w, h, 34); }, 44));
     g.add(matPhang(p, 2 * R, tr, T / 2)); g.add(matPhang(p, 2 * R, tr, -T / 2, true));
     var thanh = new THREE.Mesh(new THREE.CylinderGeometry(R - .02, R - .02, T, 90, 1, true), hai(VL.vangMo)); thanh.rotation.x = PI / 2; g.add(thanh);
     [-1, 1].forEach(function (s) { var rim = new THREE.Mesh(new THREE.TorusGeometry(R - .12, .14, 10, 90), VL.vangMo); rim.position.z = s * T / 2; g.add(rim); });
@@ -3006,19 +3109,20 @@ window.taoCharm3D = function (THREE) {
 
   DS['23868'] = function () {   /* khánh bình an garnet (xem 4 ảnh): hạt dáng khoá như ý; mặt trước garnet tròn mài vòm giữa, quanh 1 vòng kim cương pavé, núm tròn trên đỉnh đính 1 viên; thành khoét vòm; lưng chữ Phúc 福 chạm lộng; lỗ xỏ 2 sườn */
     var g = new THREE.Group(), T = 3.2;
-    var f = function (x, y) { var d = oval(2.45, 1.75)(x, y - .1); d = hop(d, tron(x, y, -1.95, 1.1, .85), .4); d = hop(d, tron(x, y, 1.95, 1.1, .85), .4); d = hop(d, tron(x, y, -2.1, -.55, .65), .35); d = hop(d, tron(x, y, 2.1, -.55, .65), .35); d = hop(d, tron(x, y, 0, -1.75, .7), .5); return d; }, p = vienTu(f, 0, 0, 260);
+    var f = function (x, y) { var d = oval(2.35, 2.0)(x, y); [[1.0, 1.6, .8], [2.05, .7, .72], [2.05, -.55, .72], [1.0, -1.65, .78]].forEach(function (q) { [-1, 1].forEach(function (sg) { d = hop(d, tron(x, y, sg * q[0], q[1], q[2]), .65); }); }); return hop(d, tron(x, y, 0, -2.3, .45), .4); }, p = vienTu(f, 0, 0, 260);   /* soát đợt 6: khoá mây 8 thuỳ gần vuông (2 thuỳ mỗi cạnh) như ảnh 1, đáy giữa có mũi nhỏ — trước là dáng nơ bướm */
     g.add(thanhVien(vienTu(function (x, y) { return f(x, y) + .08; }, 0, 0, 260), T - .2, longVang(vanLong(function (c, w, h) { c.fillRect(0, 0, w, h); c.fillStyle = '#000'; for (var k = 0; k < 9; k++) { c.beginPath(); c.ellipse((k + .5) * w / 9, h * .58, w / 9 * .3, h * .28, 0, 0, 7); c.fill(); } })), 1));
     var mat = khoi(p, 0, 0, hoSo(.5, .14), VL.vang); mat.position.z = T / 2; g.add(mat);
     g.add(chuoiHat(vienTu(function (x, y) { return f(x, y) + .12; }, 0, 0, 260), .1, VL.vang, T / 2 + .03));
     g.add(matPhang(p, 7, longVang(vanLong(function (c, w, h) { c.font = '700 330px "Kaiti TC","STKaiti","Songti TC",serif'; c.textAlign = 'center'; c.textBaseline = 'middle'; c.lineWidth = 16; c.fillText('福', w / 2, h / 2 + 10); c.strokeText('福', w / 2, h / 2 + 10); })), -T / 2, true));
     g.add(ongVien(vienTu(function (x, y) { return f(x, y) + .14; }, 0, 0, 260), .16, VL.vang, -T / 2));   /* viền lưng */
-    var nen = new THREE.Mesh(new THREE.PlaneGeometry(3.4, 2.6), new THREE.MeshStandardMaterial({ color: 0xd9aa48, metalness: 1, roughness: .4, side: THREE.DoubleSide })); nen.position.z = -T / 2 + .7; g.add(nen);
-    var ds = []; for (var i = 0; i < 14; i++) { var a = i / 14 * PI * 2; ds.push([Math.cos(a) * 1.6, -.05 + Math.sin(a) * 1.5, T / 2 + .58, 0, 0, 1]); } g.add(hangKc(.32, ds));
+    var nen = new THREE.Mesh(new THREE.PlaneGeometry(4.6, 4.0), new THREE.MeshStandardMaterial({ color: 0xd9aa48, metalness: 1, roughness: .4, side: THREE.DoubleSide })); nen.position.z = -T / 2 + .7; g.add(nen);
+    var ds = []; for (var i = 0; i < 10; i++) { var a = i / 10 * PI * 2; ds.push([Math.cos(a) * 1.55, -.05 + Math.sin(a) * 1.5, T / 2 + .58, 0, 0, 1]); } for (i = 0; i < 16; i++) { var a2 = (i + .5) / 16 * PI * 2; ds.push([Math.cos(a2) * 2.45, -.05 + Math.sin(a2) * 2.2, T / 2 + .55, 0, 0, 1]); } g.add(hangKc(.3, ds));   /* 2 vòng pavé */
+    g.add(ongVien(vienTu(function (x, y) { return f(x, y) + .42; }, 0, 0, 260), .09, VL.vang, T / 2 + .52));   /* gờ chỉ trong mép */
     var o = new THREE.Mesh(new THREE.TorusGeometry(1.08, .14, 10, 48), VL.vang); o.position.set(0, -.05, T / 2 + .6); g.add(o);
     var v = vien(1.0, daGarnet, .8); v.position.set(0, -.05, T / 2 + .5); g.add(v);
-    var nm = new THREE.Mesh(new THREE.CylinderGeometry(.45, .45, .4, 20), VL.vang); nm.rotation.x = PI / 2; nm.position.set(0, 1.95, T / 2 + .45); g.add(nm); g.add(hangKc(.3, [[0, 1.95, T / 2 + .68, 0, 0, 1]]));
+    var nm = new THREE.Mesh(new THREE.CylinderGeometry(.45, .45, .4, 20), VL.vang); nm.rotation.x = PI / 2; nm.position.set(0, 2.5, T / 2 + .3); g.add(nm); g.add(hangKc(.3, [[0, 2.5, T / 2 + .53, 0, 0, 1]]));
     [-1, 1].forEach(function (s) { var x0 = 0; while (f(x0 * s, 0) < 0 && x0 < 9) x0 += .02; var l = new THREE.Mesh(new THREE.CircleGeometry(.5, 18), VL.toi); l.rotation.y = s * PI / 2; l.position.x = s * (x0 + .02); g.add(l); });
-    return { g: g, rong: 5.6, xo: 'xuyen', cao: 4.8 };
+    return { g: g, rong: 6.2, xo: 'xuyen', cao: 5.6 };
   };
 
   DS['24136'] = function () {   /* hoa mai móc (xem 4 ảnh): hoa mai 5 cánh vàng phun cát, cánh có gân toả, mép viền chỉ; nhuỵ ngọc lục tròn + 5 hạt nhị vàng; sau lưng là móc chữ U (khoá móc) ôm vào dây, đỉnh có khoen tròn — hoa nằm áp lên dây như charm xỏ */
@@ -3067,21 +3171,26 @@ window.taoCharm3D = function (THREE) {
   }
   function timF(k) { return function (x, y) { x /= k; y /= k; return hop(hop(tron(x, y, -.95, .55, 1.15), tron(x, y, .95, .55, 1.15), .3), daGiac([[-1.95, .25], [1.95, .25], [0, -2.25]])(x, y) - .25, .35) * k; }; }   /* trái tim */
 
-  DS['24142'] = function () {   /* mây lửa ngọc (xem 4 ảnh): tấm chỉ vàng dáng mây lửa cuộn nhiều múi, đuôi xoắn vút lên nối khoen; viền hạt bi, trong là các đường chỉ cuộn, khe lộng giữa các cuộn; giữa ngọc bích xanh vàng tròn mài vòm trong ổ viền hạt; lưng tấm trơn khoét 4 lỗ */
-    var g = new THREE.Group(), T = 1.1;
-    var f = function (x, y) { var d = tron(x, y, -1.45, -.05, 1.15); d = hop(d, tron(x, y, 1.45, -.05, 1.15), .5); d = hop(d, tron(x, y, 0, -1.3, 1.15), .5); d = hop(d, tron(x, y, 0, .5, 1.1), .5); d = hop(d, tron(x, y, -1.0, 1.1, .55), .3); d = hop(d, tron(x, y, 1.0, 1.1, .55), .3); d = hop(d, daGiac([[-.3, 1.3], [.35, 1.3], [.15, 3.3], [-.25, 3.0]])(x, y) - .12, .45); return d; }   /* mây lửa: 4 thùy cuộn + 2 lưỡi lửa vai + đuôi lửa vút lên */, p = vienTu(f, 0, 0, 260);
-    var mt = vanRieng(function (c, X, Y, k) { c.strokeStyle = '#fff'; c.lineCap = 'round'; c.lineWidth = .16 * k;
-      for (var i = 0; i < 6; i++) { var a = PI / 2 + PI / 6 + i * PI / 3, cx = Math.cos(a) * 1.65, cy = -.2 + Math.sin(a) * 1.65; c.beginPath(); for (var t = 0; t <= 1; t += .03) { var b = a + PI + t * PI * 2 * 1.2, r = .55 * (1 - t * .7); c.lineTo(X(cx + Math.cos(b) * r), Y(cy + Math.sin(b) * r)); } c.stroke(); }
-      c.beginPath(); c.moveTo(X(0), Y(1.1)); c.quadraticCurveTo(X(.35), Y(2.1), X(-.1), Y(3.0)); c.stroke(); }, 2.6);
-    mt.roughness = .4;
-    var b = khoi(p, 0, 0, hoSo(T, .25), mt); b.position.z = T / 2; g.add(b);
-    g.add(chuoiHat(vienTu(function (x, y) { return f(x, y) + .12; }, 0, 0, 260), .1, VL.vang, T / 2 + .03));
-    [[1, 1], [1, -1], [-1, 1], [-1, -1]].forEach(function (q) { var k2 = new THREE.Mesh(new THREE.CircleGeometry(.22, 16), new THREE.MeshStandardMaterial({ color: 0x5a3e12, metalness: .6, roughness: .7 })); k2.scale.set(1.5, .6, 1); k2.rotation.z = q[0] * q[1] * .8; k2.position.set(q[0] * 1.35, -.2 + q[1] * 1.1, T / 2 + .01); g.add(k2); });   /* khe lộng */
-    var o = new THREE.Mesh(new THREE.TorusGeometry(1.0, .13, 10, 40), VL.vang); o.position.set(0, -.2, T / 2 + .1); g.add(o);
-    g.add(chuoiHat(vienTu(function (x, y) { return Math.hypot(x, y + .2) - 1.2; }, 0, -.2, 60), .08, VL.vang, T / 2 + .08));
-    var v = vien(.92, daTrong(0x9cc84a, vanMay, .12, .36, .3), .65); v.position.set(0, -.2, T / 2); g.add(v);
-    var yd = mocDon(g, 3.2);
-    return { g: g, rong: 5.4, xo: 'treo', cao: yd + 2.9 };
+  DS['24142'] = function () {   /* mây lửa ngọc (soát đợt 6, xem 4 ảnh): 5 cánh lửa xoáy chong chóng (lệch, cùng chiều) quanh ổ ngọc, mỗi cánh phồng có viền hạt riêng; khe lộng hình lưỡi liềm giữa các cánh (thủng ra lưng); đuôi lửa uốn chữ S vút lên khoen; lưng phẳng */
+    var g = new THREE.Group(), T = 1.0, CY = -.2, L = [];
+    for (var i = 0; i < 5; i++) { var a = PI / 2 + .75 + i * PI * 2 / 5; L.push({ x: Math.cos(a) * 1.75, y: CY + Math.sin(a) * 1.75, t: a + PI / 2 + .5, A: 1.45, B: .95, a: a }); }
+    function lob(x, y, q) { var c = Math.cos(q.t), s2 = Math.sin(q.t), u = (x - q.x) * c + (y - q.y) * s2, v = -(x - q.x) * s2 + (y - q.y) * c; return Math.hypot(u / q.A, v / q.B); }
+    function el(x, y, q) { return (lob(x, y, q) - 1) * q.B; }
+    function f2(x, y) { var d = Math.hypot(x, y - CY) - 1.3;
+      L.forEach(function (q) { d = hop(d, el(x, y, q), .3); });
+      var S = [[-.3, 1.9, .45], [.2, 2.55, .34], [.0, 3.1, .28], [-.3, 3.45, .24]]; S.forEach(function (c2) { d = hop(d, tron(x, y, c2[0], c2[1], c2[2]), .35); });   /* đuôi lửa S */
+      L.forEach(function (q) { var a = q.a + PI / 5 + .15, hx = Math.cos(a) * 1.55, hy = CY + Math.sin(a) * 1.55, c = Math.cos(a + PI / 2 + .3), s2 = Math.sin(a + PI / 2 + .3), u = (x - hx) * c + (y - hy) * s2, v = -(x - hx) * s2 + (y - hy) * c;
+        d = Math.max(d, -(Math.hypot(u / .42, v / .15) - 1) * .15); });   /* khe lộng */
+      return d; }
+    function top(x, y) { var h = 0; L.forEach(function (q) { var e = lob(x, y, q); if (e < 1) h = Math.max(h, .32 * (1 - e * e)); }); return T / 2 + h; }
+    function f(x, y, z) { var a2 = f2(x, y), dz = z >= 0 ? z - top(x, y) : -z - T / 2, r = .18; return Math.hypot(Math.max(a2 + r, 0), Math.max(dz * .85 + r, 0)) + Math.min(Math.max(a2 + r, dz * .85 + r), 0) - r; }
+    g.add(khoiTac(f, [-3.6, -3.9, -T / 2 - .1, 3.6, 3.7, T / 2 + .45], VL.vangMo, 130, '24142'));
+    L.forEach(function (q) { g.add(chuoiHat(vienTu(function (x, y) { return el(x, y, q) + .1; }, q.x, q.y, 70), .075, VL.vang, T / 2 + .08)); });   /* viền hạt từng cánh */
+    var o = new THREE.Mesh(new THREE.TorusGeometry(1.0, .13, 10, 40), VL.vang); o.position.set(0, CY, T / 2 + .3); g.add(o);
+    var de = new THREE.Mesh(new THREE.CylinderGeometry(1.05, 1.1, .4, 40), VL.vang); de.rotation.x = PI / 2; de.position.set(0, CY, T / 2 + .1); g.add(de);
+    var v = vien(.92, daTrong(0x9cc84a, vanMay, .12, .36, .3), .65); v.position.set(0, CY, T / 2 + .25); g.add(v);
+    var yd = mocDon(g, 3.55);
+    return { g: g, rong: 6.4, xo: 'treo', cao: yd + 2.9 };
   };
 
   DS['24206'] = function () {   /* thỏi vàng ngọc (xem 4 ảnh): tấm thỏi vàng như ý — mép trên lõm giữa, 2 tai cuộn tròn 2 bên, đáy bo tròn; vàng phun cát; giữa ngọc bích xanh vàng tròn trong ổ; 2 bên mỗi bên 1 đồng xu lỗ vuông + cuộn mây chạm; viền chỉ; lưng chữ Phúc; khoen hàn đỉnh + khoen lớn */
@@ -3240,7 +3349,7 @@ window.taoCharm3D = function (THREE) {
   DS['A55891'] = function () {   /* Di Lặc hổ phách (xem 4 ảnh): tượng Di Lặc ngồi chạm trên đá vàng cam trong (MẶT CHẠM LẤY TỪ ẢNH THẬT), dáng đầu tròn trên bụng bầu to, cân xứng; ổ vàng ôm sát viền hạt bi; lưng vàng chạm lộng mây cuộn; khoen hàn đỉnh + khoen lớn */
     var g = new THREE.Group(), T = 2.6;
     var f = function (x, y) { return hop(oval(4.3, 3.2)(x, y + 1.4), oval(2.5, 2.3)(x, y - 2.1), 1.2); }, vk = vienTu(f, 0, 0, 300);
-    var ngoc = ngocAnh('A55891'); ngoc.map = null; ngoc.color.set(0xf4ad2c); ngoc.bumpScale = 3.6; ngoc.transmission = .3; ngoc.thickness = 2; ngoc.attenuationColor = new THREE.Color(0xf0a020); ngoc.attenuationDistance = 3; ngoc.needsUpdate = true;   /* soát: bỏ màu ảnh lốm đốm → ngọc vàng mật ong trong, nét chạm giữ bằng vân nổi */
+    var ngoc = ngocAnh('A55891'); ngoc.map = null; ngoc.color.set(0xf4ad2c); ngoc.bumpScale = 3; ngoc.transmission = .3; ngoc.thickness = 2; ngoc.attenuationColor = new THREE.Color(0xf0a020); ngoc.attenuationDistance = 3; ngoc.needsUpdate = true;   /* soát: bỏ màu ảnh lốm đốm → ngọc vàng mật ong trong, nét chạm giữ bằng vân nổi */
     var v = vom(vk, 0, 0, 1.6, ngoc, null, 50); v.position.z = T / 2 - .3; g.add(v);
     var vo = vienTu(function (x, y) { return f(x, y) - .35; }, 0, 0, 300), de = khoi(vo, 0, 0, hoSo(T, .4), VL.vang); de.position.z = T / 2 - .05; g.add(de);
     g.add(chuoiHat(vienTu(function (x, y) { return f(x, y) - .42; }, 0, 0, 300), .16, VL.vang, -T / 2 + .25));
@@ -3329,6 +3438,17 @@ window.taoCharm3D = function (THREE) {
       if (j < ny - 1 && v0 !== (V[id(i, j + 1, k)] < 0)) quad(dinh[id(i - 1, j, k - 1)], dinh[id(i - 1, j, k)], dinh[id(i, j, k)], dinh[id(i, j, k - 1)], !v0);
       if (k < nz - 1 && v0 !== (V[id(i, j, k + 1)] < 0)) quad(dinh[id(i - 1, j - 1, k)], dinh[id(i, j - 1, k)], dinh[id(i, j, k)], dinh[id(i - 1, j, k)], !v0); }
     var uv = [], ly = bb[4] - bb[1]; for (i = 0; i < pos.length; i += 3) { if (uvF) { var q = nor[i + 2] > .05 ? uvF(pos[i], pos[i + 1]) : [.004, .004]; uv.push(q[0], q[1]); }   /* vân ảnh chỉ ở mặt trước; lưng trơn */ else uv.push(Math.atan2(pos[i + 2], pos[i]) / (2 * PI) + .5, (pos[i + 1] - bb[1]) / ly); }
+    (function () {   /* đợt 7: làm mượt Taubin (không co khối) bỏ bậc răng cưa của lưới, rồi tính lại pháp tuyến từ SDF với bước rộng → bề mặt bóng đều */
+      var nv = pos.length / 3, ke = []; for (var a = 0; a < nv; a++) ke.push([]);
+      for (var t = 0; t < idx.length; t += 3) for (var e = 0; e < 3; e++) { var u = idx[t + e], w = idx[t + (e + 1) % 3]; ke[u].push(w); ke[w].push(u); }
+      var P = Float64Array.from(pos), Q = new Float64Array(P.length);
+      for (var lan = 0; lan < 6; lan++) { var lam = lan % 2 ? -.53 : .5;
+        for (a = 0; a < nv; a++) { var L = ke[a], n2 = L.length; if (!n2) { Q[3 * a] = P[3 * a]; Q[3 * a + 1] = P[3 * a + 1]; Q[3 * a + 2] = P[3 * a + 2]; continue; } var mx = 0, my = 0, mz = 0; for (var b = 0; b < n2; b++) { mx += P[3 * L[b]]; my += P[3 * L[b] + 1]; mz += P[3 * L[b] + 2]; }
+          Q[3 * a] = P[3 * a] + lam * (mx / n2 - P[3 * a]); Q[3 * a + 1] = P[3 * a + 1] + lam * (my / n2 - P[3 * a + 1]); Q[3 * a + 2] = P[3 * a + 2] + lam * (mz / n2 - P[3 * a + 2]); }
+        var tg = P; P = Q; Q = tg; }
+      for (a = 0; a < nv; a++) { var px = P[3 * a], py = P[3 * a + 1], pz = P[3 * a + 2], e3 = h * .9;
+        var gx = f(px + e3, py, pz) - f(px - e3, py, pz), gy = f(px, py + e3, pz) - f(px, py - e3, pz), gz = f(px, py, pz + e3) - f(px, py, pz - e3), gl = Math.sqrt(gx * gx + gy * gy + gz * gz) || 1;
+        pos[3 * a] = px; pos[3 * a + 1] = py; pos[3 * a + 2] = pz; nor[3 * a] = gx / gl; nor[3 * a + 1] = gy / gl; nor[3 * a + 2] = gz / gl; } })();
     var geo = new THREE.BufferGeometry(); geo.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3)); geo.setAttribute('normal', new THREE.Float32BufferAttribute(nor, 3)); geo.setAttribute('uv', new THREE.Float32BufferAttribute(uv, 2)); geo.setIndex(idx);
     return geo;
   }
@@ -3350,7 +3470,7 @@ window.taoCharm3D = function (THREE) {
       if (a + b < .5) continue;
       g.push([cx + dx * a, cy + dy * a, cz + dz * a, cx - dx * b, cy - dy * b, cz - dz * b, (o.r || .035) * (.5 + rnd())]); }
     if (o.key && !daCo) _soi[o.key + so] = g.slice();
-    var im = new THREE.InstancedMesh(new THREE.CylinderGeometry(1, 1, 1, 5, 1, true), o.vl || new THREE.MeshStandardMaterial({ color: o.mau || 0xd99a1c, metalness: .6, roughness: .3, emissive: o.mau || 0xd99a1c, emissiveIntensity: .25 }), g.length);
+    var im = new THREE.InstancedMesh(new THREE.CylinderGeometry(1, 1, 1, 5, 1, true), o.vl || new THREE.MeshStandardMaterial({ color: o.mau || 0xd99a1c, metalness: .6, roughness: .3, emissive: o.mau || 0xd99a1c, emissiveIntensity: .45 }), g.length);
     g.forEach(function (s, i) { A.set(s[0], s[1], s[2]); B.set(s[3], s[4], s[5]); var d = B.clone().sub(A), L = d.length(); q.setFromUnitVectors(Y, d.normalize());
       m4.compose(A.clone().add(B).multiplyScalar(.5), q, new V3(s[6], L, s[6])); im.setMatrixAt(i, m4); });
     return im; }
@@ -3359,12 +3479,12 @@ window.taoCharm3D = function (THREE) {
   /* rãnh khắc mềm (cộng vào SDF): sâu d, rộng w, theo khoảng cách t tới đường */
   function ranh(t, w, d) { return d * Math.exp(-(t * t) / (w * w)); }
   var DA_TOC = {   /* chất thạch anh tóc theo ảnh: thân đá có màu + trong vừa (không trong như thuỷ tinh), sợi tóc thật bên trong */
-    vangChanh: function () { return { vl: daSuot({ mau: 0xffc62a, tr: .42, nhuom: 0xffd65a, xa: 4 }), soi: { mau: 0xe0a72c, so: 190, r: .021, dai: 3.5 } }; },
-    vangCam: function () { return { vl: daSuot({ mau: 0xffa21e, tr: .4, nhuom: 0xffc050, xa: 3.5 }), soi: { mau: 0xd8961e, so: 190, r: .021, dai: 3.5 } }; },
-    baMia: function () { return { vl: daSuot({ kinh: true, mau: 0xfff3d6, dac: .32 }), soi: { mau: 0xd08a20, so: 24, r: .06, dai: 4.5 } }; },
-    xanh: function () { return { vl: daSuot({ mau: 0xd3ebbf, tr: .62, nhuom: 0xe2f2d4, xa: 9 }), soi: { mau: 0x2b4a1e, so: 55, r: .035, dai: 4.5 } }; },
-    xanhDam: function () { return { vl: daSuot({ mau: 0xb3d69c, tr: .5, nhuom: 0xcfe6bd, xa: 6 }), soi: { mau: 0x1f3a15, so: 80, r: .04, dai: 4.5 } }; },
-    trongVang: function () { return { vl: daSuot({ kinh: true, mau: 0xfff8ea, dac: .3 }), soi: { mau: 0xd8a024, so: 120, r: .022, dai: 4 } }; }
+    vangChanh: function () { return { vl: daSuot({ mau: 0xffd84a, tr: .78, nhuom: 0xffd65a, xa: 4 }), soi: { mau: 0xe0a72c, so: 190, r: .013, dai: 3.5 } }; },
+    vangCam: function () { return { vl: daSuot({ mau: 0xffc63a, tr: .74, nhuom: 0xffcf4a, xa: 4 }), soi: { mau: 0xe8a62e, so: 190, r: .013, dai: 3.5 } }; },
+    baMia: function () { return { vl: daSuot({ kinh: true, mau: 0xf3e2b8, dac: .55 }), soi: { mau: 0xd08a20, so: 24, r: .027, dai: 4.5 } }; },
+    xanh: function () { return { vl: daSuot({ mau: 0xd3ebbf, tr: .78, nhuom: 0xe2f2d4, xa: 9 }), soi: { mau: 0x2b4a1e, so: 55, r: .024, dai: 4.5 } }; },
+    xanhDam: function () { return { vl: daSuot({ mau: 0xb3d69c, tr: .7, nhuom: 0xcfe6bd, xa: 6 }), soi: { mau: 0x1f3a15, so: 80, r: .04, dai: 4.5 } }; },
+    trongVang: function () { return { vl: daSuot({ kinh: true, mau: 0xfff8ea, dac: .3 }), soi: { mau: 0xd8a024, so: 120, r: .015, dai: 4 } }; }
   };
   var ngocLam = function () { return daSuot({ mau: 0x74ccb8, tr: .5, nhuom: 0xa8e4d6, xa: 4, nham: .12, ior: 1.66 }); };   /* ngọc lam xanh: trong vừa, phát sáng */
   function daToc(f, bb, kieu, n, giong, key, H) { var c = (typeof kieu === 'string' ? DA_TOC[kieu] : kieu)(), g = new THREE.Group(); g.add(khoiTac(f, bb, H ? vanThat(H.ten, c.vl) : c.vl, n, key, H && H.uv)); var s = Object.assign({ hatGiong: giong || 7, key: key }, c.soi); g.add(soiToc(f, bb, s)); return g; }
@@ -3375,18 +3495,24 @@ window.taoCharm3D = function (THREE) {
   /* tỳ hưu tạc đá (3641, 22654, 4064, 26101) — xem 4 ảnh cỡ lớn: con tỳ hưu NẰM PHỤC tạc tròn; MÔNG là phần to và cao nhất (2 bầu tròn, rãnh giữa,
      đuôi cuộn dưới), ĐẦU thấp hơn ở phía trước: bờm/lưng có các ngấn ngang, 2 tai nhô 2 bên, mặt có mắt lồi + mõm, 2 chân trước duỗi dưới cằm.
      Trục y = đầu(+)→đuôi(−) (lỗ xỏ dọc), z = lưng (mặt nhìn chính diện), x = bề ngang. Cỡ thật ≈ dài 10 × ngang 7 × cao 6,5 ly. */
-  function tyHuuKhoi(kieu, vuong) {   /* soát lần 2: thân lấy từ hình thật đo ảnh 22654 (chính diện nhìn từ lưng + nhìn ngang) — dài 10 × ngang 7,6 × cao 6,8 */
-    var H = hinhThat('tyHuu', { mu: 2.4 }), f0 = H.f, Zt = H.mat;
-    function f(x, y, z) { var ax = Math.abs(x), d = f0(x, y, z);
-      d = S3.hop(d, S3.hop(S3.cau(x, y, z, -1.55, -2.0, .55, 2.05), S3.cau(x, y, z, 1.55, -2.0, .55, 2.05), .35), .5);   /* 2 BẦU MÔNG phồng tròn như ảnh */
-      d += ranh(x, .28, .75) * Math.max(0, Math.min(1, (-.6 - y) / .8)) * Math.max(0, Math.min(1, z + 1.2));   /* rãnh SÂU giữa 2 mông (ảnh: 2 bầu tách rõ) */
-      d += ranh(y - 1.0, .3, .35) * Math.max(0, Math.min(1, z + .8));   /* eo cổ tách đầu và mông */
-      if (vuong && z > -.8 && y > 1.6 && y < 4.6 && ax < 2.1) { var ph = (y - 1.6) / .6; d += ranh(ph - Math.round(ph), .11, .2) * Math.min(1, (z + .8) / .8); }   /* 4064: ngấn khối đầu vuông (các mẫu khác lấy vân bờm từ ảnh) */
-            d -= .35 * Math.exp(-(Math.pow(ax - 1.9, 2) / .12 + Math.pow(y - 3.0, 2) / .5)) * Math.max(0, Math.min(1, z + 1));   /* 2 tai nhô 2 bên đầu */
-      d += ranh(Math.hypot(x, y + 4.3) - .5, .1, .2) * (z < 1.2 ? 1 : 0);   /* đuôi cuộn */
-      return Math.max(d, -S3.xuyen(x, z, 0, -.3, .45)); }
-    var g = daToc(f, H.bb, kieu, 86, 31, 'tyHuu7' + !!vuong, H);
-    return { g: xoDoc(g, 5.05), rong: 10, xo: 'ong', cao: 6.6, uoc: 6.6, dungXem: true };
+  function cl01(t) { return Math.max(0, Math.min(1, t)); }
+  function hopBo(px, py, pz, bx, by, bz, r) { var qx = Math.abs(px) - bx + r, qy = Math.abs(py) - by + r, qz = Math.abs(pz) - bz + r; return Math.hypot(Math.max(qx, 0), Math.max(qy, 0), Math.max(qz, 0)) + Math.min(Math.max(qx, qy, qz), 0) - r; }   /* hộp bo tròn */
+  function tyHuuKhoi(kieu, vuong) {   /* đợt 7 (user: sần sùi, vẹo vọ) — TẠC LẠI ĐỐI XỨNG, mặt đánh bóng: nhìn từ lưng — đầu tròn trên (2 tai, 3 gờ bờm cuộn, mắt + mũi ở đỉnh), eo cổ, 2 bầu mông to dưới tách bởi rãnh sống lưng, đuôi cuộn; bụng có 4 chân thu. Xỏ dọc đầu → đuôi */
+    function f(x, y, z) { var ax = Math.abs(x);
+      var dau = vuong ? hopBo(x, y - 2.2, z - .1, 2.15, 1.75, 1.9, .8) : S3.elip(x, y, z, 0, 2.15, .15, 2.4, 1.95, 2.05);
+      dau = S3.hop(dau, S3.elip(ax, y, z, 2.15, 3.0, .05, .55, .8, .45), .35);   /* 2 tai */
+      var mong = S3.hop(S3.elip(ax, y, z, 1.4, -1.9, 0, 2.0, 2.05, 1.95), S3.elip(x, y, z, 0, -.6, -.1, 2.3, 2.0, 1.85), .8), d = S3.hop(dau, mong, .55);
+      d = S3.hop(d, S3.elip(ax, y, z, 1.25, .5, -1.35, .7, 1.0, .55), .4); d = S3.hop(d, S3.elip(ax, y, z, 1.7, -2.7, -1.25, .7, .9, .55), .4);   /* 4 chân thu dưới bụng */
+      d = S3.hop(d, S3.cau(ax, y, z, .95, 3.45, 1.05, .42), .22); d = S3.hop(d, S3.elip(x, y, z, 0, 3.95, .45, .72, .38, .5), .25);   /* mắt lồi + mũi */
+      d += ranh(y - .55, .35, .3) * cl01(z + 1.2);   /* eo cổ */
+      d += ranh(x, .28, .42) * cl01((-1.0 - y) / .6) * cl01(z + .3);   /* rãnh sống lưng giữa 2 mông */
+      if (vuong) { if (y > 1.1 && y < 3.6) { var ph = (y - 1.1) / .62; d += ranh(ph - Math.round(ph), .1, .14) * cl01(z); } }   /* 4064: đầu khối vuông khắc ngấn */
+      else for (var i = 0; i < 3; i++) d -= .13 * Math.exp(-Math.pow((Math.hypot(x, y - 1.15) - (1.25 + i * .5)) / .14, 2)) * cl01((y - 1.1) * 2) * cl01(z);   /* 3 gờ bờm cuộn trên lưng đầu */
+      d -= .14 * Math.exp(-Math.pow((Math.hypot(x, y + 3.15) - .5) / .13, 2)) * cl01(z - .6);   /* đuôi cuộn */
+      d += ranh(Math.hypot(ax - .95, y - 3.45) - .5, .06, .1) * cl01(z);   /* vành mắt */
+      return Math.max(d, -S3.xuyen(x, z, 0, .05, .45)); }
+    var g = daKhoi(f, [-4.0, -4.6, -2.6, 4.0, 4.7, 2.7], kieu, 110, 31, 'tyHuu9' + !!vuong);
+    return { g: xoDoc(g, 4.05), rong: 10, xo: 'ong', cao: 6.6, uoc: 6.6, dungXem: true };
   }
 
 
@@ -3407,54 +3533,52 @@ window.taoCharm3D = function (THREE) {
   /* hồ ly nhỏ cuộn tròn tạc đá (3031, 24980, 24980~X51SyH, 5179, 377) — xem ảnh cỡ lớn: mặt cáo hình chữ V/tim lớn ở giữa-trên (mõm nhọn chúc xuống),
      2 tai nhọn dựng; thân tròn bao quanh, đuôi to cuộn từ bên phải vòng xuống dưới trái, 2 chân trước ló dưới mõm; nhìn ngang thấp, vồng tròn cả 2 mặt.
      Lỗ xỏ DỌC từ đỉnh đầu xuống đáy (thấy rõ trong ảnh 24980~X51SyH). Cỡ ≈ 8 × 8,5 × 5 ly. */
-  function hoLyKhoi(kieu) {   /* soát lần 2: thân lấy từ hình thật đo ảnh 3031 (chính diện + nằm ngang) — cao 8,6 × ngang 7,1 × dày 5,1; chạm mặt cáo chữ V, mắt, đuôi cuộn */
-    var H = hinhThat('hoLy', { mu: 2.2 }), f0 = H.f, Zt = H.mat;
-    var mat = daGiacSdf([[-2.1, 3.9], [-1.65, 4.32], [-.98, 4.05], [0, 3.4], [.98, 4.05], [1.65, 4.32], [2.1, 3.9], [1.9, 1.75], [.68, -.44], [0, -1.94], [-.68, -.44], [-1.9, 1.75]]);   /* viền mặt cáo + 2 tai dò từ ảnh 3031 */
-    function f(x, y, z) { var ax = Math.abs(x), d = f0(x, y, z);
-      var zt = Zt(y); if (zt !== null) d = S3.hop(d, Math.max(mat(x, y), Math.abs(z - (zt - .5)) - .85), .3);   /* KHỐI MẶT CÁO nổi cao trên thân */
-      d = S3.tru(d, Math.max(ax - (y - 3.3) * .6, 3.3 - y), .12);   /* khe chữ V giữa 2 tai */
-      if (zt !== null && z > zt - .4) d += ranh(Math.hypot((ax - .72) / 1.6, (y - 2.0) / .5) - .5, .09, .3) + ranh(Math.hypot((ax - .95) / .7, (y - 3.6) / .9) - .45, .08, .22);   /* mắt xếch + lòng tai */
-      if (z > -.3) {
-        d -= .5 * Math.exp(-(x * x / .8 + Math.pow(y - 1.7, 2) / 2.2)) * Math.max(0, Math.min(1, z + .5));   /* khối mặt cáo nổi cao */
-        var vx = Math.abs(ax - (.08 + .62 * (y + .2))); d += ranh(vx, .13, .22) * (y > -.2 && y < 3.4 ? 1 : 0);   /* viền mặt chữ V (chi tiết mắt/lông lấy từ vân ảnh) */
-        d += ranh(ax - .02, .05, .08) * (y > 2.8 ? 1 : 0);   /* khe giữa 2 tai */
-        d += ranh(Math.hypot(x - 1.85, y + 1.6) - 1.25, .12, .2) * (x > .7 ? 1 : 0);   /* đường cuộn đuôi */
-        d += ranh(y + 2.9, .1, .22) * (ax < 1.7 ? 1 : 0); }   /* ngấn chân */
+  function hoLyKhoi(kieu) {   /* đợt 7 — TẠC LẠI ĐỐI XỨNG, mặt bóng: thân tròn cuộn (bầu dưới to), khối MẶT CÁO chữ V nổi phía trên với 2 tai nhọn, mắt xếch, lòng tai lõm, mõm nhọn chúc xuống; 2 chân trước ló dưới mõm, đuôi to ôm quanh đáy. Xỏ dọc */
+    var mat = daGiacSdf([[-2.15, 3.55], [-1.7, 4.35], [-1.0, 3.75], [0, 3.35], [1.0, 3.75], [1.7, 4.35], [2.15, 3.55], [2.05, 2.0], [.85, .05], [0, -.85], [-.85, .05], [-2.05, 2.0]]);
+    function f(x, y, z) { var ax = Math.abs(x), m2 = mat(x, y), d = S3.elip(x, y, z, 0, -.7, -.1, 3.3, 2.95, 2.25);
+      d = S3.hop(d, epBo(m2 + .15, z - .5, 1.0, .6), .9);   /* khối mặt cáo nổi, liền thân */
+      d += ranh(m2, .09, .16) * cl01(z - .6);   /* đường viền mặt */
+      var ex = ax - .78, ey = y - 1.95, u = ex * .94 - ey * .34, v = ex * .34 + ey * .94; d += ranh(Math.hypot(u / .5, v / .17) - 1, .25, .13) * cl01(z - .8);   /* mắt xếch */
+      d += .2 * Math.exp(-(Math.pow(ax - 1.55, 2) / .12 + Math.pow(y - 3.7, 2) / .25)) * cl01(z - .4);   /* lòng tai lõm */
+      d = S3.hop(d, S3.cau(x, y, z, 0, -.55, 1.55, .32), .25);   /* mũi */
+      d = S3.hop(d, S3.elip(ax, y, z, .85, -2.75, 1.35, .6, .5, .55), .35);   /* 2 chân trước */
+      d -= .22 * Math.exp(-Math.pow((Math.hypot(x / 1.12, y + .9) - 2.6) / .32, 2)) * cl01((-.2 - y) / .8) * cl01(z + .3);   /* đuôi to ôm quanh đáy */
+      d += ranh(Math.hypot(x / 1.12, y + .9) - 2.2, .07, .12) * cl01((-.6 - y) / .6) * cl01(z);   /* mép trong đuôi */
       return Math.max(d, -S3.xuyen(x, z, 0, .1, .45)); }
-    var g = daKhoi(f, H.bb, kieu, 84, 53, 'hoLy7', H);
-    return { g: xoDoc(g, 4.35), rong: 8.6, xo: 'ong', cao: 7.4, uoc: 7.4, dungXem: true };
+    var g = daKhoi(f, [-3.8, -4.1, -2.6, 3.8, 4.8, 2.7], kieu, 110, 53, 'hoLy9');
+    return { g: xoDoc(g, 3.6), rong: 8.6, xo: 'ong', cao: 7.4, uoc: 7.4, dungXem: true };
   }
 
   /* hồ ly chúa tạc đá (15102, 22313, 23057): dáng giọt, đầu nhỏ trên, 2 mép răng cưa (các lớp đuôi xếp); mặt trước chạm mặt cáo mõm dài + 2 tai;
      soát lại theo ảnh: KHỐI DÀY, lưng vồng tròn (không phẳng) — bề dày ≈ 0,5 bề ngang. Xỏ dọc. */
-  function hoLyChuaKhoi(kieu) {   /* hồ ly chúa (15102, 22313, 23057) — soát lần 2: dáng dò từ ảnh 15102 (chính diện) + 23057 (nằm ngang): giọt, đầu hẹp trên, mép răng cưa
-     các lớp đuôi; mặt trước chạm mặt cáo mõm dài + 2 tai; dày ≈ 4,4 ly lưng vồng nhẹ; vân nổi từ nét chạm ảnh. Xỏ dọc. */
-    var H = hinhThat('hoLyChua', { mu: 2.4 }), f0 = H.f, Zt = H.mat;
-    function f(x, y, z) { var ax = Math.abs(x), d = f0(x, y, z), w = H.ngang(y) || 1;
-      d += .3 * Math.pow(Math.abs(Math.sin((y + 3) * 2.3)), 1.5) * Math.max(0, Math.min(1, (ax / w - .62) / .38)) * (y < 4 ? 1 : 0);   /* mép răng cưa: các lớp đuôi xếp */
-      var zt = Zt(y);
-      if (zt !== null && z > zt - 1.2) {
-        d -= .45 * Math.exp(-(x * x / .45 + Math.pow(y - 1.2, 2) / 5)) + .3 * Math.exp(-(Math.pow(ax - .95, 2) + Math.pow(y - 3.6, 2) * 2) / .3);   /* mõm dài + 2 tai nổi */
-        var ph = (y + .55 * ax) / 1.0; if (ax > 1.2) d += ranh(ph - Math.round(ph), .13, .24) * Math.min(1, (ax - 1.2) * 1.2);   /* các lớp đuôi xếp chéo */
-        d += ranh(Math.hypot((ax - .6) / .6, (y - 2.2) / .9) - .3, .05, .16); }   /* mắt */
+  function hoLyChuaKhoi(kieu) {   /* đợt 7 — TẠC LẠI ĐỐI XỨNG, mặt bóng: dáng giọt (đầu hẹp trên, bầu to dưới), 2 mép là các lọn đuôi tròn xếp lớp đều 2 bên; giữa mặt cáo dài nổi (2 tai, mắt, mõm chúc xuống); các lớp đuôi chạm chéo 2 bên; lưng vồng nhẹ. Xỏ dọc */
+    function w2(y) { return Math.max(0, 3.3 * Math.sqrt(cl01(1 - Math.pow((y + 1.0) / 3.5, 2)))); }
+    function f2(x, y) { var d = S3.hop(oval(3.25, 3.5)(x, y + 1.0), oval(1.45, 2.3)(x, y - 2.5), 1.6), ax = Math.abs(x);
+      for (var i = 0; i < 7; i++) { var yy = -3.6 + i * .95, ww = Math.min(3.25, Math.max(1.2, w2(yy) + (yy > 1.2 ? -(yy - 1.2) * .55 : 0))); d = hop(d, tron(ax, y, ww - .35, yy, .62), .28); }   /* lọn đuôi tròn 2 mép */
+      return hop(d, tron(ax, y, .8, 4.55, .42), .4); }   /* 2 tai đỉnh */
+    function f(x, y, z) { var ax = Math.abs(x), d2 = f2(x, y), d = S3.hop(phong(x, y, z, d2, 2.6, 2.15, 1.55), epBo(d2, z, .5, .45), .6);
+      d -= .45 * Math.exp(-(x * x / .4 + Math.pow(y - 1.6, 2) / 4.5)) * cl01(z);   /* mặt cáo dài nổi giữa */
+      d += ranh(Math.hypot((ax - .55) / .5, (y - 2.25) / .2) - 1, .2, .1) * cl01(z - .8);   /* mắt */
+      if (ax > 1.05) { var ph = (y + .6 * ax) / .95; d += ranh(ph - Math.round(ph), .12, .16) * cl01((ax - 1.05) * 1.5) * cl01(z); }   /* lớp đuôi chạm chéo */
+      d += ranh(ax - 1.0, .08, .14) * cl01((3.6 - y) / .5) * cl01(y + 2) * cl01(z - .5);   /* viền mặt */
       return Math.max(d, -S3.xuyen(x, z, 0, .3, .45)); }
-    var g = daKhoi(f, H.bb, kieu, 84, 67, 'hoLyChua2', H);
-    return { g: xoDoc(g, H.L + .05), rong: 9.7, xo: 'ong', cao: 9, uoc: 9, dungXem: true };
+    var g = daKhoi(f, [-4.0, -5.0, -2.2, 4.0, 5.3, 2.8], kieu, 110, 67, 'hoLyChua3');
+    return { g: xoDoc(g, 4.7), rong: 9.7, xo: 'ong', cao: 9, uoc: 9, dungXem: true };
   }
 
   /* túi tiền đá tạc tròn (9674, 22312, 9675, 16079, 9680, 9680~p1kr3L) — ảnh: bụng túi tròn căng mọi phía, cổ thắt có dây buộc, miệng xoè 3 múi cuộn;
      mặt bụng khắc đồng xu (lỗ vuông) hoặc gân toả từ cổ (9675); lỗ xỏ dọc đáy → miệng. Cỡ ≈ ngang 7 × cao 7,5 × dày 5,5 ly. */
-  function tuiKhoi(kieu, xu) {   /* soát lần 2: thân lấy từ hình thật đo ảnh (xu: 9674 túi đồng xu · không xu: 9675 túi gân) — cao 7,6; cổ thắt dây buộc, miệng 3 múi */
-    var H = hinhThat(xu ? 'tuiXu' : 'tuiGan', { mu: 2.1 }), f0 = H.f;
-    function f(x, y, z) { var ax = Math.abs(x), d = f0(x, y, z);
-      d += ranh(y - 1.35, .16, .34) * (ax < 2.4 ? 1 : 0);   /* dây buộc cổ túi */
-      d += ranh(ax - .9, .1, .3) * (y > 1.9 ? 1 : 0);   /* khe giữa các múi miệng */
-      if (z > 0) {
-        if (xu) { var r = Math.hypot(x, y + 1.25); d += ranh(r - 1.45, .11, .3) + ranh(Math.max(Math.abs(x), Math.abs(y + 1.25)) - .45, .09, .24); }   /* đồng xu lỗ vuông */
-        else { var a = Math.atan2(x, -(y - 1.1)); for (var j = -2; j <= 2; j++) d += ranh(a - j * .32, .05, .12) * (y < .9 && y > -2.2 ? 1 : 0); } }   /* gân toả từ cổ (nhẹ, vân ảnh bổ sung) */
+  function tuiKhoi(kieu, xu) {   /* đợt 7 — TẠC LẠI ĐỐI XỨNG, mặt bóng: bụng túi tròn căng, cổ thắt có vòng dây buộc nổi, miệng xoè 3 múi tròn; bụng khắc đồng xu lỗ vuông (xu) hoặc gân toả từ cổ. Xỏ dọc đáy → miệng */
+    function f(x, y, z) { var ax = Math.abs(x), d = S3.elip(x, y, z, 0, -1.0, 0, 3.0, 2.85, 2.55);
+      d = S3.hop(d, S3.elip(x, y, z, 0, 1.45, 0, 1.5, .9, 1.35), .7);   /* cổ */
+      d = S3.hop(d, S3.hop(S3.elip(x, y, z, 0, 2.85, 0, 1.15, 1.05, 1.05), S3.elip(ax, y, z, 1.65, 2.55, 0, 1.15, .9, .95), .3), .45);   /* miệng 3 múi xoè rộng */
+      d = S3.hop(d, Math.hypot(Math.hypot(x, z / .92) - 1.3, (y - 1.4) * 1.1) - .27, .15);   /* dây buộc cổ */
+      d += ranh(ax - .85, .1, .24) * cl01((y - 2.1) / .4);   /* khe giữa các múi */
+      if (xu) d += (ranh(Math.hypot(x, y + 1.0) - 1.4, .1, .2) + ranh(Math.max(ax, Math.abs(y + 1.0)) - .42, .08, .18)) * cl01(z - 1.2);   /* đồng xu lỗ vuông */
+      else { var a = Math.atan2(x, -(y - 1.1)); for (var j = -2; j <= 2; j++) d += ranh(a - j * .34, .05, .12) * cl01((.9 - y) / .4) * cl01((y + 2.6) / .5) * cl01(z - .3); }   /* gân toả từ cổ */
       return Math.max(d, -S3.xuyen(x, z, 0, 0, .45)); }
-    var g = daKhoi(f, H.bb, kieu, 80, 89, 'tui6' + !!xu, H);
-    return { g: xoDoc(g, 3.85), rong: 7.6, xo: 'ong', cao: 6.4, uoc: 6.4, dungXem: true };
+    var g = daKhoi(f, [-3.6, -4.3, -3.0, 3.6, 4.3, 3.0], kieu, 104, 89, 'tui8' + !!xu);
+    return { g: xoDoc(g, 3.88), rong: 7.6, xo: 'ong', cao: 6.4, uoc: 6.4, dungXem: true };
   }
 
   /* ---------- HÌNH THẬT DÒ TỪ ẢNH (soát 12/11 lần 2 — user: dáng "hơi dị") ----------
@@ -3500,7 +3624,7 @@ window.taoCharm3D = function (THREE) {
   var _tl2 = null;
   function vanThat(ten, vl, manh) {   /* gắn vân nổi lấy từ nét chạm ảnh thật (chỉ độ lồi lõm, không dán màu) */
     _tl2 = _tl2 || new THREE.TextureLoader(); var t = _tl2.load('charm-anh/than-' + ten + '.webp'); t.colorSpace = THREE.NoColorSpace; t.anisotropy = 4;
-    var m = vl.clone(); m.bumpMap = t; m.bumpScale = manh || 3; return m; }
+    return vl; }   /* đợt 7 (user: sần sùi): bỏ bump vân ảnh — mặt đá đánh bóng trơn, chi tiết chạm làm bằng SDF */
   function tyHuuDa(vl, kieu) {   /* tỳ hưu tạc đá nằm phục nhìn chính diện: đầu trên (bờm cuộn + 2 tai), thân dưới phình 2 mông tròn tách bởi rãnh giữa, 2 chân trước; mặt vòm, lưng phẳng; kieu 'vuong' (4064): đầu vuông khắc vạch, thân trơn */
     var g = new THREE.Group(), vuong = kieu === 'vuong';
     var f = function (x, y) { var dau = vuong ? Math.hypot(Math.max(Math.abs(x) - 1.3, 0), Math.max(Math.abs(y - 1.9) - .95, 0)) - .55 : oval(1.85, 1.55)(x, y - 1.85);
@@ -3577,14 +3701,14 @@ window.taoCharm3D = function (THREE) {
   };
 
   DS['23880'] = function () {   // thỏi vàng (nguyên bảo): thân thuyền, vành cong lên 2 đầu, gò tròn ở giữa
-    var geo = new THREE.SphereGeometry(1, 96, 64), p = geo.attributes.position, i, A = 4.5, B = 2.3, C = 2.9;
+    var geo = new THREE.SphereGeometry(1, 96, 96), p = geo.attributes.position, i, A = 4.5, B = 2.3, C = 2.9;
     for (i = 0; i < p.count; i++) { var x = p.getX(i), y = p.getY(i), z = p.getZ(i), hx = .1 + 1.65 * x * x * Math.abs(x), Y;
       if (y < 0) Y = B * y + hx * (1 + y);
-      else { var ro = Math.sqrt(Math.max(0, 1 - y * y)), re = Math.hypot(x / .74, z / .52); Y = hx - .45 * (1 - ro * ro) + (re < 1 ? 2.35 * Math.sqrt(1 - re * re) : 0); }   /* gò giữa hình bầu dục, dài theo thân — soát: nhô cao hơn mép thuyền như ảnh */
+      else { var ro = Math.sqrt(Math.max(0, 1 - y * y)), re = Math.hypot(x / .74, z / .52); Y = hx - .45 * (1 - ro * ro) + (re < 1 ? 2.55 * Math.sqrt(1 - re * re) - .32 * Math.exp(-Math.pow((re - .62) / .07, 2)) + .12 * Math.exp(-Math.pow((re - .74) / .05, 2)) : 0); }   /* soát đợt 6: gò có rãnh vòng bầu dục + gờ (ảnh 1, 2) */   /* gò giữa hình bầu dục, dài theo thân — soát: nhô cao hơn mép thuyền như ảnh */
       p.setXYZ(i, A * x, Y, C * z); }
     geo.computeVertexNormals();
     var nr = geo.attributes.normal;   // liền mép nối của hình cầu
-    for (var r = 0; r <= 64; r++) { var a = r * 97, b = r * 97 + 96, nx = nr.getX(a) + nr.getX(b), ny = nr.getY(a) + nr.getY(b), nz = nr.getZ(a) + nr.getZ(b), l = Math.hypot(nx, ny, nz) || 1; nr.setXYZ(a, nx / l, ny / l, nz / l); nr.setXYZ(b, nx / l, ny / l, nz / l); }
+    for (var r = 0; r <= 96; r++) { var a = r * 97, b = r * 97 + 96, nx = nr.getX(a) + nr.getX(b), ny = nr.getY(a) + nr.getY(b), nz = nr.getZ(a) + nr.getZ(b), l = Math.hypot(nx, ny, nz) || 1; nr.setXYZ(a, nx / l, ny / l, nz / l); nr.setXYZ(b, nx / l, ny / l, nz / l); }
     var m = new THREE.Mesh(geo, VL.vang); m.position.y = .5;
     var g = new THREE.Group(); g.add(m);
     [-1, 1].forEach(function (sg) { var l = new THREE.Mesh(new THREE.CircleGeometry(.55, 18), VL.toi); l.rotation.y = sg * PI / 2; l.position.set(sg * 3.6, .35, 0); g.add(l); });   /* soát: lỗ xuyên ở 2 đầu thuyền như ảnh */
@@ -3595,7 +3719,11 @@ window.taoCharm3D = function (THREE) {
   function xoanOc(x, y, s) { var r = Math.hypot(x, y + 1.2), a = Math.atan2(y + 1.2, x); return 1 - .13 * Math.pow(Math.max(0, Math.sin(a * 1 + r * 2.2)), 6) * (1 - s * s * s); }
   var HL = {
     '25810': function () { return holoMat({ da: 'bangtrang', k: .52, khung: batGiac(3.0, 4.2, 1.4), vien: 'kc', day: 3.4, treo: 'khoa' }); },   // khối bát giác dày 3,3 ly, vành trơn, vòng kim cương quanh hồ lô trắng
-    '25783': function () { return holoMat({ da: 'bangtrang', k: .5, khung: oval(3.55, 3.6), vien: 'thung', kcTrong: .5, day: 1.9, treo: 'khoen' }); },   // charm rơi: đế tròn viền thừng, vòng kim cương nhỏ quanh hồ lô, khoen tròn
+    '25783': function () {   /* soát đợt 6 (xem 3 ảnh): đĩa tròn viền thừng, hồ lô băng trắng giữ bằng 4 chấu; 2 bên mỗi bên 3 viên kim cương RỜI trong ổ (không phải vòng liền) */
+      var m = holoMat({ da: 'bangtrang', k: .5, khung: oval(3.55, 3.6), vien: 'thung', day: 1.9, treo: 'khoen' }), g = new THREE.Group(), dy = -(m.cao - 6.5 * .5);
+      [-1, 1].forEach(function (sg) { [.75, -.15, -1.05].forEach(function (y) { var x = sg * (2.28 - Math.abs(y + .15) * .1), o2 = khoen(.36, .08, VL.vang); o2.position.set(x, y, .06); g.add(o2); g.add(hangKc(.3, [[x, y, .12, 0, 0, 1]])); }); });
+      [[1.3, -2.45], [-1.3, -2.45], [.95, 2.15], [-.95, 2.15]].forEach(function (q) { var c = new THREE.Mesh(new THREE.CylinderGeometry(.13, .16, 1.3, 10), VL.vang); c.rotation.x = PI / 2; c.position.set(q[0], q[1], .55); g.add(c); var d = new THREE.Mesh(new THREE.SphereGeometry(.15, 10, 8), VL.vang); d.position.set(q[0] * .96, q[1] * .97, 1.2); g.add(d); });
+      g.position.y = dy; m.g.add(g); return m; },   // charm rơi: đế tròn viền thừng, vòng kim cương nhỏ quanh hồ lô, khoen tròn
     '23979': function () {   // theo ảnh cỡ lớn: đĩa gần tròn mặt cắt giác lấp lánh, khoét lỗ hình hồ lô (bầu nhỏ phía khoen), viền bi quanh mép ngoài và quanh lỗ, lưng nhám trơn
       var g = new THREE.Group(), cy = -.2, dia = oval(4.35, 4.6), lo = hinhHoLo(.5);
       function ra(h, d, n) { return vienTu(function (x, y) { return h(x, y - cy) - d; }, 0, cy, n || 160); }
@@ -3639,7 +3767,7 @@ window.taoCharm3D = function (THREE) {
         z -= .12 * R(Math.hypot((x - 3.2) / .32, (y + .3) / .13) - 1, .25);   /* mắt dài */
         z -= .10 * R(Math.hypot((x - 1.55) / .32, (y - 2.55) / .65) - 1, .15) + .10 * R(Math.hypot((x - 3.3) / .28, (y - 1.35) / .5) - 1, .15);   /* lòng 2 tai */
         return 1 + z * (1 - s * s * s * s) / Math.max(.32, Math.sqrt(1 - s * s)); }   /* cộng thêm chiều cao (không nhân vòm) → đầu & tai ở gần mép vẫn nổi rõ */
-      var g = new THREE.Group(), o = holoMat({ da: 'lamdam', hinh: h, khung: h, vien: 'tron', le: .3, day: 1.2, cao: 2.4, cham: cham, n: 240, K: 56 }).g;
+      var g = new THREE.Group(), o = holoMat({ da: 'lamdam', hinh: h, khung: h, vien: 'tron', le: .3, day: 1.2, cao: 2.4, cham: cham, n: 240, K: 56, lung: function (c, X, Y, k) { c.lineWidth = .3 * k; c.beginPath(); c.moveTo(X(-4.5), Y(-.4)); c.lineTo(X(4.5), Y(-.4)); c.stroke(); } }).g;
       g.add(o);
       var vt = vienTu(function (x, y) { return h(x, y) - .2; }, 0, -.5, 120);
       [6, 26, 44, 62, 84, 104].forEach(function (i) { var q = vt[i], c = new THREE.Mesh(new THREE.SphereGeometry(.3, 14, 10), VL.vang); c.scale.set(.7, .7, 1.3); c.position.set(q.x * .97, q.y * .97 - .01, 1.15); g.add(c); });   /* chấu nhỏ bấu lên mép đá */
@@ -3681,7 +3809,7 @@ window.taoCharm3D = function (THREE) {
     '25787': function () { return holoMat({ da: 'lucde', vien: 'thung', k: .7, day: 3.0, lung: HV.kimTien }); },   // mặt trước ngọc lục đế, lưng vàng chạm lộng dày
     '25814': function () { return holoGon({ da: 'lucde' }); },
     '25789': function () { return holoMat({ da: 'lucde', vien: 'thung', k: .85, treo: 'khoa', trai: true }); },   // mặt trước ngọc lục đế + ngọc trai cạnh khoá
-    '23968': function () { return holoKhoi({ vl: VL.vangMo, khoenEo: true, dayBanh: true, bauTren: 1.6, nghieng: 1.0, k: .72 }); },   // hồ lô nhám, đáy là bánh xe hoa có hạt kim cương; khoen ở eo
+    '23968': function () { return holoKhoi({ vl: VL.vangMo, khoenEo: true, qua: true, nghieng: 1.0, k: .72 }); },   // soát đợt 6: quả hồ lô thuôn, đáy phẳng mặt ngó sen + kim cương, cuống cong, dây hạt buộc eo; khoen ở eo   // hồ lô nhám, đáy là bánh xe hoa có hạt kim cương; khoen ở eo
     '23831': function () {   // dải dài (ảnh kẹp treo): khoen, chấu ruby, mắt như ý, hồ lô tourmaline, mắt như ý, chấu ruby, khoen cuối
       var g = new THREE.Group(), m;
       function nhuY(x, yy) { return hop(hop(tron(x, yy, -.75, -.1, .7), tron(x, yy, .75, -.1, .7), .3), tron(x, yy, 0, .45, .78), .3); }
