@@ -1,0 +1,251 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Charm 3D · bản thử · Ngọc Trầm Store</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+Display:wght@400;500&family=Be+Vietnam+Pro:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root { --nen: #f4efe6; --the: #fbf8f2; --chu: #26302b; --mo: #7d857f; --vang: #a8823a; --ngoc: #1d4a3a; --vien: #e6dfd0; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--nen); color: var(--chu); font: 15px/1.55 "Be Vietnam Pro", system-ui, sans-serif; -webkit-font-smoothing: antialiased; }
+  a { color: inherit; }
+  .khung { max-width: 1180px; margin: 0 auto; padding: 22px 16px 60px; }
+  .dau { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; flex-wrap: wrap; margin-bottom: 18px; }
+  .dau a { font-size: 13px; color: var(--mo); text-decoration: none; }
+  h1 { font: 500 clamp(26px, 4vw, 38px)/1.15 "Noto Serif Display", Georgia, serif; margin: 0; letter-spacing: -.01em; }
+  h1 em { font-style: italic; color: var(--vang); }
+  .bo { display: grid; grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr); gap: 26px; align-items: start; }
+  .san { position: sticky; top: 14px; border-radius: 26px; overflow: hidden; background: radial-gradient(120% 90% at 50% 18%, #fffdf8 0%, #f1e9da 62%, #e4d9c4 100%); border: 1px solid var(--vien); aspect-ratio: 1 / 1; touch-action: none; }
+  .san canvas { width: 100%; height: 100%; display: block; cursor: grab; }
+  .san.keo canvas { cursor: grabbing; }
+  .san .nhan { position: absolute; left: 0; right: 0; bottom: 14px; text-align: center; font-size: 12.5px; color: var(--mo); pointer-events: none; }
+  .san .ten { position: absolute; left: 18px; top: 16px; right: 120px; font: 500 19px/1.25 "Noto Serif Display", Georgia, serif; pointer-events: none; opacity: 0; transition: opacity .35s; }
+  .san .ten small { display: block; font: 400 12.5px "Be Vietnam Pro", sans-serif; color: var(--mo); margin-top: 3px; }
+  .san.gan .ten { opacity: 1; }
+  .san .ve { position: absolute; right: 14px; top: 14px; border: 1px solid var(--vien); background: rgba(255, 255, 255, .85); backdrop-filter: blur(6px); border-radius: 99px; padding: 8px 14px; font: 500 13px "Be Vietnam Pro", sans-serif; color: var(--chu); cursor: pointer; opacity: 0; pointer-events: none; transition: opacity .3s; }
+  .san.gan .ve { opacity: 1; pointer-events: auto; }
+  .san .mau { position: absolute; left: 18px; top: 84px; display: flex; gap: 6px; opacity: 0; pointer-events: none; transition: opacity .3s; }
+  .san.gan .mau { opacity: 1; pointer-events: auto; }
+  .san .mau button { border: 1px solid var(--vien); background: rgba(255, 255, 255, .85); border-radius: 99px; padding: 6px 12px; font: 500 12.5px "Be Vietnam Pro", sans-serif; color: var(--chu); cursor: pointer; }
+  .san .mau button.chon { background: var(--chu); color: #fff; border-color: var(--chu); }
+  .san .cho { position: absolute; inset: 0; display: grid; place-items: center; color: var(--mo); font-size: 13.5px; transition: opacity .5s; pointer-events: none; }
+  .san.xong .cho { opacity: 0; }
+  .mo-ta { color: var(--mo); margin: 0 0 14px; max-width: 46ch; }
+  .luoi { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+  .o { display: grid; grid-template-columns: 64px minmax(0, 1fr); gap: 11px; align-items: center; background: var(--the); border: 1px solid var(--vien); border-radius: 16px; padding: 8px; transition: border-color .2s, box-shadow .2s, transform .2s; }
+  .o.co { border-color: var(--vang); box-shadow: 0 0 0 1px var(--vang) inset; }
+  .o img { width: 64px; height: 64px; object-fit: cover; border-radius: 11px; background: #e9e2d3; display: block; }
+  .o b { display: block; font-weight: 500; font-size: 13.5px; line-height: 1.3; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+  .o small { color: var(--mo); font-size: 12px; }
+  .o .nut { display: flex; gap: 6px; margin-top: 6px; }
+  .o button { border: 1px solid var(--vien); background: #fff; border-radius: 99px; padding: 5px 11px; font: 500 12px "Be Vietnam Pro", sans-serif; color: var(--chu); cursor: pointer; transition: background .2s, color .2s, border-color .2s; }
+  .o button:hover { border-color: var(--vang); }
+  .o.co button[data-gan] { background: var(--ngoc); border-color: var(--ngoc); color: #fff; }
+  .thanh { display: flex; gap: 8px; margin: 14px 0 0; flex-wrap: wrap; }
+  .thanh button { border: 1px solid var(--vien); background: var(--the); border-radius: 99px; padding: 8px 14px; font: 500 13px "Be Vietnam Pro", sans-serif; color: var(--chu); cursor: pointer; }
+  @media (max-width: 860px) { .bo { grid-template-columns: 1fr; gap: 16px; } .san { position: relative; top: 0; } }
+  @media (max-width: 420px) { .luoi { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body>
+<div class="khung">
+  <div class="dau">
+    <h1>Charm <em>3D</em> · bản thử</h1>
+    <a href="thiet-ke.html">← Trang Tự thiết kế hiện tại</a>
+  </div>
+  <div class="bo">
+    <div class="san" id="san">
+      <canvas id="cv"></canvas>
+      <div class="cho">Đang dựng vòng 3D…</div>
+      <div class="ten" id="ten"></div>
+      <button class="ve" id="ve">← Về vòng</button>
+      <div class="mau" id="mau"></div>
+      <div class="nhan" id="nhan">Kéo để xoay vòng</div>
+    </div>
+    <div>
+      <p class="mo-ta">Đã dựng 3D <b id="soCharm">…</b> / <span id="tongCharm">…</span> charm theo ảnh thật. Bấm <b>Gắn</b> để thả charm lên vòng, <b>Xem gần</b> để xoay ngắm từng charm.</p>
+      <div class="luoi" id="luoi"></div>
+      <div class="thanh"><button id="ganHet">Gắn thử 8 charm bất kỳ</button><button id="boHet">Bỏ hết</button></div>
+    </div>
+  </div>
+</div>
+<script src="charm-3d.js?v=231"></script>
+<script>
+(function () {
+  var san = document.getElementById('san'), cv = document.getElementById('cv'), luoi = document.getElementById('luoi');
+  function e(s) { return String(s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
+  function gia(n) { return n ? n.toLocaleString('vi-VN') + 'đ' : 'Liên hệ'; }
+
+  Promise.all([import('https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.min.js'), fetch('thiet-ke.json').then(function (r) { return r.json(); })]).then(function (kq) {
+    var THREE = kq[0], tk = kq[1], TT = {};
+    tk.charm.forEach(function (c) { TT[c.id] = c; });
+    var day = tk.day[0] || { co: 8, mau: ['#87b3bb', '#486165'], ten: 'Chuỗi ngọc' };
+    var X = window.taoCharm3D(THREE);
+    var NHOM = ['Hồ lô', 'Hoa', 'Cỏ 4 lá', 'Hạt đậu', 'Lu · chặn', 'Đồng điếu', 'Kim tiền', 'Hồ điệp', 'Hồ ly', 'Khác'];
+    var MA = Object.keys(X.ds).filter(function (m) { return TT[m]; }).sort(function (a, b) { return NHOM.indexOf(TT[a].nhom) - NHOM.indexOf(TT[b].nhom) || (TT[a].ten < TT[b].ten ? -1 : 1); });
+    document.getElementById('soCharm').textContent = MA.length; document.getElementById('tongCharm').textContent = tk.charm.length;
+
+    luoi.innerHTML = MA.map(function (m) { var c = TT[m] || { ten: 'Charm ' + m, gia: 0 };
+      return '<div class="o" data-ma="' + m + '">' + (c.anh ? '<img src="https://lh3.googleusercontent.com/d/' + c.anh + '=w200" alt="" loading="lazy" referrerpolicy="no-referrer">' : '<img alt="">') +
+        '<div><b>' + e(c.ten) + '</b><small>#' + m + ' · ' + gia(c.gia) + '</small><div class="nut"><button data-gan>Gắn</button><button data-xem>Xem gần</button></div></div></div>'; }).join('');
+
+    /* ---------- cảnh ---------- */
+    var R = new THREE.WebGLRenderer({ canvas: cv, antialias: true, alpha: true, powerPreference: 'high-performance' });
+    R.setPixelRatio(Math.min(devicePixelRatio || 1, 2)); R.outputColorSpace = THREE.SRGBColorSpace;
+    R.toneMapping = THREE.ACESFilmicToneMapping; R.toneMappingExposure = 1.15;
+    var canh = new THREE.Scene(), cam = new THREE.PerspectiveCamera(30, 1, .1, 100); cam.position.set(0, 0, 20);
+    (function () {   // phòng chụp tự dựng: softbox ấm để vàng và ngọc bóng thật
+      var env = new THREE.Scene();
+      env.add(new THREE.Mesh(new THREE.SphereGeometry(20, 32, 16), new THREE.MeshBasicMaterial({ color: 0x7a6f5c, side: THREE.BackSide })));
+      function den(w, h, mau, x, y, z) { var m = new THREE.Mesh(new THREE.PlaneGeometry(w, h), new THREE.MeshBasicMaterial({ color: mau, side: THREE.DoubleSide })); m.position.set(x, y, z); m.lookAt(0, 0, 0); env.add(m); }
+      den(14, 6, 0xfff1d6, -6, 10, 6); den(8, 10, 0xffffff, 12, 2, 4); den(20, 3, 0xffd9a0, 0, -8, -10); den(6, 6, 0xcfeaff, -12, -2, -4);
+      den(10, 10, 0xfff6e6, 0, 14, -2); den(6, 14, 0xffe2b0, -14, 4, 8); den(9, 5, 0xffffff, 3, 5, 14); den(16, 4, 0xfff0d0, 0, -12, 6); den(26, 16, 0xd9bd86, 0, -1, 19);   // tấm hắt ấm sau máy ảnh: mặt vàng phẳng nhìn thẳng không bị tối
+      canh.environment = new THREE.PMREMGenerator(R).fromScene(env, .03).texture;
+    })();
+    var d1 = new THREE.DirectionalLight(0xfff8ee, 1.4); d1.position.set(-4, 6, 8); canh.add(d1);
+    var d2 = new THREE.DirectionalLight(0x9fd0ff, .45); d2.position.set(6, -3, -4); canh.add(d2);
+
+    var nghieng = new THREE.Group(), quay = new THREE.Group(); nghieng.rotation.x = .95; nghieng.add(quay); canh.add(nghieng);
+
+    /* ---------- hạt ngọc ---------- */
+    var N = 21, b = day.co / 20;
+    var c2 = document.createElement('canvas'); c2.width = 512; c2.height = 256;
+    (function (g) { g.fillStyle = '#fff'; g.fillRect(0, 0, 512, 256);
+      for (var i = 0; i < 70; i++) { var x = Math.random() * 512, y = Math.random() * 256, r = 14 + Math.random() * 70, a = .04 + Math.random() * .1, gr = g.createRadialGradient(x, y, 0, x, y, r);
+        gr.addColorStop(0, Math.random() < .25 ? 'rgba(240,255,250,' + a * 2.4 + ')' : 'rgba(20,50,55,' + a * .8 + ')'); gr.addColorStop(1, 'rgba(0,0,0,0)'); g.fillStyle = gr; g.beginPath(); g.arc(x, y, r, 0, 7); g.fill(); } })(c2.getContext('2d'));
+    var van = new THREE.CanvasTexture(c2); van.colorSpace = THREE.SRGBColorSpace; van.wrapS = THREE.RepeatWrapping;
+    var hatMat = new THREE.MeshPhysicalMaterial({ map: van, roughness: .1, clearcoat: 1, clearcoatRoughness: .04, sheen: .25, sheenRoughness: .4, sheenColor: new THREE.Color(0xe4fbff), ior: 1.66 });
+    hatMat.onBeforeCompile = function (s) { s.fragmentShader = s.fragmentShader.replace('#include <emissivemap_fragment>', '#include <emissivemap_fragment>\nfloat tamHat = pow(clamp(dot(normalize(vNormal), vec3(0.0, 0.0, 1.0)), 0.0, 1.0), 1.6);\ntotalEmissiveRadiance += diffuseColor.rgb * (0.1 + 0.32 * tamHat);'); };
+    var hat = new THREE.InstancedMesh(new THREE.SphereGeometry(1, 48, 32), hatMat, N); quay.add(hat);
+    var H = [], mT = new THREE.Color(day.mau[0]), mD = new THREE.Color(day.mau[1]);
+    for (var i = 0; i < N; i++) { var r = Math.random(); H.push({ p: new THREE.Vector3(), dat: false, q: new THREE.Quaternion().setFromEuler(new THREE.Euler(Math.random() * 6, Math.random() * 6, Math.random() * 6)) });
+      hat.setColorAt(i, mT.clone().lerp(mD, .2 + r * .5).offsetHSL((r - .5) * .02, .04, 0)); }
+    var dayChun = new THREE.Mesh(new THREE.TorusGeometry(1, .022, 8, 200), new THREE.MeshStandardMaterial({ color: 0x3a342c, roughness: .6 })); dayChun.rotation.x = Math.PI / 2; quay.add(dayChun);
+    var bc = document.createElement('canvas'); bc.width = bc.height = 128;
+    (function (g) { var gr = g.createRadialGradient(64, 64, 20, 64, 64, 64); gr.addColorStop(0, 'rgba(0,0,0,0)'); gr.addColorStop(.36, 'rgba(0,0,0,.05)'); gr.addColorStop(.47, 'rgba(0,0,0,.42)'); gr.addColorStop(.6, 'rgba(0,0,0,.06)'); gr.addColorStop(1, 'rgba(0,0,0,0)'); g.fillStyle = gr; g.fillRect(0, 0, 128, 128); })(bc.getContext('2d'));
+    var bong = new THREE.Mesh(new THREE.PlaneGeometry(1, 1), new THREE.MeshBasicMaterial({ map: new THREE.CanvasTexture(bc), transparent: true, opacity: .5, depthWrite: false })); bong.rotation.x = -Math.PI / 2; bong.position.y = -.62; quay.add(bong);
+
+    /* ---------- charm trên vòng ---------- */
+    var KHE = [0, 10, 5, 15, 3, 13, 8, 18, 1, 11, 6, 16], C = {}, canNhin = null, MAU = {};   // MAU: màu khách chọn cho charm có nhiều màu (X.bien)
+    function gan(ma) {
+      var c = C[ma];
+      if (c) { c.ra = true; return; }
+      if (Object.keys(C).length >= KHE.length) { var cu = Object.keys(C).filter(function (k) { return !C[k].ra; })[0]; if (cu) C[cu].ra = true; return setTimeout(function () { gan(ma); capNhatO(); }, 750); }
+      var m = X.tao(ma, { ten: (TT[ma] || {}).ten, co: day.co, mau: MAU[ma] }); if (!m) return;
+      var dung = Object.keys(C).map(function (k) { return C[k].khe; }), khe = KHE.filter(function (k) { return dung.indexOf(k) < 0; })[0];
+      var giu = new THREE.Group(), ng = new THREE.Group(), lat = new THREE.Group();
+      ng.rotation.x = m.dung || m.xo === 'treo' ? 0 : -Math.PI / 2;   // charm treo: hướng do con lắc quyết định if (m.lat) lat.rotation.z = Math.PI;
+      lat.add(m.g); ng.add(lat); giu.add(ng); quay.add(giu);
+      C[ma] = canNhin = { ma: ma, m: m, giu: giu, khe: khe, hien: 0, ra: false, p: new THREE.Vector3(), a: 0, dat: false };
+    }
+    function capNhatO() { [].forEach.call(luoi.children, function (o) { var c = C[o.dataset.ma], co = !!c && !c.ra; o.classList.toggle('co', co); o.querySelector('[data-gan]').textContent = co ? '✓ Đã gắn' : 'Gắn'; }); }
+
+    /* ---------- xem gần ---------- */
+    var xem = new THREE.Group(), xemTrong = new THREE.Group(); xem.add(xemTrong); canh.add(xem);
+    var dangXem = null, zXem = 0, gocXem = { x: 0, y: 0 };
+    function xemGan(ma) {
+      while (xemTrong.children.length) xemTrong.remove(xemTrong.children[0]);
+      var m = X.tao(ma, { ten: (TT[ma] || {}).ten, co: day.co, mau: MAU[ma] }); if (!m) return;
+      var bt = (X.bien || {})[ma], hm = document.getElementById('mau'); hm.innerHTML = '';
+      if (bt) bt.forEach(function (b, i) { var n = document.createElement('button'); n.textContent = b.ten; if ((MAU[ma] || bt[0].k) === b.k) n.className = 'chon';
+        n.onclick = function () { MAU[ma] = b.k; var c = C[ma]; if (c && !c.ra) { var m2 = X.tao(ma, { ten: (TT[ma] || {}).ten, co: day.co, mau: b.k }), lat = c.m.g.parent; lat.remove(c.m.g); lat.add(m2.g); c.m = m2; } xemGan(ma); }; hm.appendChild(n); });   // đổi màu: vẽ lại ô xem gần + charm đang gắn trên vòng
+      if (m.g.userData.khoa) m.g.userData.khoa.rotation.y = m.g.userData.khoaXem !== undefined ? m.g.userData.khoaXem : -Math.PI / 2;
+      if (m.dungXem) m.g.rotation.z = -Math.PI / 2;   // tượng (chú tiểu, Phật…) xỏ dọc: xem gần cho đứng thẳng   // xem gần: khoá/khoen quay mặt ra trước (trên vòng thì xoay theo dây)
+      var hop = new THREE.Box3().setFromObject(m.g), tam = hop.getCenter(new THREE.Vector3()), kt = hop.getSize(new THREE.Vector3());
+      m.g.position.sub(tam); xemTrong.add(m.g); xemTrong.scale.setScalar(5.4 / Math.max(kt.x, kt.y, 7));
+      dangXem = ma; gocXem.x = 0; gocXem.y = 0; san.classList.add('gan');
+      var c = TT[ma] || {}; document.getElementById('ten').innerHTML = e(c.ten || ma) + '<small>#' + ma + ' · ' + gia(c.gia) + ' · trên vòng: ngang ' + m.kt.x.toFixed(1).replace('.', ',') + ' × cao ' + m.kt.y.toFixed(1).replace('.', ',') + ' ly' + (m.xo === 'treo' ? ' (cả khoen)' : '') + (m.doThat ? ' · theo số đo thật' : '') + '</small>';
+      document.getElementById('nhan').textContent = 'Kéo để xoay charm';
+    }
+    function veVong() { dangXem = null; san.classList.remove('gan'); document.getElementById('nhan').textContent = 'Kéo để xoay vòng'; }
+    document.getElementById('ve').onclick = veVong;
+
+    luoi.addEventListener('click', function (ev) {
+      var o = ev.target.closest('.o'); if (!o) return; var ma = o.dataset.ma;
+      if (ev.target.closest('[data-xem]')) { xemGan(ma); if (innerWidth < 860) san.scrollIntoView({ behavior: 'smooth', block: 'start' }); return; }
+      if (ev.target.closest('[data-gan]') || ev.target.tagName === 'IMG') { veVong(); gan(ma); capNhatO(); }
+    });
+    document.getElementById('ganHet').onclick = function () { veVong(); var con = MA.filter(function (m) { return !C[m]; }).sort(function () { return Math.random() - .5; }).slice(0, 8 - Object.keys(C).length);
+      con.forEach(function (m, k) { setTimeout(function () { gan(m); canNhin = null; capNhatO(); }, k * 160); }); };
+    document.getElementById('boHet').onclick = function () { Object.keys(C).forEach(function (k) { C[k].ra = true; }); capNhatO(); };
+
+    /* ---------- kéo xoay ---------- */
+    var xoay = -.6, vX = .0025, keo = null, ngThem = 0, nghi = 0;
+    cv.addEventListener('pointerdown', function (ev) { keo = { x: ev.clientX, y: ev.clientY }; cv.setPointerCapture(ev.pointerId); san.classList.add('keo'); canNhin = null; });
+    cv.addEventListener('pointermove', function (ev) { if (!keo) return; var dx = ev.clientX - keo.x, dy = ev.clientY - keo.y; keo.x = ev.clientX; keo.y = ev.clientY;
+      if (dangXem) { gocXem.y += dx * .01; gocXem.x = Math.max(-1.2, Math.min(1.2, gocXem.x + dy * .01)); }
+      else { vX = dx * .006; xoay += dx * .008; ngThem = Math.max(-.55, Math.min(.5, ngThem + dy * .005)); } });
+    function tha() { keo = null; san.classList.remove('keo'); nghi = 3; }
+    cv.addEventListener('pointerup', tha); cv.addEventListener('pointercancel', tha);
+
+    function co() { var w = cv.clientWidth, h = cv.clientHeight; if (!w || !h) return; R.setSize(w, h, false); cam.aspect = w / h; cam.updateProjectionMatrix(); }
+    new ResizeObserver(co).observe(cv); co();
+
+    /* ---------- vòng lặp ---------- */
+    var m4 = new THREE.Matrix4(), sc = new THREE.Vector3(), tam = new THREE.Vector3(), truoc = performance.now(), BKm = 3;
+    var P = new THREE.Vector3(), T = new THREE.Vector3(), vt = new THREE.Vector3(), r3 = new THREE.Vector3(), xA = new THREE.Vector3(), yA = new THREE.Vector3(), zA = new THREE.Vector3(), mQ = new THREE.Matrix4(), qCha = new THREE.Quaternion();
+    function f(t) {
+      requestAnimationFrame(f);
+      if (document.hidden) return;
+      var dt = Math.min(.05, (t - truoc) / 1000); truoc = t;
+      var ds = Object.keys(C).map(function (k) { return C[k]; });
+      ds.forEach(function (c) { c.hien = c.ra ? Math.max(0, c.hien - dt / .7) : Math.min(1, c.hien + dt / .9); c.e = c.hien * c.hien * (3 - 2 * c.hien);
+        if (c.ra && c.hien <= 0) { quay.remove(c.giu); delete C[c.ma]; } });
+      // xếp hạt + charm theo chiều dài thật trên dây: charm chen vào, đẩy hạt giãn ra
+      var muc = [], i;
+      for (i = 0; i < N; i++) muc.push({ hat: i, rong: 2 * b * 1.015, vt: i });
+      ds.forEach(function (c) { if (C[c.ma]) muc.push({ c: c, rong: c.m.rong * .1 * c.e, vt: c.khe - .5 }); });
+      muc.sort(function (x, y) { return x.vt - y.vt; });
+      var L = 0; muc.forEach(function (m) { L += m.rong; });
+      var BK = L / (Math.PI * 2), goc = 0, mu = Math.min(1, dt * 7); BKm += (BK - BKm) * mu;
+      muc.forEach(function (m) { var a = (goc + m.rong / 2) / BK; goc += m.rong; tam.set(Math.cos(a) * BKm, 0, Math.sin(a) * BKm);
+        var o = m.c || H[m.hat]; if (!o.dat) { o.p.copy(tam); o.dat = true; } else o.p.lerp(tam, mu);
+        if (m.c) m.c.a = Math.atan2(o.p.z, o.p.x); });
+      for (i = 0; i < N; i++) { sc.setScalar(b); m4.compose(H[i].p, H[i].q, sc); hat.setMatrixAt(i, m4); }
+      hat.instanceMatrix.needsUpdate = true;
+      ds.forEach(function (c) { if (!C[c.ma]) return; var e1 = c.e, roi = (1 - e1) * (1 - e1);
+        c.giu.position.set(c.p.x, c.p.y + (c.ra ? (1 - e1) * 1.6 : roi * 4.5), c.p.z);
+        if (c.m.xo !== 'treo') c.giu.rotation.set(0, -c.a + Math.PI / 2, 0); c.giu.children[0].rotation.y = c.ra ? (1 - e1) * .8 : roi * 3;
+        c.giu.scale.setScalar(.1 * (c.ra ? e1 : .55 + .45 * e1)); });
+      dayChun.scale.setScalar(BKm); bong.scale.setScalar(BKm * 2.3);
+      quay.rotation.y = xoay; nghieng.rotation.x = .95 + ngThem + Math.sin(t / 2600) * .03; nghieng.updateMatrixWorld(true);
+      // charm treo: con lắc thật — rủ theo trọng lực, khoá trượt quanh dây, đung đưa khi vòng xoay rồi tắt dần
+      quay.getWorldQuaternion(qCha).invert();
+      ds.forEach(function (c) { if (!C[c.ma] || c.m.xo !== 'treo') return;
+        P.copy(c.giu.position); quay.localToWorld(P);
+        T.set(-Math.sin(c.a), 0, Math.cos(c.a)).transformDirection(quay.matrixWorld);
+        if (!c.b) { c.b = P.clone().addScaledVector(T, 0).add(new THREE.Vector3((Math.random() - .5) * .8, -.3, .9)); c.bT = c.b.clone(); }
+        vt.copy(c.b).sub(c.bT).multiplyScalar(Math.exp(-dt * 2.4)); c.bT.copy(c.b); c.b.add(vt); c.b.y -= 46 * dt * dt;
+        r3.copy(c.b).sub(P); r3.addScaledVector(T, -r3.dot(T)); if (r3.lengthSq() < 1e-6) r3.set(0, -1, 0); r3.normalize(); c.b.copy(P).add(r3);
+        yA.copy(r3).negate(); zA.set(0, .25, 1).addScaledVector(yA, -yA.y * .25 - yA.z).normalize(); xA.crossVectors(yA, zA).normalize(); zA.crossVectors(xA, yA);
+        mQ.makeBasis(xA, yA, zA); c.giu.quaternion.setFromRotationMatrix(mQ).premultiply(qCha);
+        var kh = c.m.g.userData.khoa; if (kh) kh.rotation.y = Math.atan2(-T.dot(zA), T.dot(xA)); });
+
+      // xoay: đưa charm vừa gắn ra trước mặt; rảnh thì tự quay chậm
+      if (!keo) {
+        if (canNhin && C[canNhin.ma] && canNhin.dat) { var d = canNhin.a - Math.PI / 2 - xoay; d = Math.atan2(Math.sin(d), Math.cos(d)); xoay += d * Math.min(1, dt * 3.2); vX = 0; nghi = 2.5; if (Math.abs(d) < .01) canNhin = null; }
+        else { nghi = Math.max(0, nghi - dt); vX += ((nghi > 0 ? 0 : .0022) - vX) * Math.min(1, dt * 1.5); xoay += vX; }
+        ngThem *= .985;
+      }
+      zXem += ((dangXem ? 1 : 0) - zXem) * Math.min(1, dt * 6);
+      var z = zXem * zXem * (3 - 2 * zXem);
+      nghieng.scale.setScalar(Math.max(1e-3, 1 - z)); nghieng.visible = z < .995; nghieng.position.y = .25 - z * 2;
+      xem.visible = z > .005; xem.scale.setScalar(Math.max(1e-3, z));
+      if (dangXem && !keo && !window.__dungXoay) { gocXem.y += dt * .5; gocXem.x *= .97; }   /* __dungXoay: khoá góc để chụp kiểm tra */
+      xem.rotation.set(-.08 + gocXem.x, Math.sin(gocXem.y) * .95, 0);
+      var zCam = (12 + BKm * 2.55) * (1 - z) + 15 * z; cam.position.z += (zCam - cam.position.z) * Math.min(1, dt * 5);
+      R.render(canh, cam);
+    }
+    requestAnimationFrame(f);
+    san.classList.add('xong');
+    ['25768', '23786', '23880', '25800', '24211'].forEach(function (m, k) { setTimeout(function () { gan(m); canNhin = null; capNhatO(); }, 500 + k * 350); });
+    window.__thu3d = { C: C, gan: gan, xemGan: xemGan, veVong: veVong, R: R, goc: gocXem, xemTrong: xemTrong };
+  }).catch(function (err) { console.error(err); san.querySelector('.cho').textContent = 'Máy này chưa dựng được 3D (' + (err && err.message || err) + ')'; });
+})();
+</script>
+</body>
+</html>
