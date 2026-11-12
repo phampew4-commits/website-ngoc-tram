@@ -55,3 +55,25 @@ Ký hiệu: ✅ đã sửa (đã chụp lại so ảnh) · ⏳ chưa sửa (đ�
 | 16481 bướm | Soát lại: khoen dùng hệ khoen nhỏ + khoen lớn chung như mọi charm treo, đúng kiểu hàng thật — không sửa. | — |
 | 23855, BS26, 23849, 23794, 23879 | Nhìn ngang tưởng 2 tấm tách rời — soát lại: đó là thành chạm lộng (hàng thật cũng lộng), không sửa. | — |
 | 23971 cầu bướm | Đã thu nhỏ vòng cổ 2 đầu. | ✅ |
+
+---
+
+## Đợt 5: soát kỹ 162 charm còn lại bằng ảnh lớn
+
+Cách soát: mỗi bảng 2 charm, đủ 4 ảnh thật cỡ lớn cạnh 4 góc 3D. Khoảng 85 charm không thấy lỗi đáng kể.
+
+**Lỗi chung đã sửa (một chỗ sửa áp cho nhiều charm):**
+- Charm xỏ dọc (kim cang 16391/16395/16396, 21669…) có đĩa lỗ đen lơ lửng ngoài đầu. Nay lỗ đặt đúng 2 đầu thật.
+- Ống cong hoa văn (23983, 23987, 23992, 24003, 24008, 24011, 24013, 24020, 24022, 24029) có lòng ống nâu đen. Nay là vàng như ảnh.
+- Bạc / vàng trắng (24064, 23990, 25389, 25390, 23879…) bị ngả be xám. Nay dùng phòng chụp trung tính, trắng bạc.
+- Ngọc trai có thêm ánh xà cừ hồng.
+- Lòng hạt chạm lộng (23782, 24195, 24205, 19033, 23757, 21662, 21666…) trước là nền nâu đặc. Nay thấy vàng bên trong như ảnh.
+- Thành lộng (23794, 23849, 23879…) có lỗ nhỏ lại để thành trông liền.
+- Xem gần: bướm 23941/23942, hồ lô 24213/23957 nay dựng đúng chiều như ảnh.
+
+**Sửa riêng:**
+16291 (3 khe cong bánh xe), 16396 (đầu kim cang giọt có nan nổi), 16407 (cánh hoa tròn rộng), 19807 (mặt nạ cáo, bỏ ria/miệng), 20245 (thỏi đáy bầu tròn, gù to), 21636 (lưỡi phurba dài thon), 21611 (vàng phun cát), 23767 (thành lộng mắt trám), 23835 (sợi lưng không thò ra), 23851 (6 cánh nhọn, đá ở đầu cánh), 23909 (hồ lô chỉ vàng lộng), 23918 (ô giữa lộng thủng), 23936 (miệng 5 múi), 23952 (dây dày), 23962 (cánh quạt rộng), 23984 (đầu ngựa to), 23990 (8 hoa pavé), 24014 (dây xích thật), 24035 (nét chữ dày), 24051 (cánh sen tròn đầu), 24077 (chuông vai tròn), 24134 (lưng lộng thấy ngọc), 24201 (3 dây xích dài khác nhau), 24209 (ô quả trám to), 24211 (vân đan to), 25146 (ngọc băng trong đều), 25380 (chạm sâu), 25785 (dáng giọt lệch), 25793 (lưng lộng khung cánh), 25800 (gân lá sâu), 12782 (ngọc băng xanh), 14681 (khung dày đá to), 25877 (đá to hơn), 26275 (lỗ chân đá nhỏ), 7648 (đuôi dày, mặt cáo có tai + mõm).
+
+**Chưa sửa (còn lệch nhỏ hoặc cần dựng lại nhiều):**
+- Giữ nguyên vì user đã chốt dáng trước đó: 24010 (2 trăng khuyết), 24106 (bông sen), 25820 (cua).
+- Còn lệch: 24030 (chữ Thọ tròn khác mẫu), 24142 (mây lửa chưa đúng dáng bất đối xứng), 25783 (đá trong khay là vòng liền, thật là 8 viên rời), 25811 / 25814 / 23776 / CHUAMA-8VBuMl (lưng chưa lộng), 25820 / 25874 (chi tiết), 9438 (đầu rồng còn sơ sài), 23868 (dáng khánh), 23947 (cánh chưa lộng), 23968 (bánh xe đáy), 19805 (độ lộng), 23880 (hoa văn mờ).

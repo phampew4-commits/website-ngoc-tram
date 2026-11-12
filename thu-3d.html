@@ -73,7 +73,7 @@
     </div>
   </div>
 </div>
-<script src="charm-3d.js?v=235"></script>
+<script src="charm-3d.js?v=239"></script>
 <script>
 (function () {
   var san = document.getElementById('san'), cv = document.getElementById('cv'), luoi = document.getElementById('luoi');
@@ -154,7 +154,7 @@
       if (bt) bt.forEach(function (b, i) { var n = document.createElement('button'); n.textContent = b.ten; if ((MAU[ma] || bt[0].k) === b.k) n.className = 'chon';
         n.onclick = function () { MAU[ma] = b.k; var c = C[ma]; if (c && !c.ra) { var m2 = X.tao(ma, { ten: (TT[ma] || {}).ten, co: day.co, mau: b.k }), lat = c.m.g.parent; lat.remove(c.m.g); lat.add(m2.g); c.m = m2; } xemGan(ma); }; hm.appendChild(n); });   // đổi màu: vẽ lại ô xem gần + charm đang gắn trên vòng
       if (m.g.userData.khoa) m.g.userData.khoa.rotation.y = m.g.userData.khoaXem !== undefined ? m.g.userData.khoaXem : -Math.PI / 2;
-      if (m.dungXem) m.g.rotation.z = -Math.PI / 2;   // tượng (chú tiểu, Phật…) xỏ dọc: xem gần cho đứng thẳng   // xem gần: khoá/khoen quay mặt ra trước (trên vòng thì xoay theo dây)
+      if (m.dungXem) m.g.rotation.z = typeof m.dungXem === 'number' ? m.dungXem : -Math.PI / 2;   // tượng (chú tiểu, Phật…) xỏ dọc: xem gần cho đứng thẳng   // xem gần: khoá/khoen quay mặt ra trước (trên vòng thì xoay theo dây)
       var hop = new THREE.Box3().setFromObject(m.g), tam = hop.getCenter(new THREE.Vector3()), kt = hop.getSize(new THREE.Vector3());
       m.g.position.sub(tam); xemTrong.add(m.g); xemTrong.scale.setScalar(5.4 / Math.max(kt.x, kt.y, 7));
       dangXem = ma; gocXem.x = 0; gocXem.y = 0; san.classList.add('gan');
