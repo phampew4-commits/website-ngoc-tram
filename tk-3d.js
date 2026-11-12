@@ -14,7 +14,7 @@
   var LUC_DE = ['#2ec46c', '#056b36'];
   var DAY = [6, 8, 7].map(function (co) { return { ten: 'Phỉ thuý xanh lục đế ' + co + ' ly', co: co, mau: LUC_DE }; });
   var soCharm = 0;
-  fetch('thiet-ke.json', { cache: 'no-cache' }).then(function (r) { return r.json(); }).then(function (d) {
+  (window.taiJson ? taiJson('thiet-ke.json') : fetch('thiet-ke.json').then(function (r) { return r.json(); })).then(function (d) {
     soCharm = (d.charm || []).length;
     var a = sec.querySelector('[data-dem="day"]'), b = sec.querySelector('[data-dem="charm"]');
     if (a && d.day) a.textContent = d.day.length + ' loại dây';

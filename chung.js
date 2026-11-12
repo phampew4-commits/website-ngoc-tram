@@ -157,7 +157,17 @@ theoDoi();
 requestAnimationFrame(function () { setTimeout(function () { $$('.hero .tieu-de,.hero [data-hien]').forEach(function (x) { x.classList.add('hien'); }); }, 150); });
 
 /* ---------- dữ liệu ---------- */
-var taiDuLieu = fetch('san-pham.json', {cache: 'no-cache'}).then(function (r) { return r.json(); }).then(function (d) {
+/* Tải JSON nhanh: trang khai báo <link rel="preload" href="x.json?v=PHIÊN"> trong <head> → tải song song ngay từ đầu.
+   Máy khách đã có đúng phiên này (lưu lần trước) → dùng luôn, khỏi chờ mạng. Phiên do xuat_du_lieu.py ghi khi xuất. */
+function taiJson(ten) {
+  var l = document.querySelector('link[rel="preload"][href^="' + ten + '"]'), url = l ? l.getAttribute('href') : ten, v = (url.split('v=')[1] || '');
+  try { var c = JSON.parse(localStorage.getItem('dl:' + ten) || 'null'); if (c && v && c.v === v) return Promise.resolve(c.d); } catch (er) {}
+  return fetch(url, v ? {} : {cache: 'no-cache'}).then(function (r) { return r.json(); }).then(function (d) {
+    try { localStorage.setItem('dl:' + ten, JSON.stringify({v: v, d: d})); } catch (er) {}
+    return d;
+  });
+}
+var taiDuLieu = taiJson('san-pham.json').then(function (d) {
   var an = ((CH.trangChu || {}).an || []).map(String);
   ds = d.filter(function (x) { return x.anh && x.anh.length && an.indexOf(String(x.ma)) < 0 && an.indexOf(String(x.id || '')) < 0; }); return ds;
 });

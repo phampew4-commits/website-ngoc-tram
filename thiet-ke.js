@@ -11,8 +11,15 @@ var dangChon = null, vongDang = 0, cheDo = 'sua';   // dangChon = charm đang ch
 var nhomLoc = 'tat', tuCharm = '', xepC = 're', soCharmHien = 0, MOI = 24, TOI_DA = +((CH.thietKe || {}).toiDaCharm) || 12;
 var CX = 200, CY = 200, R = 150, VONG_GIA = +((CH.thietKe || {}).vongGia) || 3;   // giá dây trong app là giá dây quấn 3 vòng
 
-fetch('thiet-ke.json', {cache: 'no-cache'}).then(function (r) { return r.json(); }).then(function (d) {
+taiJson('thiet-ke.json').then(function (d) {
   TK = d; docLai(); dungDay(); dungVong(); dungChip(); hienCharm(true); ve(true);
+  // bản vẽ cũ (charm-ve-rieng.js, 155KB) chỉ tải khi có charm chưa có ảnh v3
+  var V = window.V3 || {};
+  if (TK.charm.some(function (c) { return !V[c.id] && !V[c.ma]; })) {
+    var s = document.createElement('script'); s.src = 'charm-ve-rieng.js?v=' + (window.V3_PHIEN || 1);
+    s.onload = function () { TK.charm.forEach(function (c) { delete c._phac; }); ve(); };
+    document.head.appendChild(s);
+  }
 });
 
 /* ---------- tính toán ---------- */
