@@ -263,7 +263,7 @@
 
     /* ---------- vòng lặp ---------- */
     /* tự xoay chậm ở chế độ thiết kế cho sinh động; khách chạm / chọn charm thì dừng, rảnh tay 4 giây lại xoay */
-    var GIAM_DONG = matchMedia('(prefers-reduced-motion: reduce)').matches, lanCham = 0;
+    var GIAM_DONG = matchMedia('(prefers-reduced-motion: reduce)').matches, lanCham = -1e9;   // chưa chạm lần nào → xoay ngay khi mở trang
     function tuQuay() { return !GIAM_DONG && tt && tt.cheDo !== 'deo' && !keo && !chonO && !canNhin && Math.abs(vX) < 2e-3 && performance.now() - lanCham > 4000; }
     var dangChay = false, truoc = 0, yen = 1, hatDong = false, camDat = false, cT = new V3(), nhin = new V3(), nhinT = new V3();
     function chay() { if (dangChay || !tt) return; dangChay = true; truoc = performance.now(); requestAnimationFrame(f); }
