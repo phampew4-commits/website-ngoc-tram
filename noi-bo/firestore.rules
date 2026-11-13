@@ -1,0 +1,32 @@
+// Luật Firestore của web Ngọc Trầm — bản đang chạy trên Firebase.
+// App (Firebase Admin trên máy cửa hàng) KHÔNG bị luật này chặn: app vẫn đọc / sửa mọi đơn.
+// Đổi luật: app › Quản trị web › Khách hàng có nút chép, hoặc dán file này vào Firebase Console › Firestore › Rules.
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // hồ sơ khách: mỗi người chỉ đọc / ghi hồ sơ của chính mình
+    match /khach/{uid} {
+      allow read, write: if request.auth != null && request.auth.uid == uid;
+    }
+
+    // đơn hàng: khách đã đăng nhập tự đặt đơn của mình, đặt xong không sửa / xoá được nữa
+    match /donHang/{id} {
+      allow create: if request.auth != null
+                    && request.resource.data.uid == request.auth.uid
+                    && request.resource.data.trangThai == 'moi'
+                    && request.resource.data.daXem == false
+                    && request.resource.data.soMon is int
+                    && request.resource.data.soMon > 0
+                    && request.resource.data.soMon <= 30
+                    && request.resource.data.tong is number
+                    && request.resource.data.tong >= 0
+                    && request.resource.data.ten.size() <= 80
+                    && request.resource.data.sdt.size() <= 20
+                    && request.resource.data.diaChi.size() <= 300
+                    && request.resource.data.ghiChu.size() <= 500;
+      allow read: if request.auth != null && resource.data.uid == request.auth.uid;
+      allow update, delete: if false;
+    }
+  }
+}

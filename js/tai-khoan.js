@@ -90,8 +90,10 @@ function veHoSo() {
             '<span>' + (x.gia ? '≈ ' + gia(x.gia) : '') + '</span><button class="xoa-tk" data-bo="' + e(x.hash) + '" aria-label="Bỏ thiết kế">✕</button></li>'; }).join('') + '</ul>'
           : '<p class="dan">Chưa có thiết kế nào. <a href="thiet-ke.html">Thử tự thiết kế chuỗi</a>, rồi bấm "Lưu vào tài khoản".</p>') + '</section>' +
     '</div>' +
+    '<section class="tk-the tk-don" id="tkDon"><h2>Đơn đã đặt</h2><p class="dan">Đang xem lại…</p></section>' +
     '<section class="tk-yt"><h2>Món yêu thích <small>' + yt.length + '</small></h2><div class="luoi" id="luoiYt"></div>' +
       (yt.length ? '' : '<p class="dan">Bấm ♡ ở trang sản phẩm để lưu món bạn thích vào đây.</p>') + '</section>';
+  veDonCuaToi();
   $('#dangXuat').onclick = function () { KHACH.auth.signOut().then(function () { baoTin('Đã đăng xuất'); }); };
   $('#fHo').onsubmit = function (ev) {
     ev.preventDefault(); var f = ev.target, b = f.querySelector('button'); b.disabled = true;
@@ -104,5 +106,22 @@ function veHoSo() {
     var mon = yt.map(function (m) { return ds.filter(function (x) { return x.ma === m || x.id === m; })[0]; }).filter(Boolean);
     $('#luoiYt').innerHTML = mon.map(the).join('') || '<p class="dan">Các món bạn thích đã được bán hoặc tạm ẩn.</p>';
     theoDoi($('#luoiYt'));
+  });
+}
+
+/* ---------- đơn đã đặt (Firestore donHang của chính mình) ---------- */
+var TEN_TT = {moi: 'Cửa hàng đã nhận', dangGoi: 'Đang chuẩn bị gửi', daGui: 'Đã gửi đi', xong: 'Đã giao xong', huy: 'Đã huỷ'};
+function veDonCuaToi() {
+  var khung = $('#tkDon'); if (!khung) return;
+  KHACH.db.collection('donHang').where('uid', '==', KHACH.user.uid).limit(30).get().then(function (kq) {
+    var ds = kq.docs.map(function (d) { return d.data(); }).sort(function (a, b) { return (b.luc && b.luc.seconds || 0) - (a.luc && a.luc.seconds || 0); });
+    khung.innerHTML = '<h2>Đơn đã đặt <small>' + ds.length + '</small></h2>' + (ds.length ? '<ul class="ds-don">' + ds.map(function (d) {
+      var ng = d.luc && d.luc.seconds ? new Date(d.luc.seconds * 1000).toLocaleDateString('vi-VN') : '';
+      return '<li><div class="don-dau"><b>' + e(d.ma || '') + '</b><span class="chip-don tt-' + e(d.trangThai || 'moi') + '">' + e(TEN_TT[d.trangThai] || 'Cửa hàng đã nhận') + '</span></div>' +
+        '<div class="don-mon">' + (d.mon || []).map(function (m) { return e(m.ten) + ' <small>#' + e(m.ma) + '</small>'; }).join(' · ') + '</div>' +
+        '<div class="don-chan"><span>' + ng + '</span><b>' + gia(d.tong || 0) + '</b></div></li>';
+    }).join('') + '</ul>' : '<p class="dan">Chưa có đơn nào. Chọn món rồi bấm “Thêm vào giỏ” để đặt mua.</p>');
+  }).catch(function () {
+    khung.innerHTML = '<h2>Đơn đã đặt</h2><p class="dan">Chưa xem được danh sách đơn. Bạn nhắn Zalo cửa hàng để hỏi về đơn của mình nhé.</p>';
   });
 }

@@ -176,10 +176,12 @@ function moCt(x) {
     '<div class="ma-ct"><span>Mã ' + e(x.ma) + '</span><span class="chip' + (/bán/i.test(tt) ? ' ban' : '') + '">' + e(tt) + '</span></div>' +
     '<div class="gia-ct">' + gia(x.gia) + '</div><small>' + (x.gia ? 'Giá bán lẻ' : 'Nhắn shop để được báo giá') + '</small>' +
     (x.mo_ta ? '<p class="mt">' + e(x.mo_ta) + '</p>' : '') +
-    '<div class="hang"><a class="nut dac" style="background:#0068ff;border-color:#0068ff" href="' + linkZalo() + '" target="_blank" data-chep="' + e(x.ma) + '">Hỏi mua qua Zalo</a>' +
+    '<div class="hang">' + (/bán/i.test(tt) ? '' : '<button class="nut dac" data-gio="' + e(khoa(x)) + '">Thêm vào giỏ</button>') +
+    '<a class="nut zalo" href="' + linkZalo() + '" target="_blank" data-chep="' + e(x.ma) + '">Hỏi mua qua Zalo</a>' +
     '<a class="nut" href="' + linkFb() + '" target="_blank" data-chep="' + e(x.ma) + '">Nhắn Messenger</a></div>' +
     '<div class="ghi-ct">Bấm nút, câu hỏi kèm mã ' + e(x.ma) + ' được chép sẵn để bạn dán vào tin nhắn.</div>' +
     '<a class="sang-trang" href="' + linkSp(x) + '">Xem trang chi tiết <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>';
+  veNutThem();
   $('#ct').classList.add('mo'); document.body.style.overflow = 'hidden';
   document.title = x.ten + ' · Ngọc Trầm Store';
 }

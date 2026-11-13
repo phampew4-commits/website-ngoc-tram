@@ -182,6 +182,46 @@ function conHang(loai) {
   return ds.filter(function (x) { return (!loai || x.loai === loai) && x.tt !== 'Đã bán'; }).sort(function (a, b) { return b.gia - a.gia; });
 }
 
+/* ---------- giỏ hàng ----------
+   Chỉ lưu MÃ món ở máy khách (localStorage 'gio'); tên, giá, trạng thái luôn lấy mới từ data/san-pham.json
+   để khách không bao giờ đặt theo giá cũ hoặc đặt món đã bán. Mỗi món chỉ có một nên không có số lượng. */
+var GIO = {
+  ds: function () { try { return (JSON.parse(localStorage.getItem('gio') || '[]') || []).map(String); } catch (er) { return []; } },
+  luu: function (d) { try { localStorage.setItem('gio', JSON.stringify(d.slice(0, 30))); } catch (er) {} veNutGio(); veNutThem(); },
+  co: function (k) { return GIO.ds().indexOf(String(k)) >= 0; },
+  so: function () { return GIO.ds().length; },
+  them: function (k) { var d = GIO.ds(); if (d.indexOf(String(k)) < 0) { d.unshift(String(k)); GIO.luu(d); } },
+  bo: function (k) { GIO.luu(GIO.ds().filter(function (x) { return x !== String(k); })); },
+  xoaHet: function () { GIO.luu([]); }
+};
+function veNutGio() {
+  var a = $('#nutGio'), n = GIO.so();
+  if (!a) {
+    var phai = $('.dau .phai'); if (!phai) return;
+    a = document.createElement('a'); a.id = 'nutGio'; a.className = 'nut-gio'; a.href = 'gio-hang.html';
+    phai.insertBefore(a, phai.querySelector('.mo-menu'));
+  }
+  a.setAttribute('aria-label', n ? 'Giỏ hàng · ' + n + ' món' : 'Giỏ hàng'); a.title = a.getAttribute('aria-label');
+  a.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">' +
+    '<path d="M5.6 8h12.8l-1 11.1a1.9 1.9 0 0 1-1.9 1.7H8.5a1.9 1.9 0 0 1-1.9-1.7z"/><path d="M9.2 10.4V7.3a2.8 2.8 0 0 1 5.6 0v3.1"/></svg>' +
+    (n ? '<i>' + n + '</i>' : '');
+  a.classList.toggle('co', !!n);
+}
+function veNutThem() {   // đổi chữ trên mọi nút "Thêm vào giỏ" đang hiện
+  $$('[data-gio]').forEach(function (b) {
+    var co = GIO.co(b.dataset.gio);
+    b.classList.toggle('da', co);
+    b.textContent = co ? '✓ Đã trong giỏ · Xem giỏ' : 'Thêm vào giỏ';
+  });
+}
+document.addEventListener('click', function (ev) {
+  var b = ev.target.closest('[data-gio]'); if (!b) return;
+  if (GIO.co(b.dataset.gio)) { location.href = 'gio-hang.html'; return; }
+  GIO.them(b.dataset.gio); baoTin('Đã thêm vào giỏ — bấm giỏ hàng ở trên để đặt mua');
+});
+addEventListener('storage', function (ev) { if (ev.key === 'gio') { veNutGio(); veNutThem(); } });   // mở nhiều thẻ cùng lúc
+veNutGio();
+
 /* ---------- thẻ sản phẩm ---------- */
 function nhanSp(x) {
   var t = x.ten.toLowerCase(), v = /vàng (\d\dK)/i.exec(x.ten + ' ' + (x.mo_ta || ''));

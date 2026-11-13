@@ -15,7 +15,7 @@ var KHACH = {bat: false, user: null, ho: null, nghe: []};
   // app trước, auth + firestore song song (cả hai chỉ cần app).
   function choRanh() {
     return new Promise(function (ok) {
-      if (/tai-khoan/.test(location.pathname)) return ok();
+      if (/tai-khoan|gio-hang/.test(location.pathname)) return ok();
       function cho() { (window.requestIdleCallback || function (f) { setTimeout(f, 300); })(ok, { timeout: 2500 }); }
       if (document.readyState === 'complete') cho(); else window.addEventListener('load', cho, { once: true });
     });

@@ -66,7 +66,8 @@ function dungTrang(x) {
         '<div class="ma-ct" data-hien><span>Mã ' + e(x.ma) + '</span><span class="chip' + (/bán/i.test(tt) ? ' ban' : '') + '">' + e(tt) + '</span></div>' +
         '<div class="gia-sp" data-hien><b>' + gia(x.gia) + '</b><small>' + (x.gia ? 'Giá bán lẻ · mỗi món chỉ có một' : 'Nhắn shop để được báo giá') + '</small></div>' +
         '<div class="hang-mua" data-hien>' +
-          '<a class="nut dac zalo" href="' + linkZalo() + '" target="_blank" data-chep="' + e(x.ma) + '">Hỏi mua qua Zalo</a>' +
+          (/bán/i.test(tt) ? '' : '<button class="nut dac" data-gio="' + e(khoa(x)) + '">Thêm vào giỏ</button>') +
+          '<a class="nut zalo" href="' + linkZalo() + '" target="_blank" data-chep="' + e(x.ma) + '">Hỏi mua qua Zalo</a>' +
           '<a class="nut" href="' + linkFb() + '" target="_blank" data-chep="' + e(x.ma) + '">Nhắn Messenger</a>' +
           (KHACH.bat ? '<button class="nut nut-yt" id="nutYt" data-ma="' + e(x.ma) + '"><span>♡</span> Lưu vào yêu thích</button>' : '') +
         '</div>' +
@@ -93,7 +94,9 @@ function dungTrang(x) {
 
   /* thanh mua dính dưới đáy (điện thoại) */
   $('#thanhMua').innerHTML = '<div><small>Mã ' + e(x.ma) + '</small><b>' + gia(x.gia) + '</b></div>' +
-    '<a class="nut dac zalo" href="' + linkZalo() + '" target="_blank" data-chep="' + e(x.ma) + '">Hỏi mua qua Zalo</a>';
+    (/bán/i.test(tt) ? '<a class="nut dac zalo" href="' + linkZalo() + '" target="_blank" data-chep="' + e(x.ma) + '">Hỏi mua qua Zalo</a>'
+                     : '<button class="nut dac" data-gio="' + e(khoa(x)) + '">Thêm vào giỏ</button>');
+  veNutThem();
   var hm = $('.hang-mua'), lq = $('#lien-he');
   function thanh() { $('#thanhMua').classList.toggle('hien', hm.getBoundingClientRect().bottom < 0 && lq.getBoundingClientRect().top > innerHeight); }
   addEventListener('scroll', thanh, {passive: true}); thanh();
