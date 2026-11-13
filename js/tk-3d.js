@@ -6,7 +6,6 @@
   if (!sec) return;
   var the = sec.querySelector('.tk-vong3d'), cv = sec.querySelector('.tk-3d'), nhan = sec.querySelector('.tk-nhan');
   var nut = [].slice.call(sec.querySelectorAll('.tk-buoc button'));
-  var GIAM = matchMedia('(prefers-reduced-motion: reduce)').matches;
   var TG = 5200;   // thời gian mỗi bước (ms)
 
   // ---------- dữ liệu dây (màu thật từ kho) ----------
@@ -20,7 +19,7 @@
     { ten: 'Ngọc hoà điền xanh nho 6 ly', co: 6, mau: ['#c3d6a8', '#71895a'], sang: .7 }
   ];
   var soCharm = 0;
-  (window.taiJson ? taiJson('thiet-ke.json') : fetch('thiet-ke.json').then(function (r) { return r.json(); })).then(function (d) {
+  (window.taiJson ? taiJson('data/thiet-ke.json') : fetch('data/thiet-ke.json').then(function (r) { return r.json(); })).then(function (d) {
     soCharm = (d.charm || []).length;
     var a = sec.querySelector('[data-dem="day"]'), b = sec.querySelector('[data-dem="charm"]');
     if (a && d.day) a.textContent = d.day.length + ' loại dây';

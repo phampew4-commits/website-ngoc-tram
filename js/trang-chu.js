@@ -54,8 +54,10 @@ function dungNoiBat() {
 }
 
 /* ---------- bộ sưu tập: chữ lớn + ảnh theo chuột ---------- */
+function demLoai() { var d = {}; ds.forEach(function (x) { d[x.loai] = (d[x.loai] || 0) + 1; }); return d; }
+
 function dungBst() {
-  var dem = {}; ds.forEach(function (x) { dem[x.loai] = (dem[x.loai] || 0) + 1; });
+  var dem = demLoai();
   $('#dsBst').innerHTML = THU_TU.filter(function (l) { return dem[l]; }).map(function (l) {
     var a = conHang(l)[Math.min(1, conHang(l).length - 1)];
     return '<li data-hien><a href="#san-pham" data-loai="' + l + '" data-anh="' + (a ? anh(a.anh[0], 500) : '') + '">' + LOAI[l].ten + '<sup>' + dem[l] + '</sup></a></li>';
@@ -123,7 +125,7 @@ khiCuon();
 
 /* ---------- lọc + lưới sản phẩm ---------- */
 function dungTab() {
-  var dem = {}; ds.forEach(function (x) { dem[x.loai] = (dem[x.loai] || 0) + 1; });
+  var dem = demLoai();
   $('#tab').innerHTML = '<button data-loai="tat" class="on">Tất cả<span>' + ds.length + '</span></button>' +
     THU_TU.filter(function (l) { return dem[l]; }).map(function (l) { return '<button data-loai="' + l + '">' + LOAI[l].ngan + '<span>' + dem[l] + '</span></button>'; }).join('');
   $('#tab').onclick = function (ev) { var b = ev.target.closest('button'); if (b) chonLoai(b.dataset.loai); };
@@ -153,7 +155,7 @@ function hienLuoi(lai) {
   $('#xemThem').style.display = soHien < r.length ? '' : 'none';
   $('#xemThem').textContent = 'Xem thêm · ' + (r.length - soHien) + ' món';
 }
-document.addEventListener('click', function (ev) { var b = ev.target.closest('.sp'); if (b) location.hash = 'sp/' + encodeURIComponent(b.dataset.k); });
+window.moSp = function (k) { location.hash = 'sp/' + encodeURIComponent(k); };   // trang chủ mở chi tiết ngay tại chỗ
 
 /* ---------- chi tiết (trượt từ phải) ---------- */
 function moTheoHash() {

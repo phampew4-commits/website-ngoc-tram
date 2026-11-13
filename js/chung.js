@@ -15,10 +15,13 @@ var THU_TU = ['tron', 'chuoi', 'charm', 'nhan', 'khuyen', 'matday'];
 var ds = [], loc = 'tat', tu = '', sx = 'moi', soHien = 0, MOI_LAN = 16;
 var GIAM = matchMedia('(prefers-reduced-motion: reduce)').matches;
 
+/* bấm thẻ sản phẩm → mở trang chi tiết; trang chủ đặt moSp riêng (mở bằng hash) */
+document.addEventListener('click', function (ev) { var b = ev.target.closest('.sp'); if (b) (window.moSp || function (k) { location.href = 'san-pham.html?ma=' + encodeURIComponent(k); })(b.dataset.k); });
+
 function $(s) { return document.querySelector(s); }
 function $$(s) { return [].slice.call(document.querySelectorAll(s)); }
 function e(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function (x) { return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[x]; }); }
-function anh(id, w) { return /[\/.]/.test(id) ? id : 'https://lh3.googleusercontent.com/d/' + id + '=w' + (w || 600); }   // id Drive · hoặc đường dẫn ảnh trên web (day-tron/…)
+function anh(id, w) { return /[\/.]/.test(id) ? id : 'https://lh3.googleusercontent.com/d/' + id + '=w' + (w || 600); }   // id Drive · hoặc đường dẫn ảnh trên web (img/day-tron/…)
 function gia(n) { return n ? n.toLocaleString('vi-VN') + 'đ' : 'Liên hệ'; }
 function khoa(x) { return x.id || x.ma; }
 function boDau(s) { return String(s).normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/đ/g, 'd').replace(/Đ/g, 'D').toLowerCase(); }
@@ -105,7 +108,7 @@ function dungChanTrang() {
     '</div></div>' +
     '<div class="duoi"><div class="khung ct-luoi">' +
       '<div class="cot-tt">' +
-        '<a class="hieu-ct" href="' + (veTrang || '#') + '"><img src="hoa.png" alt=""><b>Ngọc Trầm</b></a>' +
+        '<a class="hieu-ct" href="' + (veTrang || '#') + '"><img src="img/hoa.png" alt=""><b>Ngọc Trầm</b></a>' +
         '<p>' + ndHtml(ND.gioiThieu || 'Phỉ thuý & trang sức vàng, chọn tay từng món từ năm 2015.') + '</p>' +
         '<div class="mo-cua' + (tt.mo ? ' mo' : '') + '"><i></i>' + tt.chu + '</div>' +
         '<ul class="lien-he-ct">' +
@@ -168,7 +171,7 @@ function taiJson(ten) {
     return d;
   });
 }
-var taiDuLieu = taiJson('san-pham.json').then(function (d) {
+var taiDuLieu = taiJson('data/san-pham.json').then(function (d) {
   var an = ((CH.trangChu || {}).an || []).map(String);
   ds = d.filter(function (x) { return x.anh && x.anh.length && an.indexOf(String(x.ma)) < 0 && an.indexOf(String(x.id || '')) < 0; }); return ds;
 });

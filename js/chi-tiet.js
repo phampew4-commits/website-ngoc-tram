@@ -224,9 +224,6 @@ function dungLienQuan(x) {
   theoDoi($('#lienQuan'));
 }
 
-/* thẻ sản phẩm trên trang này dẫn sang trang chi tiết */
-document.addEventListener('click', function (ev) { var b = ev.target.closest('.sp'); if (b) location.href = 'san-pham.html?ma=' + encodeURIComponent(b.dataset.k); });
-
 /* ♡ yêu thích (cần tài khoản) */
 function veYt() { var b = $('#nutYt'); if (!b) return; var co = KHACH.yeuThich(b.dataset.ma); b.classList.toggle('on', co); b.innerHTML = '<span>' + (co ? '♥' : '♡') + '</span> ' + (co ? 'Đã lưu yêu thích' : 'Lưu vào yêu thích'); }
 if (KHACH.bat) { KHACH.nghe.push(veYt); KHACH.san.then(function () { setTimeout(veYt, 300); }); }

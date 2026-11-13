@@ -55,7 +55,7 @@
 <div class="khung">
   <div class="dau">
     <h1>Charm <em>3D</em> · bản thử</h1>
-    <a href="thiet-ke.html">← Trang Tự thiết kế hiện tại</a>
+    <a href="../thiet-ke.html">← Trang Tự thiết kế hiện tại</a>
   </div>
   <div class="bo">
     <div class="san" id="san">
@@ -73,14 +73,14 @@
     </div>
   </div>
 </div>
-<script src="charm-3d.js?v=266"></script>
+<script src="../js/charm-3d.js?v=266"></script>
 <script>
 (function () {
   var san = document.getElementById('san'), cv = document.getElementById('cv'), luoi = document.getElementById('luoi');
   function e(s) { return String(s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
   function gia(n) { return n ? n.toLocaleString('vi-VN') + 'đ' : 'Liên hệ'; }
 
-  Promise.all([import('https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.min.js'), fetch('thiet-ke.json').then(function (r) { return r.json(); })]).then(function (kq) {
+  Promise.all([import('https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.min.js'), fetch('../data/thiet-ke.json').then(function (r) { return r.json(); })]).then(function (kq) {
     var THREE = kq[0], tk = kq[1], TT = {};
     tk.charm.forEach(function (c) { TT[c.id] = c; });
     var day = tk.day[0] || { co: 8, mau: ['#87b3bb', '#486165'], ten: 'Chuỗi ngọc' };

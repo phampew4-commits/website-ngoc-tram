@@ -4,7 +4,7 @@
 :root{
   --giay:#f4eee3; --giay2:#ebe2d2; --the:#fbf8f2;
   --muc:#1d3a46; --dem:#14262e; --chu:#1f2a2e; --mo:#6e6a62; --vien:rgba(29,58,70,.14);
-  --vang:#a8823a; --vang2:#d1ad66; --ngoc:#3d7a62; --ngoc2:#8fc2a8; --do:#a8452f;
+  --vang:#a8823a; --vang2:#d1ad66; --ngoc:#3d7a62; --do:#a8452f;
   --serif:"Noto Serif Display",Georgia,serif; --sans:"Be Vietnam Pro",-apple-system,system-ui,sans-serif;
   --muot:cubic-bezier(.16,1,.3,1);
 }
@@ -542,7 +542,6 @@ section[id]{scroll-margin-top:68px}
 .moi-tk .phai{position:relative;display:block;max-width:440px;margin:0 auto;width:100%}
 .vong-mh{width:100%;display:block;animation:quay 60s linear infinite;filter:drop-shadow(0 30px 40px rgba(0,0,0,.35))}
 .moi-tk .phai:hover .vong-mh{animation-duration:12s}
-.giua-mh{position:absolute;inset:0;display:grid;place-items:center;font:300 italic 30px var(--serif);color:var(--vang2)}
 @media (max-width:860px){.moi-tk .khung{grid-template-columns:1fr}.moi-tk .phai{max-width:300px}}
 .tk-san{-webkit-user-select:none;user-select:none}
 

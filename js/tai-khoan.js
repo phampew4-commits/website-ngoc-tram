@@ -106,4 +106,3 @@ function veHoSo() {
     theoDoi($('#luoiYt'));
   });
 }
-document.addEventListener('click', function (ev) { var b = ev.target.closest('.sp'); if (b) location.href = 'san-pham.html?ma=' + encodeURIComponent(b.dataset.k); });

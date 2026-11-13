@@ -93,7 +93,7 @@
     function taoMoHinh(g) {
       var c = g.c, m = X.tao(c.id, { ten: c.ten, co: coDay, mau: g.mau });
       if (m) return m;
-      var gr = new THREE.Group(), xo = (window.V3 || {})[c.id] || c.xo || 'treo', url = (window.V3 || {})[c.id] ? 'charm-v3/' + c.id + '.webp?v=' + (window.V3_PHIEN || 1) : (/[\/.]/.test(c.anh) ? c.anh : 'https://lh3.googleusercontent.com/d/' + c.anh + '=w300');
+      var gr = new THREE.Group(), xo = (window.V3 || {})[c.id] || c.xo || 'treo', url = (window.V3 || {})[c.id] ? 'img/charm-v3/' + c.id + '.webp?v=' + (window.V3_PHIEN || 1) : (/[\/.]/.test(c.anh) ? c.anh : 'https://lh3.googleusercontent.com/d/' + c.anh + '=w300');
       var t = THIEU[url] || (THIEU[url] = new THREE.TextureLoader().load(url)); t.colorSpace = THREE.SRGBColorSpace;
       var tam = new THREE.Mesh(new THREE.PlaneGeometry(10, 10), new THREE.MeshBasicMaterial({ map: t, transparent: true, alphaTest: .1, side: THREE.DoubleSide, toneMapped: false }));
       tam.position.y = xo === 'treo' ? -4.8 : 0; gr.add(tam);
@@ -263,8 +263,8 @@
 
     /* ---------- vòng lặp ---------- */
     /* tự xoay chậm ở chế độ thiết kế cho sinh động; khách chạm / chọn charm thì dừng, rảnh tay 4 giây lại xoay */
-    var GIAM_DONG = matchMedia('(prefers-reduced-motion: reduce)').matches, lanCham = -1e9;   // chưa chạm lần nào → xoay ngay khi mở trang
-    function tuQuay() { return !GIAM_DONG && tt && tt.cheDo !== 'deo' && !keo && !chonO && !canNhin && Math.abs(vX) < 2e-3 && performance.now() - lanCham > 4000; }
+    var lanCham = -1e9;   // chưa chạm lần nào → xoay ngay khi mở trang
+    function tuQuay() { return !GIAM && tt && tt.cheDo !== 'deo' && !keo && !chonO && !canNhin && Math.abs(vX) < 2e-3 && performance.now() - lanCham > 4000; }
     var dangChay = false, truoc = 0, yen = 1, hatDong = false, camDat = false, cT = new V3(), nhin = new V3(), nhinT = new V3();
     function chay() { if (dangChay || !tt) return; dangChay = true; truoc = performance.now(); requestAnimationFrame(f); }
     function f(t) {
@@ -274,7 +274,7 @@
       R.render(canh, cam);
       if (V.khi.khung) V.khi.khung();
       /* đứng yên hẳn (không kéo, không lướt, con lắc tắt) → nghỉ vẽ cho đỡ tốn pin */
-      var dong = keo || canNhin || hatDong || (!GIAM_DONG && tt.cheDo !== 'deo' && !chonO) ||   // thiết kế: chạy tiếp để tự xoay (kể cả lúc chờ 4 giây sau khi khách chạm) cam.position.distanceToSquared(cT) > 1e-6 || Math.abs(vX) > 1e-4 || (tt.cheDo === 'deo' && tuSpin) || vongChon.visible;
+      var dong = keo || canNhin || hatDong || (!GIAM && tt.cheDo !== 'deo' && !chonO) ||   // thiết kế: chạy tiếp để tự xoay (kể cả lúc chờ 4 giây sau khi khách chạm) cam.position.distanceToSquared(cT) > 1e-6 || Math.abs(vX) > 1e-4 || (tt.cheDo === 'deo' && tuSpin) || vongChon.visible;
       DS.forEach(function (o) { if (o.e < 1 || o.ra || (o.treo && o.bT && o.b.distanceToSquared(o.bT) > 1e-9)) dong = true; });
       if (!dong) { yen++; if (yen > 90) { dangChay = false; return; } } else yen = 1;
       requestAnimationFrame(f);

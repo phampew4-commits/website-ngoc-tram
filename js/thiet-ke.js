@@ -11,9 +11,8 @@ var dangChon = null, vongDang = 0, cheDo = 'sua';   // dangChon = charm đang ch
 var nhomLoc = 'tat', tuCharm = '', xepC = 're', soCharmHien = 0, MOI = 24, TOI_DA = +((CH.thietKe || {}).toiDaCharm) || 12;
 var CX = 200, CY = 200, R = 150, VONG_GIA = +((CH.thietKe || {}).vongGia) || 3;   // giá dây trong app là giá dây quấn 3 vòng
 
-taiJson('thiet-ke.json').then(function (d) {
+taiJson('data/thiet-ke.json').then(function (d) {
   TK = d; docLai(); dungDay(); dungVong(); dungChip(); hienCharm(true); ve(true);
-  // charm-ve-rieng.js (bản vẽ 2D cũ, 152KB) không tải nữa: mọi charm trong bản vẽ đó đã có ảnh v3; charm mới dùng ảnh v3 / mô hình 3D
 });
 
 /* ---------- tính toán ---------- */
