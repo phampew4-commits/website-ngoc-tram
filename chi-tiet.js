@@ -64,7 +64,6 @@ function dungTrang(x) {
         '<span class="nho" data-hien>' + loai.ten + ' · ' + e(nhanSp(x)) + '</span>' +
         '<h1 class="tieu-de"><span class="dong-chu"><span>' + e(x.ten) + '</span></span></h1>' +
         '<div class="ma-ct" data-hien><span>Mã ' + e(x.ma) + '</span><span class="chip' + (/bán/i.test(tt) ? ' ban' : '') + '">' + e(tt) + '</span></div>' +
-        '<p class="gioi-sp" data-hien>' + e(gioiThieu(x)) + '</p>' +
         '<div class="gia-sp" data-hien><b>' + gia(x.gia) + '</b><small>' + (x.gia ? 'Giá bán lẻ · mỗi món chỉ có một' : 'Nhắn shop để được báo giá') + '</small></div>' +
         '<div class="hang-mua" data-hien>' +
           '<a class="nut dac zalo" href="' + linkZalo() + '" target="_blank" data-chep="' + e(x.ma) + '">Hỏi mua qua Zalo</a>' +
@@ -78,9 +77,11 @@ function dungTrang(x) {
           '<li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M3 7h11v9H3zM14 10h4l3 3v3h-7"/><circle cx="7" cy="17.5" r="1.8"/><circle cx="17" cy="17.5" r="1.8"/></svg><span>Giao toàn quốc<small>Đóng hộp cẩn thận</small></span></li>' +
         '</ul>' +
         '<div class="mo-rong" data-hien>' +
-          '<details open><summary>Thông tin sản phẩm</summary><div class="tl"><div><dl class="bang-ts">' +
+          '<details open><summary>Thông tin sản phẩm</summary><div class="tl"><div>' +
+            (x.ct && x.ct.length ? '<p class="nhan-tp">Chi tiết món</p><ul class="ds-ct">' + x.ct.map(function (d) { return '<li>' + e(d) + '</li>'; }).join('') + '</ul>' : '') +
+            '<dl class="bang-ts">' +
             thongSo(x).map(function (r) { return '<div><dt>' + e(r[0]) + '</dt><dd>' + e(r[1]) + '</dd></div>'; }).join('') + '</dl>' +
-            (tp ? '<p class="nhan-tp">Charm đi kèm</p>' + tp : '') + '</div></div></details>' +
+            (tp && !(x.ct && x.ct.length) ? '<p class="nhan-tp">Charm đi kèm</p>' + tp : '') + '</div></div></details>' +
           '<details><summary>Giao hàng</summary><div class="tl"><div>' + dsCs('giao') + '</div></div></details>' +
           '<details><summary>Đổi trả &amp; bảo hành</summary><div class="tl"><div><p class="nhan-tp">Đổi trả</p>' + dsCs('doi') + '<p class="nhan-tp">Bảo hành</p>' + dsCs('bh') + '<p class="nhan-tp">Lưu ý về charm vàng</p>' + dsCs('luuY') + '</div></div></details>' +
           (x.tram ? GIU_TRAM : GIU_NGOC) +
@@ -128,29 +129,13 @@ function boAnh(x) {
   }
 }
 
-/* câu giới thiệu ngắn dưới tên: rút từ tên + dữ liệu thật, không thêm lời hứa nào ngoài chính sách cửa hàng */
-function gioiThieu(x) {
-  var t = x.ten + ' ' + (x.mo_ta || ''), ngoc = nhanSp(x).split(' · ')[0], co = /(\d+(?:[.,]\d+)?) ly/.exec(x.ten), v = /vàng (\d\dK)/i.exec(t), dau = '';
-  if (ngoc === LOAI[x.loai].ngan) ngoc = '';
-  var tram = x.tram || /trầm/i.test(t);
-  if (x.tron) {   // dây trơn: chỉ lấy câu kiểu dây + màu (bỏ ghi chú nội bộ)
-    dau = ((x.mo_ta || '').match(/(Chuỗi (quấn|đơn)[^.]*\.|Màu [^.]*\.)/g) || []).join(' ') + ' Dây trơn, có thể gắn thêm charm ở trang Tự thiết kế.';
-  } else if (x.loai === 'chuoi') {
-    dau = 'Chuỗi ' + (ngoc ? ngoc.toLowerCase() : (tram ? 'trầm' : 'ngọc')) + (co ? ' hạt ' + co[1].replace('.', ',') + ' ly' : '') +
-      (/mix|charm|chặn/i.test(t) ? ', phối charm ' + (v ? 'vàng ' + v[1].toUpperCase() : /bạc|925/i.test(t) ? 'bạc' : 'vàng') + ' theo tông ' + (tram ? 'trầm' : 'ngọc') : '') + '.';
-  }
-  var duyNhat = tram ? 'Không có hai chuỗi trầm giống nhau — món này chỉ có một, đúng chiếc trong ảnh.'
-    : (ngoc || x.loai === 'chuoi') && x.loai !== 'charm' ? 'Không có hai viên ngọc giống nhau — món này chỉ có một, đúng chiếc trong ảnh.' : 'Ảnh chụp đúng món bạn nhận.';
-  return (dau ? dau.trim() + ' ' : '') + duyNhat + ' Nhắn mã để xem thêm video trước khi chốt.';
-}
-
 /* ảnh lớn: xem kĩ từng góc (đủ bộ ảnh, xếp so le), bấm để xem toàn màn hình */
 function dungXemKi(x) {
   if (x.anh.length < 2) return;
   var k = $('#xemKi');
   k.innerHTML = '<div class="khung"><div class="dau-xk"><span class="nho" data-hien>Ảnh thật · chụp đúng món</span>' +
     '<h2 class="tieu-de"><span class="dong-chu"><span>Xem kĩ <em>từng góc</em></span></span></h2>' +
-    '<p data-hien>' + x.anh.length + ' ảnh chụp chính món mã ' + e(x.ma) + ' dưới ánh sáng thật. Màu ngọc có thể chênh nhẹ theo màn hình — cần thì nhắn xin thêm video.</p></div>' +
+    '<p data-hien>' + x.anh.length + ' ảnh đều chụp đúng chiếc bạn sẽ nhận (mã sản phẩm ' + e(x.ma) + '). Màu ngọc có thể chênh nhẹ theo màn hình — cần thì nhắn xin thêm video.</p></div>' +
     '<div class="luoi-xk">' + [0, 1].map(function (c) {   // 2 cột so le: ảnh lẻ bên trái, ảnh chẵn bên phải (lệch xuống)
       return '<div class="cot">' + x.anh.map(function (id, i) {
         return i % 2 !== c ? '' : '<figure data-hien data-i="' + i + '"><button type="button" aria-label="Xem ảnh ' + (i + 1) + ' toàn màn hình">' + hinh(id, x.ten + ' – ảnh ' + (i + 1), 1200) + '</button>' +
