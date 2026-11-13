@@ -1018,3 +1018,4 @@ body.khoa-cuon{overflow:hidden}
 .ds-ct li::before{content:"";position:absolute;left:2px;top:19px;width:7px;height:7px;border-radius:50%;background:var(--vang2);box-shadow:0 0 0 3px rgba(209,173,102,.18)}
 .ds-ct li:first-child{font:400 17px/1.5 var(--serif);color:var(--muc);padding-left:0}
 .ds-ct li:first-child::before{display:none}
+.dau-xk p a{color:var(--muc);border-bottom:1px solid var(--vang)}

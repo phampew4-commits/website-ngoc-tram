@@ -135,7 +135,7 @@ function dungXemKi(x) {
   var k = $('#xemKi');
   k.innerHTML = '<div class="khung"><div class="dau-xk"><span class="nho" data-hien>Ảnh thật · chụp đúng món</span>' +
     '<h2 class="tieu-de"><span class="dong-chu"><span>Xem kĩ <em>từng góc</em></span></span></h2>' +
-    '<p data-hien>' + x.anh.length + ' ảnh đều chụp đúng chiếc bạn sẽ nhận (mã sản phẩm ' + e(x.ma) + '). Màu ngọc có thể chênh nhẹ theo màn hình — cần thì nhắn xin thêm video.</p></div>' +
+    '<p data-hien>Bấm vào ảnh để xem phóng to. Muốn xem rõ màu ngọc hơn, <a href="' + linkZalo() + '" target="_blank" data-chep="' + e(x.ma) + '">nhắn Ngọc Trầm</a> để nhận video quay trực tiếp món này.</p></div>' +
     '<div class="luoi-xk">' + [0, 1].map(function (c) {   // 2 cột so le: ảnh lẻ bên trái, ảnh chẵn bên phải (lệch xuống)
       return '<div class="cot">' + x.anh.map(function (id, i) {
         return i % 2 !== c ? '' : '<figure data-hien data-i="' + i + '"><button type="button" aria-label="Xem ảnh ' + (i + 1) + ' toàn màn hình">' + hinh(id, x.ten + ' – ảnh ' + (i + 1), 1200) + '</button>' +
