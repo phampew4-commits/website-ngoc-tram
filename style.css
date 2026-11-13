@@ -1019,3 +1019,7 @@ body.khoa-cuon{overflow:hidden}
 .ds-ct li:first-child{font:400 17px/1.5 var(--serif);color:var(--muc);padding-left:0}
 .ds-ct li:first-child::before{display:none}
 .dau-xk p a{color:var(--muc);border-bottom:1px solid var(--vang)}
+/* nút gỡ bớt charm: vùng bấm rộng hơn hình tròn (ngón tay trên điện thoại hay lệch ra ngoài → trúng thẻ → lại gắn thêm) */
+.the-charm .bot-charm::after{content:"";position:absolute;inset:-14px;border-radius:50%}
+.the-charm .dau-cong,.the-charm .bot-charm,.the-charm{touch-action:manipulation;-webkit-tap-highlight-color:transparent}
+@media (hover:none){.the-charm .bot-charm{width:34px;height:34px;font-size:22px}}

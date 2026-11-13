@@ -404,7 +404,11 @@ function hienCharm(lai) {
 $('#dsCharm').addEventListener('click', function (ev) {
   var b = ev.target.closest('.the-charm'); if (!b) return;
   var c = TK.charm.filter(function (x) { return x.id === b.dataset.id; })[0];
-  if (ev.target.closest('.bot-charm')) {   // gỡ bớt viên gắn sau cùng
+  // gỡ bớt viên gắn sau cùng. iPhone (Safari) báo cú chạm vào nút "−" là chạm vào cả thẻ (ev.target = thẻ),
+  // nên xét theo toạ độ ngón tay: trong vòng nút "−" (nới thêm 14px) là gỡ, không phải gắn thêm.
+  var bot = b.querySelector('.bot-charm'), rb = bot && ev.detail && b.classList.contains('da') ? bot.getBoundingClientRect() : null;
+  var trungBot = ev.target.closest('.bot-charm') || (rb && ev.clientX >= rb.left - 14 && ev.clientX <= rb.right + 14 && ev.clientY >= rb.top - 14 && ev.clientY <= rb.bottom + 14);
+  if (trungBot) {
     var cuoi = chon.gan.filter(function (g) { return g.c === c; }).pop(); if (cuoi) boMot(cuoi); return;
   }
   if (!chon.day) { baoTin('Chọn dây ngọc ở bước 01 trước nhé'); $('#dsDay').scrollIntoView({block: 'center'}); return; }
