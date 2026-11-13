@@ -13,7 +13,11 @@ taiDuLieu.then(function () {
   var x = ds.filter(function (y) { return khoa(y) === maSp; })[0] || ds.filter(function (y) { return y.ma === maSp; })[0];
   if (!x) return khongThay();
   dungTrang(x);
+  dungXemKi(x);
+  dungQuy();
   dungLienQuan(x);
+  dungHd(x);
+  dungDaXem(x);
 }).catch(khongThay);
 
 function khongThay() {
@@ -29,7 +33,7 @@ function thongSo(x) {
   r.push(['Dòng sản phẩm', LOAI[x.loai].ten]);
   var ngoc = nhanSp(x).split(' · ')[0];
   if (ngoc && ngoc !== LOAI[x.loai].ngan) r.push([x.tram ? 'Loại hạt' : 'Chất ngọc', ngoc]);
-  var co = /(\d+(?:[.,]\d+)?) ly/.exec(t); if (co) r.push(['Cỡ hạt', co[1].replace('.', ',') + ' ly']);
+  var co = /(\d+(?:[.,]\d+)?) ly/.exec(x.ten); if (co && x.loai !== 'charm') r.push(['Cỡ hạt', co[1].replace('.', ',') + ' ly']);
   var v = /vàng (\d\dK)/i.exec(t); if (v) r.push([x.loai === 'chuoi' ? 'Charm' : 'Chất liệu vàng', 'Vàng ' + v[1].toUpperCase()]);
   else if (/bạc|925/i.test(t)) r.push([x.loai === 'chuoi' ? 'Chất liệu charm' : 'Chất liệu', /phủ vàng/i.test(t) ? 'Bạc 925 phủ vàng' : 'Bạc 925']);
   r.push(['Mã sản phẩm', x.ma]);
@@ -60,6 +64,7 @@ function dungTrang(x) {
         '<span class="nho" data-hien>' + loai.ten + ' · ' + e(nhanSp(x)) + '</span>' +
         '<h1 class="tieu-de"><span class="dong-chu"><span>' + e(x.ten) + '</span></span></h1>' +
         '<div class="ma-ct" data-hien><span>Mã ' + e(x.ma) + '</span><span class="chip' + (/bán/i.test(tt) ? ' ban' : '') + '">' + e(tt) + '</span></div>' +
+        '<p class="gioi-sp" data-hien>' + e(gioiThieu(x)) + '</p>' +
         '<div class="gia-sp" data-hien><b>' + gia(x.gia) + '</b><small>' + (x.gia ? 'Giá bán lẻ · mỗi món chỉ có một' : 'Nhắn shop để được báo giá') + '</small></div>' +
         '<div class="hang-mua" data-hien>' +
           '<a class="nut dac zalo" href="' + linkZalo() + '" target="_blank" data-chep="' + e(x.ma) + '">Hỏi mua qua Zalo</a>' +
@@ -106,7 +111,7 @@ function boAnh(x) {
     $$('#nhoAnh button').forEach(function (b, t) { b.classList.toggle('on', t === i); });
     if ($('#demAnh')) $('#demAnh').textContent = ('0' + (i + 1)).slice(-2) + ' / ' + ('0' + n).slice(-2);
   }
-  k.addEventListener('click', function (ev) { var b = ev.target.closest('[data-buoc]'); if (b) toi(i + +b.dataset.buoc); });
+  k.addEventListener('click', function (ev) { var b = ev.target.closest('[data-buoc]'); if (b) toi(i + +b.dataset.buoc); else moDen(x, i); });
   if ($('#nhoAnh')) $('#nhoAnh').addEventListener('click', function (ev) { var b = ev.target.closest('button'); if (b) toi(+b.dataset.i); });
   addEventListener('keydown', function (ev) { if (ev.key === 'ArrowLeft') toi(i - 1); if (ev.key === 'ArrowRight') toi(i + 1); });
   var x0 = null;
@@ -121,6 +126,106 @@ function boAnh(x) {
     });
     k.addEventListener('mouseleave', function () { k.classList.remove('phong'); });
   }
+}
+
+/* câu giới thiệu ngắn dưới tên: rút từ tên + dữ liệu thật, không thêm lời hứa nào ngoài chính sách cửa hàng */
+function gioiThieu(x) {
+  var t = x.ten + ' ' + (x.mo_ta || ''), ngoc = nhanSp(x).split(' · ')[0], co = /(\d+(?:[.,]\d+)?) ly/.exec(x.ten), v = /vàng (\d\dK)/i.exec(t), dau = '';
+  if (ngoc === LOAI[x.loai].ngan) ngoc = '';
+  var tram = x.tram || /trầm/i.test(t);
+  if (x.tron) {   // dây trơn: chỉ lấy câu kiểu dây + màu (bỏ ghi chú nội bộ)
+    dau = ((x.mo_ta || '').match(/(Chuỗi (quấn|đơn)[^.]*\.|Màu [^.]*\.)/g) || []).join(' ') + ' Dây trơn, có thể gắn thêm charm ở trang Tự thiết kế.';
+  } else if (x.loai === 'chuoi') {
+    dau = 'Chuỗi ' + (ngoc ? ngoc.toLowerCase() : (tram ? 'trầm' : 'ngọc')) + (co ? ' hạt ' + co[1].replace('.', ',') + ' ly' : '') +
+      (/mix|charm|chặn/i.test(t) ? ', phối charm ' + (v ? 'vàng ' + v[1].toUpperCase() : /bạc|925/i.test(t) ? 'bạc' : 'vàng') + ' theo tông ' + (tram ? 'trầm' : 'ngọc') : '') + '.';
+  }
+  var duyNhat = tram ? 'Không có hai chuỗi trầm giống nhau — món này chỉ có một, đúng chiếc trong ảnh.'
+    : (ngoc || x.loai === 'chuoi') && x.loai !== 'charm' ? 'Không có hai viên ngọc giống nhau — món này chỉ có một, đúng chiếc trong ảnh.' : 'Ảnh chụp đúng món bạn nhận.';
+  return (dau ? dau.trim() + ' ' : '') + duyNhat + ' Nhắn mã để xem thêm video trước khi chốt.';
+}
+
+/* ảnh lớn: xem kĩ từng góc (đủ bộ ảnh, xếp so le), bấm để xem toàn màn hình */
+function dungXemKi(x) {
+  if (x.anh.length < 2) return;
+  var k = $('#xemKi');
+  k.innerHTML = '<div class="khung"><div class="dau-xk"><span class="nho" data-hien>Ảnh thật · chụp đúng món</span>' +
+    '<h2 class="tieu-de"><span class="dong-chu"><span>Xem kĩ <em>từng góc</em></span></span></h2>' +
+    '<p data-hien>' + x.anh.length + ' ảnh chụp chính món mã ' + e(x.ma) + ' dưới ánh sáng thật. Màu ngọc có thể chênh nhẹ theo màn hình — cần thì nhắn xin thêm video.</p></div>' +
+    '<div class="luoi-xk">' + [0, 1].map(function (c) {   // 2 cột so le: ảnh lẻ bên trái, ảnh chẵn bên phải (lệch xuống)
+      return '<div class="cot">' + x.anh.map(function (id, i) {
+        return i % 2 !== c ? '' : '<figure data-hien data-i="' + i + '"><button type="button" aria-label="Xem ảnh ' + (i + 1) + ' toàn màn hình">' + hinh(id, x.ten + ' – ảnh ' + (i + 1), 1200) + '</button>' +
+          '<figcaption>' + ('0' + (i + 1)).slice(-2) + '</figcaption></figure>'; }).join('') + '</div>'; }).join('') + '</div></div>';
+  k.hidden = false;
+  k.addEventListener('click', function (ev) { var f = ev.target.closest('figure'); if (f) moDen(x, +f.dataset.i); });
+  theoDoi(k);
+}
+
+/* xem ảnh toàn màn hình: mũi tên, phím, vuốt, Esc */
+function moDen(x, i) {
+  var d = $('#denAnh'), n = x.anh.length, truoc = document.activeElement;
+  d.innerHTML = '<button class="dong" aria-label="Đóng">×</button>' + x.anh.map(function (id, t) { return '<figure data-i="' + t + '">' + hinh(id, x.ten + ' – ảnh ' + (t + 1), 2000) + '</figure>'; }).join('') +
+    (n > 1 ? '<button class="mui-ten trai" data-buoc="-1" aria-label="Ảnh trước"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M15 5l-7 7 7 7"/></svg></button>' +
+      '<button class="mui-ten phai" data-buoc="1" aria-label="Ảnh sau"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9 5l7 7-7 7"/></svg></button>' : '') +
+    '<span class="dem-anh"></span>';
+  d.setAttribute('role', 'dialog'); d.setAttribute('aria-modal', 'true'); d.setAttribute('aria-label', 'Ảnh ' + x.ten);
+  function toi(j) { i = (j + n) % n; d.querySelectorAll('figure').forEach(function (f, t) { f.classList.toggle('on', t === i); }); d.querySelector('.dem-anh').textContent = ('0' + (i + 1)).slice(-2) + ' / ' + ('0' + n).slice(-2); }
+  function dong() { d.classList.remove('mo'); document.body.classList.remove('khoa-cuon'); removeEventListener('keydown', phim, true); setTimeout(function () { d.hidden = true; d.innerHTML = ''; }, 350); if (truoc) truoc.focus(); }
+  function phim(ev) { if (ev.key === 'Escape') dong(); else if (ev.key === 'ArrowLeft') toi(i - 1); else if (ev.key === 'ArrowRight') toi(i + 1); else return; ev.stopPropagation(); ev.preventDefault(); }
+  d.onclick = function (ev) { var b = ev.target.closest('[data-buoc]'); if (b) toi(i + +b.dataset.buoc); else if (ev.target.closest('.dong') || !ev.target.closest('img')) dong(); };
+  var x0 = null;
+  d.ontouchstart = function (ev) { x0 = ev.touches[0].clientX; };
+  d.ontouchend = function (ev) { if (x0 == null) return; var q = ev.changedTouches[0].clientX - x0; if (Math.abs(q) > 40) toi(i + (q < 0 ? 1 : -1)); x0 = null; };
+  addEventListener('keydown', phim, true);
+  d.hidden = false; document.body.classList.add('khoa-cuon'); toi(i);
+  requestAnimationFrame(function () { d.classList.add('mo'); d.querySelector('.dong').focus(); });
+}
+
+/* dải "Cách Ngọc Trầm chọn từng món" — chữ lấy từ phần Nội dung trang chủ (app › Cài đặt web) */
+function dungQuy() {
+  var v = ((CH.noiDung || {}).van || {}).quy || {}, k = $('#spQuy');
+  var buoc = [
+    [v.b1t || 'Chọn ngọc', v.b1n || 'Từng viên ngọc được xem dưới ánh sáng tự nhiên — màu, độ trong, vân ngọc — trước khi vào kho.',
+      '<circle pathLength="1" cx="40" cy="40" r="14"/><circle pathLength="1" cx="70" cy="34" r="14"/><circle pathLength="1" cx="100" cy="40" r="14"/><circle pathLength="1" cx="118" cy="66" r="14"/><circle pathLength="1" cx="28" cy="68" r="14"/><path pathLength="1" d="M64 74c0 0 0 14 11 24c11-10 11-24 11-24c-6-5-16-5-22 0z"/><path pathLength="1" d="M75 60v14"/>'],
+    [v.b2t || 'Phối charm vàng', v.b2n || 'Chuỗi được phối với charm vàng theo tông ngọc, để mỗi bộ là một thiết kế không lặp lại.',
+      '<path pathLength="1" d="M20 30c30 50 80 50 110 0"/><circle pathLength="1" cx="45" cy="58" r="7"/><circle pathLength="1" cx="75" cy="66" r="7"/><circle pathLength="1" cx="105" cy="58" r="7"/><path pathLength="1" d="M75 73v10"/><path pathLength="1" d="M66 92a9 9 0 1018 0c0-8-9-9-9-9s-9 1-9 9z"/><path pathLength="1" d="M75 101v8"/>'],
+    [v.b3t || 'Đóng hộp & gửi đi', v.b3n || 'Mỗi món được kiểm tra lần cuối, gửi video cho bạn xem trước, rồi đóng hộp cẩn thận và giao tận nơi.',
+      '<rect pathLength="1" x="30" y="50" width="90" height="60" rx="3"/><path pathLength="1" d="M24 50h102v-14H24z"/><path pathLength="1" d="M75 36v74"/><path pathLength="1" d="M75 36c-14-22-34-10-22 0M75 36c14-22 34-10 22 0"/>']];
+  var tieu = (v.tieu || 'Cách Ngọc Trầm\n*chọn* từng món').split('\n');
+  k.innerHTML = '<div class="khung"><h2 class="tieu-de">' + tieu.map(function (d) { return '<span class="dong-chu"><span>' + ndHtml(d) + '</span></span>'; }).join('') + '</h2>' +
+    '<div class="buoc-ngang">' + buoc.map(function (b, i) {
+      return '<article data-hien style="--i:' + i + '"><svg viewBox="0 0 150 130" aria-hidden="true">' + b[2] + '</svg><span class="so">0' + (i + 1) + '</span><h3>' + e(b[0]) + '</h3><p>' + e(b[1]) + '</p></article>'; }).join('') +
+    '</div></div>';
+  k.hidden = false; theoDoi(k);
+}
+
+/* hỏi đáp (app › Nội dung › Hỏi đáp) + gợi ý tự thiết kế với chuỗi / charm */
+function dungHd(x) {
+  var hd = (CH.noiDung || {}).hoiDap || [], k = $('#spHd');
+  if (!hd.length) return;
+  var goi = x.loai === 'chuoi' || x.loai === 'charm' ? '<a class="goi-tk" href="thiet-ke.html" data-hien><span class="nho">Xưởng phối chuỗi · 3D</span>' +
+    '<b>' + (x.loai === 'chuoi' ? 'Thích dây ngọc này, muốn <em>phối kiểu khác?</em>' : 'Xem charm này <em>trên chuỗi của bạn</em>') + '</b>' +
+    '<small>Chọn dây, nhập cỡ tay, gắn charm vàng vào đúng chỗ — xoay xem 3D như thật rồi gửi cho Ngọc Trầm xâu giúp.</small>' +
+    '<span class="nut dac">Tự thiết kế <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span></a>' : '';
+  k.innerHTML = '<div class="khung"><div class="trai"><span class="nho" data-hien>Cần biết</span>' +
+    '<h2 class="tieu-de"><span class="dong-chu"><span>Hỏi <em>&amp;</em> đáp</span></span></h2>' +
+    '<p data-hien>Chưa thấy câu bạn cần? <a href="' + linkZalo() + '" target="_blank" data-chep="' + e(x.ma) + '">Nhắn Ngọc Trầm</a> kèm mã ' + e(x.ma) + '.</p>' + goi + '</div>' +
+    '<div data-hien>' + hd.map(function (q, i) { return '<details' + (i ? '' : ' open') + '><summary>' + e(q.hoi) + '</summary><div class="tl"><div><p>' + e(q.dap) + '</p></div></div></details>'; }).join('') + '</div></div>';
+  k.hidden = false; theoDoi(k);
+}
+
+/* món bạn vừa xem (nhớ trên máy khách, tối đa 12) */
+function dungDaXem(x) {
+  var kx = khoa(x), cu = [];
+  try { cu = JSON.parse(localStorage.getItem('daXem') || '[]'); } catch (er) {}
+  try { localStorage.setItem('daXem', JSON.stringify([kx].concat(cu.filter(function (m) { return m !== kx; })).slice(0, 12))); } catch (er) {}
+  var mon = cu.filter(function (m) { return m !== kx; }).map(function (m) { return ds.filter(function (y) { return khoa(y) === m; })[0]; })
+    .filter(function (y) { return y && y.tt !== 'Đã bán'; }).slice(0, 6);
+  if (!mon.length) return;
+  var k = $('#daXem');
+  k.innerHTML = '<div class="khung"><div class="dau-dx"><span class="nho">Bạn vừa xem</span><button type="button" class="xoa-dx">Xoá lịch sử</button></div><div class="hang-dx">' +
+    mon.map(function (y) { return '<a href="' + linkSp(y) + '">' + hinh(y.anh[0], y.ten, 300) + '<span>' + e(y.ten) + '</span><b>' + gia(y.gia) + '</b></a>'; }).join('') + '</div></div>';
+  k.hidden = false;
+  k.querySelector('.xoa-dx').onclick = function () { try { localStorage.setItem('daXem', JSON.stringify([kx])); } catch (er) {} k.hidden = true; };
 }
 
 function dungLienQuan(x) {
