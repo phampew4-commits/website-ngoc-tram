@@ -137,12 +137,12 @@
         if (g.moi && t.cheDo !== 'deo') canNhin = o;
       });
       chonO = t.chon ? DS.get(t.chon) || null : null;
-      chay();
+      yen = 1; chay();   // có thay đổi → vẽ tiếp cho tới khi hạt xếp xong (không dừng giữa chừng để lại vòng hở)
     }
 
     /* ---------- xếp hạt + charm theo bề rộng thật trên dây (đơn vị cm) ---------- */
     function xep(dt) {
-      var t = tt, rH = t.co / 20, ds = [], soHat = 0, mu = Math.min(1, dt * 7), ks = t.cheDo === 'deo' ? Array.from({ length: t.L }, function (_, k) { return k; }) : [t.vongDang];
+      var t = tt, rH = t.co / 20, ds = [], soHat = 0, mu = Math.min(1, dt * 7); hatDong = false; var ks = t.cheDo === 'deo' ? Array.from({ length: t.L }, function (_, k) { return k; }) : [t.vongDang];
       var o3 = {}; DS.forEach(function (o) { if (!o.ra) o3[o.g.k + '.' + o.g.j] = o; });
       var dsVong = ks.map(function (k) {
         var muc = [];
@@ -154,6 +154,7 @@
         }
         var L = 0; muc.forEach(function (m) { L += m.w; });
         var BK = L / (2 * PI); BKm[k] = BKm[k] === undefined ? BK : BKm[k] + (BK - BKm[k]) * mu;
+        if (Math.abs(BKm[k] - BK) > 1e-4) hatDong = true;
         return { k: k, muc: muc, BK: BK };
       });
       /* đeo thử: cổ tay vừa lòng vòng lớn nhất, các vòng xếp cạnh nhau, vòng 1 sát bàn tay */
@@ -171,7 +172,7 @@
             P = new V3(x0, cy + BK * Math.cos(th), BK * Math.sin(th));
             T = new V3(0, Math.sin(th), -Math.cos(th)); F = new V3(0, Math.cos(th), Math.sin(th)); }
           else { P = new V3(Math.cos(a) * BK, 0, Math.sin(a) * BK); T = new V3(Math.sin(a), 0, -Math.cos(a)); F = new V3(Math.cos(a), 0, Math.sin(a)); }
-          if (m.hat !== undefined) { var h = HAT[m.hat]; if (!h.dat) { h.p.copy(P); h.dat = true; } else h.p.lerp(P, mu); h.F = F; gj[m.j] = a; ds.push(h); soHat++; return; }
+          if (m.hat !== undefined) { var h = HAT[m.hat]; if (!h.dat) { h.p.copy(P); h.dat = true; } else { if (h.p.distanceToSquared(P) > 1e-8) hatDong = true; h.p.lerp(P, mu); } h.F = F; gj[m.j] = a; ds.push(h); soHat++; return; }
           var o = m.o; if (!m.o.treo) gj[m.j] = a;
           if (!o.dat) { o.p.copy(P); o.dat = true; } else o.p.lerp(P, mu);
           o.T.copy(T); o.F.copy(F); o.a = a;
@@ -230,6 +231,7 @@
     cv.addEventListener('pointerdown', function (ev) {
       if (!tt) return;
       var o = tt.cheDo !== 'deo' ? trungCharm(ev) : null;
+      lanCham = performance.now();
       keo = { x: ev.clientX, y: ev.clientY, x0: ev.clientX, y0: ev.clientY, o: o, di: false };
       cv.setPointerCapture(ev.pointerId); canNhin = null; tuSpin = false; san.classList.add('keo-3d');
     });
@@ -250,7 +252,7 @@
       if (!keo) return;
       if (!keo.di && V.khi.chon) V.khi.chon(keo.o ? keo.o.g : null);
       if (keo.o) keo.o.keo = false;
-      keo = null; san.classList.remove('keo-3d'); chay();
+      keo = null; lanCham = performance.now(); san.classList.remove('keo-3d'); chay();
     }
     cv.addEventListener('pointerup', tha); cv.addEventListener('pointercancel', tha);
 
@@ -260,7 +262,10 @@
     var thay = true; new IntersectionObserver(function (e) { thay = e[0].isIntersecting; if (thay) chay(); }).observe(san);
 
     /* ---------- vòng lặp ---------- */
-    var dangChay = false, truoc = 0, yen = 1, camDat = false, cT = new V3(), nhin = new V3(), nhinT = new V3();
+    /* tự xoay chậm ở chế độ thiết kế cho sinh động; khách chạm / chọn charm thì dừng, rảnh tay 4 giây lại xoay */
+    var GIAM_DONG = matchMedia('(prefers-reduced-motion: reduce)').matches, lanCham = 0;
+    function tuQuay() { return !GIAM_DONG && tt && tt.cheDo !== 'deo' && !keo && !chonO && !canNhin && Math.abs(vX) < 2e-3 && performance.now() - lanCham > 4000; }
+    var dangChay = false, truoc = 0, yen = 1, hatDong = false, camDat = false, cT = new V3(), nhin = new V3(), nhinT = new V3();
     function chay() { if (dangChay || !tt) return; dangChay = true; truoc = performance.now(); requestAnimationFrame(f); }
     function f(t) {
       var dt = Math.min(.05, (t - truoc) / 1000); truoc = t;
@@ -269,7 +274,7 @@
       R.render(canh, cam);
       if (V.khi.khung) V.khi.khung();
       /* đứng yên hẳn (không kéo, không lướt, con lắc tắt) → nghỉ vẽ cho đỡ tốn pin */
-      var dong = keo || canNhin || Math.abs(vX) > 1e-4 || (tt.cheDo === 'deo' && tuSpin) || vongChon.visible;
+      var dong = keo || canNhin || hatDong || (!GIAM_DONG && tt.cheDo !== 'deo' && !chonO) ||   // thiết kế: chạy tiếp để tự xoay (kể cả lúc chờ 4 giây sau khi khách chạm) cam.position.distanceToSquared(cT) > 1e-6 || Math.abs(vX) > 1e-4 || (tt.cheDo === 'deo' && tuSpin) || vongChon.visible;
       DS.forEach(function (o) { if (o.e < 1 || o.ra || (o.treo && o.bT && o.b.distanceToSquared(o.bT) > 1e-9)) dong = true; });
       if (!dong) { yen++; if (yen > 90) { dangChay = false; return; } } else yen = 1;
       requestAnimationFrame(f);
@@ -280,7 +285,7 @@
         if (deo) { if (tuSpin) spin += dt * .35; }
         else if (canNhin && DS.get(canNhin.g) === canNhin && canNhin.dat) {   // đưa charm vừa gắn ra trước mặt
           var d = -(canNhin.a - PI / 2) - xoay; d = Math.atan2(Math.sin(d), Math.cos(d)); xoay += d * Math.min(1, dt * 3.2); vX = 0; if (Math.abs(d) < .01) canNhin = null; }
-        else { vX *= Math.pow(.02, dt); xoay += vX; }
+        else { vX *= Math.pow(.02, dt); xoay += vX; if (tuQuay()) xoay += dt * .3; }
         ngThem *= Math.pow(.4, dt);
       }
       var kq = xep(dt);
@@ -290,7 +295,8 @@
         nhinT.set(xc + .5, -.25, 0); cT.set(nhinT.x + kc * Math.sin(az) * Math.cos(el), nhinT.y + kc * Math.sin(el), kc * Math.cos(az) * Math.cos(el));
       } else {
         quay.rotation.y = xoay; nghieng.rotation.x = .9 + ngThem;
-        var bk = BKm[tt.vongDang] || 3; nhinT.set(0, -.55, 0); cT.set(0, 0, 7 + bk * 3.3);
+        // máy ảnh đứng yên theo cỡ tay lớn (~19 cm) → đổi cỡ tay thấy vòng to / nhỏ thật; vòng to hơn thế mới lùi ra
+        var bk = BKm[tt.vongDang] || 3; nhinT.set(0, -.55, 0); cT.set(0, 0, 7 + Math.max(bk, 3.1) * 3.3);
       }
       var mc = Math.min(1, dt * 5); cam.position.lerp(cT, camDat ? mc : 1); nhin.lerp(nhinT, camDat ? mc : 1); cam.lookAt(nhin); camDat = true;
       nghieng.updateMatrixWorld(true); deoG.updateMatrixWorld(true);

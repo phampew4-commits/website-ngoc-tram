@@ -187,8 +187,8 @@ function dungQuy() {
 function dungHd(x) {
   var hd = (CH.noiDung || {}).hoiDap || [], k = $('#spHd');
   if (!hd.length) return;
-  var goi = x.loai === 'chuoi' || x.loai === 'charm' ? '<a class="goi-tk" href="thiet-ke.html" data-hien><span class="nho">Xưởng phối chuỗi · 3D</span>' +
-    '<b>' + (x.loai === 'chuoi' ? 'Thích dây ngọc này, muốn <em>phối kiểu khác?</em>' : 'Xem charm này <em>trên chuỗi của bạn</em>') + '</b>' +
+  var goi = x.loai === 'chuoi' || x.loai === 'tron' || x.loai === 'charm' ? '<a class="goi-tk" href="thiet-ke.html" data-hien><span class="nho">Xưởng phối chuỗi · 3D</span>' +
+    '<b>' + (x.loai === 'tron' ? 'Gắn thêm charm vàng <em>cho dây ngọc này</em>' : x.loai === 'chuoi' ? 'Thích dây ngọc này, muốn <em>phối kiểu khác?</em>' : 'Xem charm này <em>trên chuỗi của bạn</em>') + '</b>' +
     '<small>Chọn dây, nhập cỡ tay, gắn charm vàng vào đúng chỗ — xoay xem 3D như thật rồi gửi cho Ngọc Trầm xâu giúp.</small>' +
     '<span class="nut dac">Tự thiết kế <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span></a>' : '';
   k.innerHTML = '<div class="khung"><div class="trai"><span class="nho" data-hien>Cần biết</span>' +

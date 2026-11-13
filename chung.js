@@ -4,13 +4,14 @@ var LIEN_HE = CH.lienHe || {fanpage: []};
 LIEN_HE.fanpage = LIEN_HE.fanpage || [];
 
 var LOAI = {
-  chuoi:  {ten: 'Chuỗi mix charm', ngan: 'Chuỗi'},
+  tron:   {ten: 'Chuỗi ngọc',      ngan: 'Chuỗi'},       // chuỗi trơn (kho chuỗi trơn trong app), chưa gắn charm
+  chuoi:  {ten: 'Chuỗi mix charm', ngan: 'Chuỗi mix'},
   charm:  {ten: 'Charm vàng',      ngan: 'Charm'},
   nhan:   {ten: 'Nhẫn',            ngan: 'Nhẫn'},
   khuyen: {ten: 'Khuyên tai',      ngan: 'Khuyên'},
   matday: {ten: 'Mặt dây',         ngan: 'Mặt dây'}
 };
-var THU_TU = ['chuoi', 'charm', 'nhan', 'khuyen', 'matday'];
+var THU_TU = ['tron', 'chuoi', 'charm', 'nhan', 'khuyen', 'matday'];
 var ds = [], loc = 'tat', tu = '', sx = 'moi', soHien = 0, MOI_LAN = 16;
 var GIAM = matchMedia('(prefers-reduced-motion: reduce)').matches;
 
