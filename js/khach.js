@@ -4,7 +4,7 @@
    - Hồ sơ khách: Firestore khach/{uid} = {ten, sdt, diaChi, email, thietKe:[{ten,hash,gia,luc}], yeuThich:[mã], tao, capNhat}
    - Luật Firestore: khách chỉ đọc / ghi hồ sơ của chính mình.
    ========================================================= */
-var KHACH = {bat: false, user: null, ho: null, nghe: []};
+var KHACH = {bat: false, user: null, ho: null, nghe: [function () { if (window.veNutYt) veNutYt(); }]};
 (function () {
   var fb = CH.firebase || {};
   KHACH.bat = !!(fb.apiKey && fb.authDomain && fb.projectId && fb.appId);

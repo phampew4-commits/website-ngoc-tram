@@ -169,6 +169,7 @@ function moCt(x) {
   $('#bang').innerHTML = x.anh.map(function (id, i) { return hinh(id, x.ten + ' – ảnh ' + (i + 1), 1200); }).join('');
   $('#bang').scrollLeft = 0;
   $('#chamCt').innerHTML = x.anh.length > 1 ? x.anh.map(function (_, i) { return '<button' + (i ? '' : ' class="on"') + ' aria-label="Ảnh ' + (i + 1) + '"></button>'; }).join('') : '';
+  $$('.ct .lat').forEach(function (b) { b.hidden = x.anh.length < 2; });   // một ảnh thì khỏi mũi tên
   var tt = x.tt || 'Còn hàng';
   $('#ttCt').innerHTML =
     '<span class="nho">' + LOAI[x.loai].ten + ' · ' + e(nhanSp(x)) + '</span>' +
@@ -194,9 +195,46 @@ $('#ct').onclick = function (ev) {
   if (ev.target.closest('[data-dong]')) dongCt();
   var b = ev.target.closest('#chamCt button');
   if (b) { var bg = $('#bang'); bg.scrollTo({left: [].indexOf.call(b.parentNode.children, b) * bg.clientWidth, behavior: 'smooth'}); }
+  var l = ev.target.closest('[data-lat]');
+  if (l) {   // mũi tên lật ảnh, chạy vòng lại từ đầu
+    var g = $('#bang'), so = g.children.length, i = Math.round(g.scrollLeft / g.clientWidth) + (+l.dataset.lat);
+    g.scrollTo({left: ((i % so) + so) % so * g.clientWidth, behavior: 'smooth'});
+  }
 };
 addEventListener('keydown', function (ev) { if (ev.key === 'Escape' && $('#ct').classList.contains('mo')) dongCt(); });
 $('#bang').addEventListener('scroll', function () {
   var i = Math.round(this.scrollLeft / this.clientWidth);
   $$('#chamCt button').forEach(function (x, j) { x.classList.toggle('on', j === i); });
 }, {passive: true});
+
+
+/* ---------- cảm nhận khách hàng (sửa trong app › Nội dung trang) ---------- */
+(function () {
+  var ds = (ND.camNhan || []).filter(function (x) { return x && x.noi; });
+  var muc = $('#cam-nhan'); if (!muc || !ds.length) return;
+  muc.hidden = false;
+  $('#dsCamNhan').innerHTML = ds.map(function (x) {
+    var sao = Math.max(1, Math.min(5, +x.sao || 5));
+    return '<figure class="cn-the"><div class="sao" aria-label="' + sao + ' trên 5 sao">' +
+      new Array(sao + 1).join('<span>★</span>') + '</div>' +
+      '<blockquote>' + e(x.noi) + '</blockquote>' +
+      (x.ten ? '<figcaption><b>' + e(x.ten) + '</b>' + (x.tu ? '<span>Khách ở ' + e(x.tu) + '</span>' : '') + '</figcaption>' : '') +
+      '</figure>';
+  }).join('');
+  theoDoi(muc);
+  var bang = $('#dsCamNhan');
+  $('#cam-nhan').addEventListener('click', function (ev) {
+    var b = ev.target.closest('[data-cn-lat]'); if (!b) return;
+    var the = bang.querySelector('.cn-the'); if (!the) return;
+    var buoc = the.getBoundingClientRect().width + 20;
+    bang.scrollBy({left: buoc * (+b.dataset.cnLat), behavior: 'smooth'});
+  });
+  function dauLat() {
+    var het = bang.scrollWidth - bang.clientWidth - 4;
+    $('.cn-lat.truoc').disabled = bang.scrollLeft <= 2;
+    $('.cn-lat.sau').disabled = bang.scrollLeft >= het;
+    $('.cn-khung').classList.toggle('du', het <= 2);
+  }
+  bang.addEventListener('scroll', dauLat, {passive: true});
+  addEventListener('resize', dauLat); setTimeout(dauLat, 60);
+})();

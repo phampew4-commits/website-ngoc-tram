@@ -14,7 +14,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+Display:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Be+Vietnam+Pro:wght@300;400;500;600&display=swap" rel="stylesheet">
 <link rel="preload" href="data/san-pham.json?v=c4df211b73" as="fetch" crossorigin="anonymous"><link rel="preload" href="data/thiet-ke.json?v=1368b80d8b" as="fetch" crossorigin="anonymous"><link rel="preconnect" href="https://lh3.googleusercontent.com" crossorigin>
-<link rel="stylesheet" href="css/style.css?v=91">
+<link rel="stylesheet" href="css/style.css?v=93">
 </head>
 <body>
 
@@ -195,6 +195,22 @@
   </div>
 </section>
 
+<!-- ========== CẢM NHẬN KHÁCH HÀNG ========== -->
+<section class="muc cam-nhan" id="cam-nhan" hidden>
+  <div class="khung">
+    <div class="giua">
+      <span class="nho" data-hien data-nd="cn.nho">Cảm nhận</span>
+      <h2 class="tieu-de" data-nd="cn.tieu"><span class="dong-chu"><span>Khách nói gì về <em>Ngọc Trầm</em></span></span></h2>
+      <p data-hien data-nd="cn.moTa">Những lời nhắn khách gửi lại sau khi nhận món.</p>
+    </div>
+    <div class="cn-khung" data-hien>
+      <button class="cn-lat truoc" data-cn-lat="-1" aria-label="Xem cảm nhận trước"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M15 5l-7 7 7 7"/></svg></button>
+      <div class="cn-ds" id="dsCamNhan"></div>
+      <button class="cn-lat sau" data-cn-lat="1" aria-label="Xem cảm nhận sau"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M9 5l7 7-7 7"/></svg></button>
+    </div>
+  </div>
+</section>
+
 <!-- ========== HỎI ĐÁP ========== -->
 <section class="muc hd" id="hoi-dap" style="padding-top:40px">
   <div class="khung">
@@ -238,16 +254,19 @@
   <div class="nen" data-dong></div>
   <div class="hop">
     <button class="dong" data-dong aria-label="Đóng"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M5 5l14 14M19 5L5 19"/></svg></button>
-    <div class="chuyen-anh"><div class="bang" id="bang"></div><div class="cham" id="chamCt"></div></div>
+    <div class="chuyen-anh"><div class="bang" id="bang"></div>
+      <button class="lat truoc" data-lat="-1" aria-label="Ảnh trước"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M15 5l-7 7 7 7"/></svg></button>
+      <button class="lat sau" data-lat="1" aria-label="Ảnh sau"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M9 5l7 7-7 7"/></svg></button>
+      <div class="cham" id="chamCt"></div></div>
     <div class="tt-ct" id="ttCt"></div>
   </div>
 </div>
 <div class="thong-bao" id="thongBao"></div>
 
-<script src="js/cau-hinh.js?v=83"></script>
-<script src="js/chung.js?v=91"></script>
-<script src="js/khach.js?v=91"></script>
-<script src="js/trang-chu.js?v=91"></script>
+<script src="js/cau-hinh.js?v=93"></script>
+<script src="js/chung.js?v=93"></script>
+<script src="js/khach.js?v=93"></script>
+<script src="js/trang-chu.js?v=93"></script>
 <script src="js/tk-3d.js?v=84"></script>
 </body>
 </html>
