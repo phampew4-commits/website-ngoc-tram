@@ -99,10 +99,13 @@
       tam.position.y = xo === 'treo' ? -4.8 : 0; gr.add(tam);
       return { g: gr, xo: xo === 'treo' ? 'treo' : 'xuyen', rong: xo === 'treo' ? 1.6 : 7, cao: 10, dung: true, kt: { x: 10, y: 10, z: .1 } };
     }
+    /* thu nhỏ charm trên vòng cho cân với hạt (khách thấy charm to quá): xuyên/ống ×0,8 · treo ×0,72 · chặn đã theo cỡ hạt nên giữ nguyên */
+    var CO_XUYEN = .8, CO_TREO = .72;
+    function heSoCo(g, m) { return /chặn/i.test(g.c.ten || '') ? 1 : m.xo === 'treo' ? CO_TREO : CO_XUYEN; }
     function taoCharm(g) {
       var m = taoMoHinh(g), giu = new THREE.Group(); giu.add(m.g);
       var hop = new THREE.Box3().setFromObject(m.g), tam = hop.getCenter(new V3()), kt = hop.getSize(new V3());
-      var o = { g: g, m: m, giu: giu, tam: tam, ban: Math.max(kt.x, kt.y) * .5, e: 0, ra: false, p: new V3(), T: new V3(1, 0, 0), F: new V3(0, 1, 0), dat: false, mau: g.mau, treo: m.xo === 'treo', moi: !!g.moi };
+      var o = { k: heSoCo(g, m), g: g, m: m, giu: giu, tam: tam, ban: Math.max(kt.x, kt.y) * .5, e: 0, ra: false, p: new V3(), T: new V3(1, 0, 0), F: new V3(0, 1, 0), dat: false, mau: g.mau, treo: m.xo === 'treo', moi: !!g.moi };
       giu.traverse(function (x) { x.userData.charm = o; });
       return o;
     }
@@ -145,9 +148,9 @@
         var muc = [];
         for (var j = 0; j < t.n; j++) {
           var o = o3[k + '.' + j];
-          if (o && !o.treo) { muc.push({ o: o, w: o.m.rong * .1 * Math.max(.05, o.e), j: j }); continue; }
+          if (o && !o.treo) { muc.push({ o: o, w: o.m.rong * .1 * o.k * Math.max(.05, o.e), j: j }); continue; }
           muc.push({ hat: k * 64 + j, w: 2 * rH * 1.015, j: j });
-          if (o) muc.push({ o: o, w: Math.max(.05, o.m.rong * .1 * o.e), j: j + .5 });
+          if (o) muc.push({ o: o, w: Math.max(.05, o.m.rong * .1 * o.k * o.e), j: j + .5 });
         }
         var L = 0; muc.forEach(function (m) { L += m.w; });
         var BK = L / (2 * PI); BKm[k] = BKm[k] === undefined ? BK : BKm[k] + (BK - BKm[k]) * mu;
@@ -192,7 +195,7 @@
         if (o.ra && o.e <= 0) { boCharm(o); if (chonO === o) chonO = null; return; }
         var e1 = o.e * o.e * (3 - 2 * o.e), roi = (1 - e1) * (1 - e1), len = o.ra ? (1 - e1) * 1.6 : roi * 4.5;
         o.giu.position.copy(o.p); o.giu.position.y += len + (o.keo ? .35 : 0);
-        o.giu.scale.setScalar(.1 * (o.ra ? Math.max(.001, e1) : .55 + .45 * e1));
+        o.giu.scale.setScalar(.1 * o.k * (o.ra ? Math.max(.001, e1) : .55 + .45 * e1));
         if (!o.treo) {   /* trục ngang charm = chiều dây, mặt trước ngửa lên (thiết kế) hoặc quay ra ngoài cổ tay (đeo thử) */
           xA.copy(o.T); zA.copy(o.m.dung || deo ? o.F : yA.set(0, 1, 0)); yA.crossVectors(zA, xA).normalize(); zA.crossVectors(xA, yA);
           mB.makeBasis(xA, yA, zA); o.giu.quaternion.setFromRotationMatrix(mB);
@@ -293,7 +296,7 @@
       nghieng.updateMatrixWorld(true); deoG.updateMatrixWorld(true);
       datCharm(dt);
       /* vòng chọn quanh charm đang chọn */
-      if (chonO && DS.get(chonO.g) === chonO && !deo) { vongChon.visible = true; chonO.giu.localToWorld(vongChon.position.copy(chonO.tam)); vongChon.scale.setScalar(Math.max(.9, chonO.ban * .1 * 2.6)); vongChon.material.rotation += dt * .6; }
+      if (chonO && DS.get(chonO.g) === chonO && !deo) { vongChon.visible = true; chonO.giu.localToWorld(vongChon.position.copy(chonO.tam)); vongChon.scale.setScalar(Math.max(.8, chonO.ban * .1 * chonO.k * 2.6)); vongChon.material.rotation += dt * .6; }
       else vongChon.visible = false;
     }
 
