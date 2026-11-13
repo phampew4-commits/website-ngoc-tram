@@ -13,13 +13,7 @@ var CX = 200, CY = 200, R = 150, VONG_GIA = +((CH.thietKe || {}).vongGia) || 3; 
 
 taiJson('thiet-ke.json').then(function (d) {
   TK = d; docLai(); dungDay(); dungVong(); dungChip(); hienCharm(true); ve(true);
-  // bản vẽ cũ (charm-ve-rieng.js, 155KB) chỉ tải khi có charm chưa có ảnh v3
-  var V = window.V3 || {};
-  if (TK.charm.some(function (c) { return !V[c.id] && !V[c.ma]; })) {
-    var s = document.createElement('script'); s.src = 'charm-ve-rieng.js?v=' + (window.V3_PHIEN || 1);
-    s.onload = function () { TK.charm.forEach(function (c) { delete c._phac; }); ve(); };
-    document.head.appendChild(s);
-  }
+  // charm-ve-rieng.js (bản vẽ 2D cũ, 152KB) không tải nữa: mọi charm trong bản vẽ đó đã có ảnh v3; charm mới dùng ảnh v3 / mô hình 3D
 });
 
 /* ---------- tính toán ---------- */

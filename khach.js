@@ -11,7 +11,17 @@ var KHACH = {bat: false, user: null, ho: null, nghe: []};
   var BAN = '10.12.2', sdk = ['app', 'auth', 'firestore'].map(function (m) { return 'https://www.gstatic.com/firebasejs/' + BAN + '/firebase-' + m + '-compat.js'; });
 
   function napScript(src) { return new Promise(function (ok, loi) { var s = document.createElement('script'); s.src = src; s.onload = ok; s.onerror = loi; document.head.appendChild(s); }); }
-  KHACH.san = !KHACH.bat ? Promise.resolve(null) : sdk.reduce(function (p, s) { return p.then(function () { return napScript(s); }); }, Promise.resolve())
+  // tải SDK (~150KB) SAU khi trang đã hiện xong để ảnh / vòng 3D lên trước; trang tài khoản thì tải ngay.
+  // app trước, auth + firestore song song (cả hai chỉ cần app).
+  function choRanh() {
+    return new Promise(function (ok) {
+      if (/tai-khoan/.test(location.pathname)) return ok();
+      function cho() { (window.requestIdleCallback || function (f) { setTimeout(f, 300); })(ok, { timeout: 2500 }); }
+      if (document.readyState === 'complete') cho(); else window.addEventListener('load', cho, { once: true });
+    });
+  }
+  KHACH.san = !KHACH.bat ? Promise.resolve(null) : choRanh().then(function () { return napScript(sdk[0]); })
+    .then(function () { return Promise.all([napScript(sdk[1]), napScript(sdk[2])]); })
     .then(function () {
       firebase.initializeApp({apiKey: fb.apiKey, authDomain: fb.authDomain, projectId: fb.projectId, appId: fb.appId});
       KHACH.auth = firebase.auth(); KHACH.db = firebase.firestore();
