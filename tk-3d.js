@@ -10,9 +10,15 @@
   var TG = 5200;   // thời gian mỗi bước (ms)
 
   // ---------- dữ liệu dây (màu thật từ kho) ----------
-  // màu chuỗi: phỉ thuý xanh lục đế (imperial green) — bước 01 minh hoạ đổi cỡ hạt
-  var LUC_DE = ['#2ec46c', '#056b36'];
-  var DAY = [6, 8, 7].map(function (co) { return { ten: 'Phỉ thuý xanh lục đế ' + co + ' ly', co: co, mau: LUC_DE }; });
+  // bước 01 minh hoạ các loại dây khác nhau (màu chất ngọc cửa hàng có bán): mau = [màu sáng, màu đậm]
+  // nham: độ nhám mặt hạt (trầm hương gỗ → nhám, không trong); sang: độ ánh sáng xuyên trong hạt
+  var DAY = [   // đều là loại chuỗi cửa hàng đang / đã bán (tên theo kho)
+    { ten: 'Phỉ thuý xanh lục đế 6 ly', co: 6, mau: ['#2ec46c', '#056b36'] },
+    { ten: 'Phỉ thuý lam băng guatemala 8 ly', co: 8, mau: ['#8fbcc3', '#456267'] },
+    { ten: 'Ngọc bích xanh táo 6 ly', co: 6, mau: ['#86d13c', '#3c8a17'] },
+    { ten: 'Trầm hương 6 ly', co: 6, mau: ['#8a5c34', '#3a2112'], nham: .5, sang: .25 },
+    { ten: 'Ngọc hoà điền xanh nho 6 ly', co: 6, mau: ['#c3d6a8', '#71895a'], sang: .7 }
+  ];
   var soCharm = 0;
   (window.taiJson ? taiJson('thiet-ke.json') : fetch('thiet-ke.json').then(function (r) { return r.json(); })).then(function (d) {
     soCharm = (d.charm || []).length;
@@ -22,7 +28,7 @@
   }).catch(function () {});
 
   // ---------- trạng thái chung (dùng cả khi không có 3D) ----------
-  var daDoi = false, buoc = 0, batDau = performance.now(), dayI = 0, coTay = 15.5, dangKeo = false;
+  var daDoi = 0, buoc = 0, batDau = performance.now(), dayI = 0, coTay = 15.5, dangKeo = false;
   var khoaNhan = '';
   function chu(nho, lon, khoa) {   // khoa: chỉ chạy hiệu ứng khi đổi bước / đổi dây, không chạy khi số cỡ tay nhảy
     if (!nhan) return;
@@ -33,7 +39,7 @@
   }
   function soHat(day, cm) { return Math.max(14, Math.min(42, Math.round((cm * 10 + 15) / day.co))); }
   function datBuoc(i, tay) {
-    buoc = i; batDau = performance.now(); daDoi = false;
+    buoc = i; batDau = performance.now(); daDoi = 0;
     nut.forEach(function (b, k) { b.classList.toggle('on', k === i); b.setAttribute('aria-selected', k === i); b.style.setProperty('--tg', (GIAM || tay ? 0 : TG) + 'ms'); });
     the.dataset.buoc = i;
     if (i === 0) dayI = (dayI + 1) % DAY.length;
@@ -52,7 +58,7 @@
   function nhip(t) {   // đồng hồ chung: đổi bước, đổi dây, cỡ tay
     var tg = t - batDau;
     if (tuChay && !dangKeo && tg > TG) datBuoc((buoc + 1) % 3);
-    if (buoc === 0 && tg > TG / 2 && !daDoi) { dayI = (dayI + 1) % DAY.length; daDoi = true; }   // mỗi bước 01 đổi 2 dây
+    if (buoc === 0 && tg > TG * (daDoi + 1) / 3 && daDoi < 2) { dayI = (dayI + 1) % DAY.length; daDoi++; }   // mỗi lượt bước 01 xem 3 loại dây
     if (buoc === 1) coTay = 15.5 + 2.2 * Math.sin(tg / TG * Math.PI * 2);
     else coTay += (15.5 - coTay) * .08;
     capNhatChu(t);
@@ -131,10 +137,12 @@
     var MAX = 44, b0 = .3;
     var hatGeo = new THREE.SphereGeometry(1, 40, 28);
     var hatMat = new THREE.MeshPhysicalMaterial({ map: vanNgoc(), roughness: .1, clearcoat: 1, clearcoatRoughness: .04, sheen: .25, sheenRoughness: .4, sheenColor: new THREE.Color(0xd8ffe4), ior: 1.66, specularIntensity: 1 });
+    var uSang = { value: 1 };   // đổi theo loại dây (trầm hương gần như không xuyên sáng)
     hatMat.onBeforeCompile = function (s) {   // ánh sáng xuyên trong hạt: màu ngọc tự sáng, đậm ở tâm, nhạt ra mép
-      s.fragmentShader = s.fragmentShader.replace('#include <emissivemap_fragment>', '#include <emissivemap_fragment>\n' +
+      s.uniforms.uSang = uSang;
+      s.fragmentShader = 'uniform float uSang;\n' + s.fragmentShader.replace('#include <emissivemap_fragment>', '#include <emissivemap_fragment>\n' +
         'float tamHat = pow(clamp(dot(normalize(vNormal), vec3(0.0, 0.0, 1.0)), 0.0, 1.0), 1.6);\n' +
-        'totalEmissiveRadiance += diffuseColor.rgb * (0.1 + 0.32 * tamHat);');
+        'totalEmissiveRadiance += diffuseColor.rgb * (0.1 + 0.32 * tamHat) * uSang;');
     };
     var hat = new THREE.InstancedMesh(hatGeo, hatMat, MAX);
     hat.instanceMatrix.setUsage(THREE.DynamicDrawUsage);
@@ -220,6 +228,11 @@
         var n = soHat(d, coTay), bMuc = d.co / 20;   // bán kính hạt: 6 ly → .3
         bChay += (bMuc - bChay) * Math.min(1, dt * 5);
         mTam.set(d.mau[0]); mDam.set(d.mau[1]);
+        var md = Math.min(1, dt * 3.5);   // chất hạt đổi mượt theo loại dây
+        hatMat.roughness += ((d.nham || .1) - hatMat.roughness) * md;
+        hatMat.clearcoat += ((d.nham ? .25 : 1) - hatMat.clearcoat) * md;
+        hatMat.sheen += ((d.nham ? 0 : .25) - hatMat.sheen) * md;
+        uSang.value += ((d.sang || 1) - uSang.value) * md;
 
         // charm: bước 3 rơi vào lần lượt; bước khác bay lên ẩn đi; trượt nhẹ trên dây
         C.forEach(function (c, k) {
