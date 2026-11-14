@@ -1262,7 +1262,7 @@ body.khoa-cuon{overflow:hidden}
 /* --- cột phải: các thẻ cảm nhận --- */
 .cn-phai{display:grid;gap:14px;align-content:start}
 .cn-the{position:relative;margin:0;background:var(--the);border:1px solid var(--vien);border-radius:18px;padding:24px 26px 22px;
-  transition:background .6s var(--muot),color .6s var(--muot),border-color .6s var(--muot),box-shadow .5s var(--muot),translate .5s var(--muot)}
+  transition:background-color .5s var(--muot),color .5s var(--muot),border-color .5s var(--muot),translate .4s var(--muot)}
 .cn-the:hover{translate:0 -3px;box-shadow:0 20px 34px -26px rgba(14,28,34,.5)}
 .cn-the .sao{display:flex;gap:4px;color:var(--vang2);font-size:13px;line-height:1;margin-bottom:13px}
 .cn-the blockquote{margin:0;font:300 16px/1.7 var(--serif);color:var(--muc)}
@@ -1289,19 +1289,14 @@ body.khoa-cuon{overflow:hidden}
 .cn-the.sang .cn-di{background:rgba(255,255,255,.08);border-color:rgba(255,255,255,.22);color:#f1ece1}
 .cn-the.sang .cn-di:hover{background:var(--vang);border-color:var(--vang);color:#fff}
 
-/* vạch thời gian chạy trên thẻ đang sáng + sao nảy lên từng ngôi */
-@keyframes cn-chay{from{scale:0 1}to{scale:1 1}}
+/* sao nảy lên từng ngôi khi thẻ vừa sáng (bỏ vạch đếm giờ: đè lên mép thẻ và chạy giật) */
 @keyframes cn-sao{from{opacity:0;scale:.5;translate:0 5px}to{opacity:1;scale:1;translate:0 0}}
-.cn-the.sang::after{content:"";position:absolute;left:26px;right:26px;top:0;height:2px;border-radius:2px;background:var(--vang2);
-  transform-origin:left;animation:cn-chay 4.5s linear forwards}
-.cam-nhan:hover .cn-the.sang::after{animation-play-state:paused}
 .cn-the.sang .sao span{animation:cn-sao .45s var(--muot) backwards}
 .cn-the.sang .sao span:nth-child(2){animation-delay:.06s}
 .cn-the.sang .sao span:nth-child(3){animation-delay:.12s}
 .cn-the.sang .sao span:nth-child(4){animation-delay:.18s}
 .cn-the.sang .sao span:nth-child(5){animation-delay:.24s}
 @media (prefers-reduced-motion:reduce){
-  .cn-the.sang::after{display:none}
   .cn-the.sang .sao span{animation:none}
 }
 
