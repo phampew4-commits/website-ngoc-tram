@@ -149,6 +149,119 @@ function dungChanTrang() {
 }
 
 
+/* =========================================================
+   MENU LỚN (mega) — dựng bằng JS nên 5 trang dùng chung
+   Máy tính: rê vào mục là bảng sổ xuống hết bề ngang.
+   Điện thoại: mỗi mục là một khay gập trong màn hình menu.
+   ========================================================= */
+var NGOC_TIM = ['Phỉ thuý', 'Lam băng', 'Lục đế', 'Hoà điền', 'Ngọc bích', 'Trầm hương', 'Hoàng long'];
+function dungMenu() {
+  var m = $('#menu'); if (!m) return;
+  var v = $('.hero') ? '' : 'index.html';   // ở trang khác thì phải quay về trang chủ
+  var tt = trangThaiMo();
+  var mui = '<svg class="mui-mega" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M6 9.5l6 6 6-6"/></svg>';
+  var ten = function (x) { return '<span>' + x + '</span>'; };
+  var lk = function (ds) { return ds.map(function (x) { return '<li><a href="' + x[1] + '"' + (x[2] ? ' target="_blank" rel="noopener"' : '') + '>' + e(x[0]) + '</a></li>'; }).join(''); };
+
+  var megaSp = '<div class="mega" id="megaSp">' +
+    '<div class="mega-trong">' +
+      '<div class="mega-cot"><h3>Theo loại</h3><ul class="mega-ds" id="megaLoai"><li class="mega-cho">Đang tải…</li></ul></div>' +
+      '<div class="mega-cot"><h3>Theo dòng ngọc</h3><ul class="mega-ds" id="megaNgoc"></ul></div>' +
+      '<div class="mega-cot"><h3>Mới về</h3><div class="mega-mon" id="megaMoi"></div></div>' +
+      '<a class="mega-the" id="megaThe" href="' + v + '#noi-bat"><span class="h"></span>' +
+        '<span class="nho">Tuyển chọn</span><b>Món nổi bật tuần này</b>' +
+        '<span class="di">Xem ngay<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span></a>' +
+    '</div>' +
+    '<div class="mega-chan"><div class="mega-chan-trong">' +
+      '<a href="' + v + '#san-pham">Tất cả sản phẩm</a><a href="' + v + '#bo-suu-tap">Bộ sưu tập</a>' +
+      '<button type="button" data-mo-tim>Tìm theo tên hoặc mã</button>' +
+      '<span class="ghi">Mỗi món chỉ có một — ai chốt trước giữ trước.</span>' +
+    '</div></div></div>';
+
+  var megaTk = '<div class="mega" id="megaTk">' +
+    '<div class="mega-trong tk">' +
+      '<div class="mega-cot gioi">' +
+        '<h3>Xưởng phối chuỗi</h3>' +
+        '<p>Chọn dây ngọc, lấy cỡ tay rồi gắn charm vàng — vòng xoay 3D ngay trên màn hình. Ưng mắt thì gửi cho cửa hàng làm thật.</p>' +
+        '<a class="nut dac" href="thiet-ke.html">Mở xưởng phối chuỗi</a>' +
+      '</div>' +
+      '<ol class="mega-buoc">' +
+        '<li><b>01</b><span>Chọn dây ngọc<small>Phỉ thuý, hoà điền, ngọc bích…</small></span></li>' +
+        '<li><b>02</b><span>Cỡ tay &amp; số vòng<small>Đo một lần, nhớ cho lần sau</small></span></li>' +
+        '<li><b>03</b><span>Gắn charm vàng<small id="megaSoCharm">Charm vàng 14K – 18K</small></span></li>' +
+      '</ol>' +
+      '<a class="mega-the" id="megaTheTk" href="thiet-ke.html"><span class="h"></span>' +
+        '<span class="nho">Gợi ý</span><b>Xem vòng mẫu xoay 360°</b>' +
+        '<span class="di">Thử ngay<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span></a>' +
+    '</div></div>';
+
+  var megaHt = '<div class="mega" id="megaHt">' +
+    '<div class="mega-trong ht">' +
+      '<div class="mega-cot"><h3>Mua sắm &amp; giao nhận</h3><ul class="mega-ds">' +
+        lk([['Giao hàng', v + '#hd-giao'], ['Đổi trả', v + '#hd-doi'], ['Bảo hành', v + '#hd-bh'],
+            ['Lưu ý charm vàng', v + '#hd-luuy'], ['Hỏi & đáp', v + '#hoi-dap']]) + '</ul></div>' +
+      '<div class="mega-cot"><h3>Ngọc Trầm</h3><ul class="mega-ds">' +
+        lk([['Câu chuyện cửa hàng', v + '#cau-chuyen'], ['Cảm nhận khách hàng', v + '#cam-nhan'],
+            ['Tài khoản của bạn', 'tai-khoan.html'], ['Giỏ hàng', 'gio-hang.html'], ['Đơn đã đặt', 'tai-khoan.html']]) + '</ul></div>' +
+      '<div class="mega-cot nhan">' +
+        '<h3>Nhắn cho cửa hàng</h3>' +
+        '<div class="mo-cua' + (tt.mo ? ' mo' : '') + '"><i></i>' + tt.chu + '</div>' +
+        '<a class="sdt" href="tel:' + e(LIEN_HE.sdt) + '">' + e(LIEN_HE.sdt) + '</a>' +
+        '<p>' + e(LIEN_HE.diaChi) + '</p>' +
+        '<div class="hang"><a class="nut dac" href="' + linkZalo() + '" target="_blank" rel="noopener">Nhắn Zalo</a>' +
+        '<a class="nut" href="' + linkFb() + '" target="_blank" rel="noopener">Messenger</a></div>' +
+      '</div>' +
+    '</div></div>';
+
+  m.innerHTML = '<ul class="menu-ds">' +
+    '<li class="co-mega"><button type="button" class="menu-nut" aria-expanded="false" aria-controls="megaSp">' + ten('Sản phẩm') + mui + '</button>' + megaSp + '</li>' +
+    '<li class="co-mega"><button type="button" class="menu-nut" aria-expanded="false" aria-controls="megaTk">' + ten('Tự thiết kế') + mui + '</button>' + megaTk + '</li>' +
+    '<li class="co-mega"><button type="button" class="menu-nut" aria-expanded="false" aria-controls="megaHt">' + ten('Hỗ trợ') + mui + '</button>' + megaHt + '</li>' +
+    '<li><a class="menu-nut" href="' + v + '#cau-chuyen">' + ten('Câu chuyện') + '</a></li>' +
+    '</ul>';
+
+  /* phần chạy theo dữ liệu: số món từng loại, dòng ngọc, món mới về, ảnh thẻ */
+  taiDuLieu.then(function () {
+    var dem = {};
+    ds.forEach(function (x) { dem[x.loai] = (dem[x.loai] || 0) + 1; });
+    $('#megaLoai').innerHTML = THU_TU.filter(function (l) { return dem[l]; }).map(function (l) {
+      return '<li><a href="' + v + '#loai-' + l + '">' + LOAI[l].ten + '<i>' + dem[l] + '</i></a></li>';
+    }).join('');
+    $('#megaNgoc').innerHTML = NGOC_TIM.map(function (t) {
+      var q = boDau(t), n = 0;
+      ds.forEach(function (x) { if (boDau(x.ten + ' ' + (x.mo_ta || '')).indexOf(q) >= 0) n++; });
+      return n ? '<li><button type="button" data-tim="' + e(t) + '">' + e(t) + '<i>' + n + '</i></button></li>' : '';
+    }).join('');
+    var moi = ds.slice().sort(function (a, b) { return (a.loai === 'charm') - (b.loai === 'charm') || ngaySo(b.ngay) - ngaySo(a.ngay); }).slice(0, 3);
+    $('#megaMoi').innerHTML = moi.map(function (x) {
+      return '<a class="mega-nho" href="' + linkSp(x) + '"><span class="h">' + hinh(x.anh[0], x.ten, 160) + '</span>' +
+        '<span class="tt"><b>' + e(x.ten) + '</b><small>' + gia(x.gia) + '</small></span></a>';
+    }).join('');
+    var sang = conHang('')[0] || ds[0];
+    if (sang) $('#megaThe').querySelector('.h').innerHTML = hinh(sang.anh[0], '', 500);
+    var day = ds.filter(function (x) { return x.loai === 'tron' || x.loai === 'chuoi'; });
+    var mau = day[Math.floor(Math.random() * day.length)];
+    if (mau) $('#megaTheTk').querySelector('.h').innerHTML = hinh(mau.anh[0], '', 500);
+    if (dem.charm) $('#megaSoCharm').textContent = dem.charm + ' charm vàng 14K – 18K';
+  }).catch(function () {});
+}
+
+var megaMo = null, megaHen;
+function moMega(li) {
+  clearTimeout(megaHen);
+  if (megaMo === li) return;
+  if (megaMo) megaMo.classList.remove('mo'), megaMo.querySelector('.menu-nut').setAttribute('aria-expanded', 'false');
+  megaMo = li;
+  if (li) { li.classList.add('mo'); li.querySelector('.menu-nut').setAttribute('aria-expanded', 'true'); }
+  dau.classList.toggle('mo-mega', !!li);
+}
+function dongMega(tre) {
+  clearTimeout(megaHen);
+  if (tre) megaHen = setTimeout(function () { moMega(null); }, 180);
+  else moMega(null);
+}
+function dienThoai() { return innerWidth <= 900; }
+
 /* ---------- đầu trang + menu ---------- */
 var dau = $('#dau');
 function capNhatDau() { dau.classList.toggle('dac', !$('.hero') || scrollY > innerHeight * 0.75); }
@@ -156,8 +269,46 @@ addEventListener('scroll', capNhatDau, {passive: true}); capNhatDau();
 $('#moMenu').onclick = function () {
   var mo = $('#menu').classList.toggle('mo'); this.classList.toggle('mo', mo); document.body.classList.toggle('khoa', mo);
   document.body.style.overflow = mo ? 'hidden' : '';
+  if (!mo) moMega(null);
 };
-$$('#menu a').forEach(function (a) { a.onclick = function () { $('#menu').classList.remove('mo'); $('#moMenu').classList.remove('mo'); document.body.classList.remove('khoa'); document.body.style.overflow = ''; }; });
+function dongMenuDt() {   // đóng màn hình menu trên điện thoại
+  $('#menu').classList.remove('mo'); $('#moMenu').classList.remove('mo');
+  document.body.classList.remove('khoa'); moMega(null); traCuon();
+}
+(function () {
+  var nav = $('#menu'); if (!nav) return;
+  nav.addEventListener('click', function (ev) {
+    var t = ev.target.closest('[data-tim]');
+    if (t) {   // dòng ngọc → mở hộp tìm với sẵn chữ
+      ev.preventDefault(); dongMenuDt(); moTim();
+      var o = $('#oTimDau'); o.value = t.dataset.tim; $('#timXoa').hidden = false; veTim(o.value);
+      return;
+    }
+    if (ev.target.closest('[data-mo-tim]')) { ev.preventDefault(); dongMenuDt(); moTim(); return; }
+    var b = ev.target.closest('.menu-nut');
+    if (b && b.tagName === 'BUTTON') {   // bấm tên mục: điện thoại gập/mở, máy tính đóng mở bảng
+      ev.preventDefault();
+      var li = b.parentNode;
+      moMega(megaMo === li ? null : li);
+      return;
+    }
+    if (ev.target.closest('a')) dongMenuDt();   // bấm một mục con → đóng menu
+  });
+  nav.addEventListener('mouseover', function (ev) {
+    if (dienThoai()) return;
+    var li = ev.target.closest('.co-mega');
+    if (li) moMega(li);
+    else if (ev.target.closest('.menu-ds')) dongMega(true);
+  });
+  nav.addEventListener('mouseleave', function () { if (!dienThoai()) dongMega(true); });
+  nav.addEventListener('focusin', function (ev) {
+    if (dienThoai()) return;
+    var li = ev.target.closest('.co-mega');
+    if (li) moMega(li); else moMega(null);
+  });
+  addEventListener('keydown', function (ev) { if (ev.key === 'Escape' && megaMo) moMega(null); });
+  addEventListener('resize', function () { moMega(null); });
+})();
 
 /* ---------- hiện ra khi cuộn tới ---------- */
 var io = new IntersectionObserver(function (es) {
@@ -188,6 +339,7 @@ var taiDuLieu = taiJson('data/san-pham.json').then(function (d) {
 });
 function linkSp(x) { return 'san-pham.html?ma=' + encodeURIComponent(khoa(x)); }
 dungChanTrang();
+dungMenu();   // phải gọi sau khi có taiDuLieu (menu lớn đếm số món theo loại)
 
 function conHang(loai) {
   return ds.filter(function (x) { return (!loai || x.loai === loai) && x.tt !== 'Đã bán'; }).sort(function (a, b) { return b.gia - a.gia; });

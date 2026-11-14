@@ -238,3 +238,12 @@ $('#bang').addEventListener('scroll', function () {
   bang.addEventListener('scroll', dauLat, {passive: true});
   addEventListener('resize', dauLat); setTimeout(dauLat, 60);
 })();
+
+/* mở trang kèm #loai-… (từ menu lớn hoặc chân trang ở trang khác) → lọc sẵn đúng loại rồi cuộn tới lưới */
+(function () {
+  var m = /^#loai-(\w+)$/.exec(location.hash); if (!m || !LOAI[m[1]]) return;
+  taiDuLieu.then(function () {
+    chonLoai(m[1]);
+    setTimeout(function () { cuonToi($('#san-pham')); }, 260);
+  });
+})();

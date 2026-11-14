@@ -48,7 +48,9 @@ body::after{content:"";position:fixed;left:50%;top:50%;width:52px;height:52px;ma
   background:url(../img/hoa.png) center/contain no-repeat;animation:hoa-tan .66s var(--muot) forwards}
 html.roi-trang body::before{animation:man-hien .24s var(--muot) forwards}
 html.da-nap body::before,html.da-nap body::after{animation:none;opacity:0;visibility:hidden}
-.dau{animation:dau-xuong .7s .22s var(--muot) both}
+/* backwards (không phải both): chạy xong thì translate trở về none — còn giữ lại thì .dau thành khung chứa
+   cho con position:fixed, làm màn hình menu điện thoại bị bó trong 68px của thanh đầu trang */
+.dau{animation:dau-xuong .7s .22s var(--muot) backwards}
 [data-hien]{opacity:0;translate:0 2.2rem;transition:opacity 1s var(--muot),translate 1.1s var(--muot)}
 [data-hien].hien{opacity:1;translate:0 0}
 /* ảnh mở màn từ dưới lên */
@@ -73,19 +75,25 @@ html.da-nap body::before,html.da-nap body::after{animation:none;opacity:0;visibi
 .hieu img{width:34px;height:34px;transition:filter .45s}
 .dau:not(.dac) .hieu img{filter:brightness(0) invert(1)}
 .hieu b{font:400 20px/1 var(--serif);letter-spacing:.01em}
-.menu{display:flex;gap:30px;font-size:13px}
-.menu a{position:relative;opacity:.9}
-.menu a::after{content:"";position:absolute;left:0;right:0;bottom:-4px;height:1px;background:currentColor;scale:0 1;transform-origin:right;transition:scale .5s var(--muot)}
-.menu a:hover::after{scale:1;transform-origin:left}
+.menu{display:flex;font-size:13px}
+.menu-ds{display:flex;gap:30px;list-style:none;margin:0;padding:0}
+.menu-ds > li{position:static}
+.menu-nut{display:inline-flex;align-items:center;gap:6px;font-size:13px;opacity:.9;padding:25px 0;color:inherit;transition:opacity .3s}
+.menu-nut:hover{opacity:1}
+.menu-nut > span{position:relative}
+.menu-nut > span::after{content:"";position:absolute;left:0;right:0;bottom:-4px;height:1px;background:currentColor;scale:0 1;transform-origin:right;transition:scale .5s var(--muot)}
+.menu-nut:hover > span::after,.co-mega.mo .menu-nut > span::after{scale:1;transform-origin:left}
+.mui-mega{width:13px;height:13px;opacity:.55;transition:rotate .4s var(--muot)}
+.co-mega.mo .mui-mega{rotate:180deg;opacity:1}
 .dau .phai{margin-left:auto;display:flex;align-items:center;gap:18px}
 .dau .phai a{font-size:11px;letter-spacing:.24em;text-transform:uppercase}
 .mo-menu{display:none}
 @media (max-width:900px){
   .dau .khung{padding:0 18px}
-  .menu{position:fixed;inset:0;background:var(--dem);color:#fff;flex-direction:column;justify-content:center;align-items:center;gap:14px;
-    font:300 32px/1.25 var(--serif);clip-path:inset(0 0 100% 0);transition:clip-path .7s var(--muot);z-index:-1}
+  .menu{position:fixed;inset:0;background:var(--dem);color:#fff;display:block;overflow-y:auto;-webkit-overflow-scrolling:touch;
+    padding:92px 22px max(40px,env(safe-area-inset-bottom));clip-path:inset(0 0 100% 0);transition:clip-path .7s var(--muot);z-index:-1}
   .menu.mo{clip-path:inset(0)}
-  .menu a::after{display:none}
+  .menu-nut > span::after{display:none}
   .mo-menu{display:block;width:30px;height:30px;position:relative}
   .mo-menu i{position:absolute;left:4px;right:4px;height:1.5px;background:currentColor;transition:.4s var(--muot)}
   .mo-menu i:first-child{top:11px}.mo-menu i:last-child{top:18px}
@@ -1346,4 +1354,104 @@ body.khoa-cuon{overflow:hidden}
   .o-tim input{font-size:17px}
   .tim-mon{grid-template-columns:46px 1fr auto;gap:11px}
   .tim-mon .h{width:46px;height:46px}
+}
+
+/* =========================================================
+   MENU LỚN (mega) — bảng sổ xuống hết bề ngang đầu trang
+   ========================================================= */
+.mega{position:absolute;left:0;right:0;top:100%;background:var(--giay);color:var(--chu);border-top:1px solid var(--vien);
+  box-shadow:0 34px 60px -34px rgba(14,28,34,.45);opacity:0;visibility:hidden;translate:0 -10px;
+  transition:opacity .3s var(--muot),translate .45s var(--muot),visibility .3s}
+.co-mega.mo .mega{opacity:1;visibility:visible;translate:0 0}
+.mega-trong{display:grid;grid-template-columns:1fr 1fr 1.3fr .9fr;gap:44px;padding:36px 32px 34px;align-items:start}
+.mega-trong.tk{grid-template-columns:1.15fr 1.25fr .9fr}
+.mega-trong.ht{grid-template-columns:1fr 1fr 1.1fr}
+.mega-cot h3{font:500 10.5px/1 var(--sans);letter-spacing:.2em;text-transform:uppercase;color:var(--vang);margin:0 0 14px}
+.mega-ds{list-style:none;margin:0;padding:0}
+.mega-ds a,.mega-ds button{display:flex;align-items:baseline;gap:9px;width:100%;text-align:left;padding:7px 0;
+  font:400 15px/1.45 var(--sans);color:var(--chu);transition:color .3s,translate .35s var(--muot)}
+.mega-ds a:hover,.mega-ds button:hover{color:var(--muc);translate:3px 0}
+.mega-ds i{font-style:normal;font-size:10.5px;letter-spacing:.1em;color:var(--mo)}
+.mega-cho{padding:7px 0;font-size:14px;color:var(--mo)}
+.mega-mon{display:grid;gap:4px}
+.mega-nho{display:grid;grid-template-columns:54px 1fr;gap:13px;align-items:center;padding:6px 0;transition:translate .35s var(--muot)}
+.mega-nho:hover{translate:3px 0}
+.mega-nho .h{display:block;width:54px;height:54px;border-radius:5px;overflow:hidden;background:var(--giay2)}
+.mega-nho .h img{width:100%;height:100%;object-fit:cover}
+.mega-nho b{display:block;font:400 13.5px/1.4 var(--sans);color:var(--chu);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.mega-nho small{display:block;font:500 14px/1.3 var(--serif);color:var(--muc);margin-top:3px;font-variant-numeric:lining-nums}
+.mega-the{display:block;border-radius:10px;overflow:hidden;background:var(--the);border:1px solid var(--vien);padding-bottom:16px;
+  transition:border-color .4s,box-shadow .4s,translate .5s var(--muot)}
+.mega-the:hover{border-color:rgba(29,58,70,.35);box-shadow:0 18px 30px -22px rgba(14,28,34,.5);translate:0 -3px}
+.mega-the .h{display:block;aspect-ratio:4/3;background:var(--giay2);overflow:hidden}
+.mega-the .h img{width:100%;height:100%;object-fit:cover;transition:scale 1s var(--muot)}
+.mega-the:hover .h img{scale:1.05}
+.mega-the .nho{display:block;margin:14px 16px 0;font-size:9.5px;letter-spacing:.28em;color:var(--vang)}
+.mega-the b{display:block;margin:7px 16px 0;font:300 19px/1.3 var(--serif);color:var(--muc)}
+.mega-the .di{display:inline-flex;align-items:center;gap:7px;margin:11px 16px 0;font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--mo)}
+.mega-the .di svg{width:13px;height:13px;transition:translate .35s var(--muot)}
+.mega-the:hover .di svg{translate:4px 0}
+.mega-chan{border-top:1px solid var(--vien);background:var(--giay2)}
+.mega-chan-trong{display:flex;flex-wrap:wrap;align-items:center;gap:24px;padding:13px 32px;font-size:12.5px}
+.mega-chan a,.mega-chan button{color:var(--muc);border-bottom:1px solid transparent;transition:border-color .3s}
+.mega-chan a:hover,.mega-chan button:hover{border-color:var(--muc)}
+.mega-chan .ghi{margin-left:auto;color:var(--mo)}
+.mega-cot.gioi p{margin:0 0 20px;color:var(--mo);font-size:14px;max-width:34ch}
+.mega-buoc{list-style:none;margin:0;padding:0;display:grid;gap:12px}
+.mega-buoc li{display:flex;gap:14px;align-items:baseline;padding:12px 16px;border:1px solid var(--vien);border-radius:8px;background:var(--the)}
+.mega-buoc b{font:300 20px/1 var(--serif);color:transparent;-webkit-text-stroke:1px var(--vang2)}
+.mega-buoc span{font-size:14.5px;color:var(--chu)}
+.mega-buoc small{display:block;font-size:12.5px;color:var(--mo);margin-top:3px}
+.mega-cot.nhan .mo-cua{background:rgba(29,58,70,.07);color:var(--muc)}
+.mega-cot.nhan .sdt{display:block;margin:14px 0 4px;font:300 26px/1 var(--serif);color:var(--muc);font-variant-numeric:lining-nums}
+.mega-cot.nhan p{margin:0 0 16px;font-size:13px;color:var(--mo)}
+.mega-cot.nhan .hang{display:flex;gap:9px;flex-wrap:wrap}
+.mega-cot.nhan .nut{padding:11px 18px;font-size:10px}
+@media (min-width:901px){
+  .dau.mo-mega{background:color-mix(in srgb,var(--giay) 94%,transparent);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);color:var(--muc)}
+  .dau.mo-mega .hieu img{filter:none}
+}
+@media (max-width:1100px){
+  .mega-trong{grid-template-columns:1fr 1fr 1.2fr;gap:32px}
+  .mega-trong > .mega-the{display:none}
+  .mega-trong.tk{grid-template-columns:1fr 1.2fr}
+  .mega-trong.ht{grid-template-columns:1fr 1fr 1fr}
+}
+
+/* ---- menu lớn trên điện thoại: khay gập trong màn hình menu ---- */
+@media (max-width:900px){
+  .menu-ds{display:block}
+  .menu-ds > li{border-bottom:1px solid rgba(255,255,255,.13)}
+  .menu-nut{display:flex;justify-content:space-between;align-items:center;width:100%;padding:17px 0;
+    font:300 25px/1.2 var(--serif);opacity:1;color:#fff}
+  .mui-mega{width:18px;height:18px;opacity:.6}
+  .mega{position:static;opacity:1;visibility:visible;translate:0;background:none;border:0;box-shadow:none;color:#e9e3d6;display:none}
+  .co-mega.mo .mega{display:block;animation:dau-xuong .45s var(--muot) both}
+  .mega-trong,.mega-trong.tk,.mega-trong.ht{grid-template-columns:1fr;gap:22px;padding:4px 0 24px}
+  .mega-trong > .mega-the{display:block}
+  .mega-cot h3{color:var(--vang2);margin-bottom:8px}
+  .mega-ds a,.mega-ds button{color:#e9e3d6;font-size:16px;padding:9px 0}
+  .mega-ds a:hover,.mega-ds button:hover{color:#fff}
+  .mega-ds i{color:rgba(233,227,214,.5)}
+  .mega-nho b{color:#e9e3d6}
+  .mega-nho small{color:var(--vang2)}
+  .mega-nho .h,.mega-the .h{background:rgba(255,255,255,.08)}
+  .mega-the{background:rgba(255,255,255,.05);border-color:rgba(255,255,255,.14)}
+  .mega-the .h{aspect-ratio:16/9}
+  .mega-the b{color:#fff;font-size:18px}
+  .mega-the .di{color:rgba(233,227,214,.6)}
+  .mega-buoc li{background:rgba(255,255,255,.05);border-color:rgba(255,255,255,.14)}
+  .mega-buoc span{color:#e9e3d6}
+  .mega-buoc small{color:rgba(233,227,214,.55)}
+  .mega-cot.gioi p{color:rgba(233,227,214,.75)}
+  .mega-cot.gioi .nut.dac{background:var(--vang);border-color:var(--vang)}
+  .mega-cot.nhan .mo-cua{background:rgba(255,255,255,.08);color:#e6e0d4}
+  .mega-cot.nhan .sdt{color:#fff}
+  .mega-cot.nhan p{color:rgba(233,227,214,.6)}
+  .mega-cot.nhan .nut{color:#fff;border-color:rgba(255,255,255,.4)}
+  .mega-cot.nhan .nut.dac{background:var(--vang);border-color:var(--vang)}
+  .mega-chan{background:none;border-color:rgba(255,255,255,.13)}
+  .mega-chan-trong{padding:14px 0;gap:18px}
+  .mega-chan a,.mega-chan button{color:#e9e3d6}
+  .mega-chan .ghi{margin-left:0;color:rgba(233,227,214,.55);flex:1 0 100%}
 }
