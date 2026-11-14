@@ -69,7 +69,7 @@ function dungTrang(x) {
           (/bán/i.test(tt) ? '' : '<button class="nut dac" data-gio="' + e(khoa(x)) + '">Thêm vào giỏ</button>') +
           '<a class="nut zalo" href="' + linkZalo() + '" target="_blank" data-chep="' + e(x.ma) + '">Hỏi mua qua Zalo</a>' +
           '<a class="nut" href="' + linkFb() + '" target="_blank" data-chep="' + e(x.ma) + '">Nhắn Messenger</a>' +
-          (KHACH.bat ? '<button class="nut nut-yt" id="nutYt" data-ma="' + e(x.ma) + '"><span>♡</span> Lưu vào yêu thích</button>' : '') +
+          '<button class="nut nut-yt" id="nutYt" data-ma="' + e(x.ma) + '"><span>♡</span> Lưu vào yêu thích</button>' +
         '</div>' +
         '<p class="ghi-ct" data-hien>Bấm nút, câu hỏi kèm mã ' + e(x.ma) + ' được chép sẵn — bạn chỉ cần dán vào tin nhắn.</p>' +
         '<ul class="cam-ket-sp" data-hien>' +
@@ -227,13 +227,11 @@ function dungLienQuan(x) {
   theoDoi($('#lienQuan'));
 }
 
-/* ♡ yêu thích (cần tài khoản) */
-function veYt() { var b = $('#nutYt'); if (!b) return; var co = KHACH.yeuThich(b.dataset.ma); b.classList.toggle('on', co); b.innerHTML = '<span>' + (co ? '♥' : '♡') + '</span> ' + (co ? 'Đã lưu yêu thích' : 'Lưu vào yêu thích'); }
+/* ♡ yêu thích — lưu ngay ở máy khách, đăng nhập thì đồng bộ lên tài khoản */
+function veYt() { var b = $('#nutYt'); if (!b) return; var co = YT.co(b.dataset.ma); b.classList.toggle('on', co); b.innerHTML = '<span>' + (co ? '♥' : '♡') + '</span> ' + (co ? 'Đã lưu yêu thích' : 'Lưu vào yêu thích'); }
 if (KHACH.bat) { KHACH.nghe.push(veYt); KHACH.san.then(function () { setTimeout(veYt, 300); }); }
 document.addEventListener('click', function (ev) {
   var b = ev.target.closest('#nutYt'); if (!b) return;
-  if (!KHACH.user) return KHACH.canDangNhap();
-  b.disabled = true;
-  KHACH.doiYeuThich(b.dataset.ma).then(function (moi) { baoTin(moi ? 'Đã lưu vào yêu thích' : 'Đã bỏ khỏi yêu thích'); veYt(); })
-    .catch(function () { baoTin('Chưa lưu được, thử lại nhé'); }).then(function () { b.disabled = false; });
+  baoTin(YT.doi(b.dataset.ma) ? 'Đã lưu vào yêu thích' : 'Đã bỏ khỏi yêu thích');
+  veYt();
 });

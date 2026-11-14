@@ -899,7 +899,7 @@ section[id]{scroll-margin-top:68px}
   .dau .hieu{grid-column:2;grid-row:1;justify-self:center}
   .dau .hieu b{display:none}
   .dau .hieu img{width:38px;height:38px}
-  .dau .phai .nut-tk{grid-column:3;grid-row:1;justify-self:end}
+  .dau-nut{grid-column:3;grid-row:1;justify-self:end;gap:10px}
 }
 
 /* charm có khoen thõng ra ngoài vòng: không cắt ở mép khung */
@@ -1253,4 +1253,97 @@ body.khoa-cuon{overflow:hidden}
   .cn-the{flex:0 0 86%;padding:26px 22px}
   .cn-lat{display:none}
   .cn-ds{gap:14px}
+}
+
+/* =========================================================
+   HÀNG NÚT TRÒN TRÊN ĐẦU TRANG (tìm · yêu thích · giỏ · tài khoản)
+   ========================================================= */
+.dau-nut{display:flex;align-items:center;gap:12px}
+.nut-dau{position:relative;width:34px;height:34px;border-radius:50%;display:grid;place-items:center;border:1px solid currentColor;opacity:.85;
+  transition:opacity var(--tg-nut),background var(--tg-nut),color var(--tg-nut)}
+.nut-dau:hover{opacity:1}
+.nut-dau svg{width:17px;height:17px}
+.nut-dau i{position:absolute;top:-5px;right:-5px;min-width:17px;height:17px;padding:0 4px;border-radius:99px;background:var(--vang);color:#fff;
+  font:500 10.5px/17px var(--sans);font-style:normal;letter-spacing:0;text-align:center}
+.dau .phai .nut-dau{display:grid!important;letter-spacing:0}
+.nut-yt-dau.co{color:var(--vang2);border-color:currentColor;opacity:1}
+.dau.dac .nut-yt-dau.co{color:var(--vang)}
+.nut-yt-dau.co svg{fill:currentColor}
+@media (max-width:900px){.nut-dau{width:32px;height:32px}.nut-dau svg{width:16px;height:16px}}
+@media (max-width:380px){.dau-nut{gap:4px}.nut-dau{width:30px;height:30px}}
+
+/* nút tim trên thẻ sản phẩm: bấm rồi thì tô đầy */
+.sp .viec .tron.da svg,.ngan-mon .tron.da svg{fill:currentColor}
+
+/* hàng nút trong ngăn món yêu thích */
+.viec-ngan{display:flex;flex-direction:column;align-items:flex-end;gap:12px}
+.ngan-mon .tron{width:34px;height:34px;border-radius:50%;background:var(--the);border:1px solid var(--vien);color:var(--muc);display:grid;place-items:center;
+  transition:background .3s,color .3s,border-color .3s}
+.ngan-mon .tron svg{width:15px;height:15px}
+.ngan-mon .tron:hover,.ngan-mon .tron.da{background:var(--muc);color:#fff;border-color:var(--muc)}
+.ngan-gio footer .nhe a{border-bottom:1px solid var(--vien);color:var(--muc)}
+.ngan-gio footer .tiep{display:block;width:100%;margin-top:12px;font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--mo);text-align:center}
+
+/* =========================================================
+   HỘP TÌM KIẾM (mở từ nút kính lúp trên đầu trang)
+   ========================================================= */
+.hop-tim{position:fixed;inset:0;z-index:95;visibility:hidden}
+.hop-tim.mo{visibility:visible}
+.hop-tim .nen{position:absolute;inset:0;background:rgba(14,28,34,.5);-webkit-backdrop-filter:blur(5px);backdrop-filter:blur(5px);opacity:0;transition:opacity .4s}
+.hop-tim.mo .nen{opacity:1}
+.hop-tim .hop{position:absolute;left:50%;top:0;translate:-50% -14px;width:min(640px,calc(100% - 24px));margin-top:min(86px,9vh);
+  background:var(--the);border-radius:14px;overflow:hidden;box-shadow:0 40px 90px -30px rgba(14,28,34,.55),0 0 0 1px var(--vien);
+  opacity:0;transition:opacity .35s var(--muot),translate .5s var(--muot);display:flex;flex-direction:column;max-height:min(78vh,calc(100dvh - 120px))}
+.hop-tim.mo .hop{opacity:1;translate:-50% 0}
+.o-tim{display:flex;align-items:center;gap:12px;padding:16px 18px;border-bottom:1px solid var(--vien);flex:none}
+.o-tim > svg{width:19px;height:19px;color:var(--vang);flex:none}
+.o-tim input{flex:1;min-width:0;border:0;background:none;outline:none;font:300 19px/1.4 var(--serif);color:var(--muc);padding:4px 0;-webkit-appearance:none;appearance:none}
+.o-tim input::placeholder{color:var(--mo);opacity:.75}
+.o-tim input::-webkit-search-cancel-button{display:none}
+.o-tim .xoa{width:26px;height:26px;border-radius:50%;display:grid;place-items:center;color:var(--mo);flex:none}
+.o-tim .xoa[hidden]{display:none}
+.o-tim .xoa:hover{background:var(--giay2);color:var(--muc)}
+.o-tim .xoa svg{width:13px;height:13px}
+.o-tim .dong-tim{flex:none;font-size:10.5px;letter-spacing:.2em;text-transform:uppercase;color:var(--mo);border:1px solid var(--vien);border-radius:99px;padding:7px 12px;
+  transition:background .3s,color .3s}
+.o-tim .dong-tim:hover{background:var(--muc);color:#fff;border-color:var(--muc)}
+.kq-tim{overflow:auto;padding:8px 10px 14px;-webkit-overflow-scrolling:touch}
+.chip-tim{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;padding:8px 8px 12px}
+.chip-tim::-webkit-scrollbar{display:none}
+.chip-tim button{flex:none;display:inline-flex;align-items:center;gap:6px;padding:7px 13px;border-radius:99px;border:1px solid var(--vien);background:var(--giay);
+  font-size:12.5px;color:var(--muc);white-space:nowrap;transition:background .3s,color .3s,border-color .3s}
+.chip-tim button i{font-style:normal;font-size:10.5px;color:var(--mo)}
+.chip-tim button:hover{border-color:rgba(29,58,70,.4)}
+.chip-tim button.on{background:var(--muc);border-color:var(--muc);color:#fff}
+.chip-tim button.on i{color:rgba(255,255,255,.6)}
+.so-tim,.nhom-tim h3{font:500 10.5px/1 var(--sans);letter-spacing:.2em;text-transform:uppercase;color:var(--vang);margin:6px 0 4px;padding:0 8px}
+.nhom-tim{margin-bottom:6px}
+.nhom-tim h3{margin:12px 0 6px}
+.chu-tim{display:flex;flex-wrap:wrap;gap:6px;padding:4px 8px 2px}
+.chu-tim button{padding:6px 12px;border-radius:99px;border:1px solid var(--vien);background:var(--giay);font-size:12.5px;color:var(--mo);transition:color .3s,border-color .3s}
+.chu-tim button:hover{color:var(--muc);border-color:rgba(29,58,70,.4)}
+.tim-mon{display:grid;grid-template-columns:52px 1fr auto;gap:14px;align-items:center;padding:9px 8px;border-radius:9px;transition:background .25s}
+.tim-mon:hover,.tim-mon.chon{background:var(--giay)}
+.tim-mon .h{display:block;width:52px;height:52px;border-radius:5px;overflow:hidden;background:var(--giay2)}
+.tim-mon .h img{width:100%;height:100%;object-fit:cover}
+.tim-mon .tt{min-width:0}
+.tim-mon b{display:block;font:400 14px/1.4 var(--sans);color:var(--chu);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.tim-mon small{display:block;font-size:11.5px;color:var(--mo);margin-top:3px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.tim-mon .g{font:500 15px/1 var(--serif);color:var(--muc);white-space:nowrap;font-variant-numeric:lining-nums}
+.tim-mon.ban{opacity:.55}
+.tim-them{display:flex;align-items:center;justify-content:center;gap:9px;margin:10px 8px 4px;padding:13px;border-radius:9px;border:1px dashed var(--vien);
+  font-size:12.5px;color:var(--muc);transition:background .3s,border-color .3s}
+.tim-them svg{width:14px;height:14px;transition:translate .35s var(--muot)}
+.tim-them:hover{background:var(--giay);border-color:rgba(29,58,70,.35)}
+.tim-them:hover svg{translate:4px 0}
+.tim-trong{text-align:center;padding:34px 16px 30px}
+.tim-trong p{margin:0 0 8px;color:var(--muc);font-size:16px}
+.tim-trong .nhe{color:var(--mo);font-size:13px;margin-bottom:22px;max-width:40ch;margin-inline:auto}
+.dang-tai{text-align:center;color:var(--mo);font-size:13px;padding:28px 0}
+@media (max-width:620px){
+  .hop-tim .hop{margin-top:0;top:0;border-radius:0;width:100%;max-height:100dvh;height:100dvh}
+  .o-tim{padding:14px 14px;padding-top:max(14px,env(safe-area-inset-top))}
+  .o-tim input{font-size:17px}
+  .tim-mon{grid-template-columns:46px 1fr auto;gap:11px}
+  .tim-mon .h{width:46px;height:46px}
 }

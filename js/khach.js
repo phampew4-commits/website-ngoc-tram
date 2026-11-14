@@ -47,18 +47,22 @@ var KHACH = {bat: false, user: null, ho: null, nghe: [function () { if (window.v
                     tao: firebase.firestore.FieldValue.serverTimestamp()};
         return KHACH.doc().set(KHACH.ho, {merge: true});
       }
-    }).catch(function () { KHACH.ho = KHACH.ho || {thietKe: [], yeuThich: []}; });
+    }).catch(function () { KHACH.ho = KHACH.ho || {thietKe: [], yeuThich: []}; }).then(gopYeuThich);
   };
+  /* gộp món yêu thích đang lưu ở máy này với món yêu thích trong tài khoản — lúc vừa đăng nhập */
+  function gopYeuThich() {
+    if (typeof YT === 'undefined' || !KHACH.ho) return;
+    var cuc = YT.ds(), xa = (KHACH.ho.yeuThich || []).map(String);
+    var gop = cuc.concat(xa.filter(function (m) { return cuc.indexOf(m) < 0; })).slice(0, 200);
+    if (gop.join('|') !== cuc.join('|')) YT.dat(gop);
+    if (gop.join('|') !== xa.join('|')) { KHACH.ho.yeuThich = gop; KHACH.ghi({yeuThich: gop}).catch(function () {}); }
+  }
   KHACH.ghi = function (thay) {
     Object.keys(thay).forEach(function (k) { KHACH.ho[k] = thay[k]; });
     return KHACH.doc().set(Object.assign({}, thay, {capNhat: firebase.firestore.FieldValue.serverTimestamp()}), {merge: true});
   };
-  KHACH.yeuThich = function (ma) { return !!(KHACH.ho && (KHACH.ho.yeuThich || []).indexOf(String(ma)) >= 0); };
-  KHACH.doiYeuThich = function (ma) {
-    var ds = (KHACH.ho.yeuThich || []).slice(), i = ds.indexOf(String(ma));
-    if (i >= 0) ds.splice(i, 1); else ds.unshift(String(ma));
-    return KHACH.ghi({yeuThich: ds.slice(0, 200)}).then(function () { return i < 0; });
-  };
+  KHACH.yeuThich = function (ma) { return typeof YT !== 'undefined' ? YT.co(ma) : !!(KHACH.ho && (KHACH.ho.yeuThich || []).indexOf(String(ma)) >= 0); };
+  KHACH.doiYeuThich = function (ma) { return Promise.resolve(YT.doi(ma)); };
   KHACH.luuThietKe = function (tk) {
     var ds = (KHACH.ho.thietKe || []).filter(function (x) { return x.hash !== tk.hash; });
     ds.unshift(Object.assign({luc: Date.now()}, tk));
@@ -73,9 +77,9 @@ var KHACH = {bat: false, user: null, ho: null, nghe: [function () { if (window.v
   function veNutTk() {
     var a = document.getElementById('nutTk');
     if (!a) {
-      var phai = document.querySelector('.dau .phai'); if (!phai) return;
-      a = document.createElement('a'); a.id = 'nutTk'; a.className = 'nut-tk'; a.href = 'tai-khoan.html';
-      phai.insertBefore(a, phai.querySelector('.mo-menu'));
+      var o = (window.oNut && oNut()) || document.querySelector('.dau .phai'); if (!o) return;
+      a = document.createElement('a'); a.id = 'nutTk'; a.className = 'nut-dau nut-tk'; a.href = 'tai-khoan.html';
+      if (o.id === 'dauNut') o.appendChild(a); else o.insertBefore(a, o.querySelector('.mo-menu'));
     }
     var u = KHACH.user, ten = (KHACH.ho && KHACH.ho.ten) || (u && (u.displayName || u.email)) || '';
     a.setAttribute('aria-label', u ? 'Tài khoản của ' + ten : 'Đăng nhập');
