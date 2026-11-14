@@ -213,12 +213,20 @@ function dungMenu() {
       '</div>' +
     '</div></div>';
 
-  m.innerHTML = '<ul class="menu-ds">' +
+  m.innerHTML =
+    '<div class="menu-nhanh">' +
+      '<a href="gio-hang.html"><span class="h">' + IC_GIO + '<i id="menuSoGio" hidden></i></span>Giỏ hàng</a>' +
+      '<button type="button" data-mo-yt><span class="h">' + IC_TIM + '<i id="menuSoYt" hidden></i></span>Yêu thích</button>' +
+      '<a href="tai-khoan.html"><span class="h">' + IC_NGUOI + '</span>Tài khoản</a>' +
+    '</div>' +
+    '<ul class="menu-ds">' +
     '<li class="co-mega"><button type="button" class="menu-nut" aria-expanded="false" aria-controls="megaSp">' + ten('Sản phẩm') + mui + '</button>' + megaSp + '</li>' +
     '<li class="co-mega"><button type="button" class="menu-nut" aria-expanded="false" aria-controls="megaTk">' + ten('Tự thiết kế') + mui + '</button>' + megaTk + '</li>' +
     '<li class="co-mega"><button type="button" class="menu-nut" aria-expanded="false" aria-controls="megaHt">' + ten('Hỗ trợ') + mui + '</button>' + megaHt + '</li>' +
     '<li><a class="menu-nut" href="' + v + '#cau-chuyen">' + ten('Câu chuyện') + '</a></li>' +
     '</ul>';
+
+  soTrongMenu('menuSoGio', GIO.so()); soTrongMenu('menuSoYt', YT.so());   // hàng nút nhanh vừa dựng xong
 
   /* phần chạy theo dữ liệu: số món từng loại, dòng ngọc, món mới về, ảnh thẻ */
   taiDuLieu.then(function () {
@@ -285,6 +293,7 @@ function dongMenuDt() {   // đóng màn hình menu trên điện thoại
       return;
     }
     if (ev.target.closest('[data-mo-tim]')) { ev.preventDefault(); dongMenuDt(); moTim(); return; }
+    if (ev.target.closest('[data-mo-yt]')) { ev.preventDefault(); dongMenuDt(); moYt(); return; }
     var b = ev.target.closest('.menu-nut');
     if (b && b.tagName === 'BUTTON') {   // bấm tên mục: điện thoại gập/mở, máy tính đóng mở bảng
       ev.preventDefault();
@@ -339,7 +348,6 @@ var taiDuLieu = taiJson('data/san-pham.json').then(function (d) {
 });
 function linkSp(x) { return 'san-pham.html?ma=' + encodeURIComponent(khoa(x)); }
 dungChanTrang();
-dungMenu();   // phải gọi sau khi có taiDuLieu (menu lớn đếm số món theo loại)
 
 function conHang(loai) {
   return ds.filter(function (x) { return (!loai || x.loai === loai) && x.tt !== 'Đã bán'; }).sort(function (a, b) { return b.gia - a.gia; });
@@ -351,6 +359,7 @@ var IC_GIO = _sv('<path d="M5.6 8h12.8l-1 11.1a1.9 1.9 0 0 1-1.9 1.7H8.5a1.9 1.9
 var IC_TIM = _sv('<path d="M12 20.3s-7.3-4.5-7.3-9.6A3.9 3.9 0 0 1 12 8.1a3.9 3.9 0 0 1 7.3 2.6c0 5.1-7.3 9.6-7.3 9.6z"/>');
 var IC_MAT = _sv('<path d="M2.6 12S6.2 6.6 12 6.6 21.4 12 21.4 12 17.8 17.4 12 17.4 2.6 12 2.6 12z"/><circle cx="12" cy="12" r="2.7"/>');
 var IC_KINH = _sv('<circle cx="10.8" cy="10.8" r="6.3"/><path d="M15.4 15.4L21 21"/>');
+var IC_NGUOI = _sv('<circle cx="12" cy="8.5" r="3.6"/><path d="M4.5 20c1-3.8 4-5.8 7.5-5.8s6.5 2 7.5 5.8"/>');
 
 /* ---------- hàng nút tròn trên đầu trang (tìm · yêu thích · giỏ · tài khoản) ---------- */
 function oNut() {
@@ -383,6 +392,7 @@ function veNutGio() {
     a.onclick = function (ev) { if (!/gio-hang/.test(location.pathname)) { ev.preventDefault(); moGio(); } };
     o.appendChild(a);
   }
+  soTrongMenu('menuSoGio', n);
   a.setAttribute('aria-label', n ? 'Giỏ hàng · ' + n + ' món' : 'Giỏ hàng'); a.title = a.getAttribute('aria-label');
   a.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">' +
     '<path d="M5.6 8h12.8l-1 11.1a1.9 1.9 0 0 1-1.9 1.7H8.5a1.9 1.9 0 0 1-1.9-1.7z"/><path d="M9.2 10.4V7.3a2.8 2.8 0 0 1 5.6 0v3.1"/></svg>' +
@@ -425,10 +435,17 @@ function veNutYtDau() {
     a.onclick = function () { moYt(); };
     o.appendChild(a);
   }
+  soTrongMenu('menuSoYt', n);
   a.setAttribute('aria-label', n ? 'Món yêu thích · ' + n + ' món' : 'Món yêu thích');
   a.title = a.getAttribute('aria-label');
   a.innerHTML = IC_TIM + (n ? '<i>' + n + '</i>' : '');
   a.classList.toggle('co', !!n);
+}
+function soTrongMenu(id, n) {   // số món trên hàng nút nhanh trong menu điện thoại + chấm báo trên nút menu
+  var o = document.getElementById(id);
+  if (o) { o.textContent = n; o.hidden = !n; }
+  var mn = document.getElementById('moMenu');
+  if (mn) mn.classList.toggle('co-cham', (typeof GIO !== 'undefined' ? GIO.so() : 0) + (typeof YT !== 'undefined' ? YT.so() : 0) > 0);
 }
 function veNutTim() {
   if (document.getElementById('nutTimDau')) return;
@@ -471,6 +488,7 @@ addEventListener('storage', function (ev) {   // mở nhiều thẻ cùng lúc
   if (ev.key === 'yeuThich') { veNutYtDau(); veNutYt(); }
 });
 veNutTim(); veNutYtDau(); veNutGio();
+dungMenu();   // gọi sau cùng: cần taiDuLieu (đếm số món) và các biểu tượng IC_* ở trên
 
 /* ---------- ngăn sổ ra từ phải: dùng chung cho giỏ hàng và món yêu thích ---------- */
 var nganGio = null, nganKieu = 'gio';

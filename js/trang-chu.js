@@ -213,14 +213,32 @@ $('#bang').addEventListener('scroll', function () {
   var ds = (ND.camNhan || []).filter(function (x) { return x && x.noi; });
   var muc = $('#cam-nhan'); if (!muc || !ds.length) return;
   muc.hidden = false;
-  $('#dsCamNhan').innerHTML = ds.map(function (x) {
+  var kho = {};
+  ds.forEach(function (x) { if (x.ma) kho[String(x.ma)] = null; });
+  $('#dsCamNhan').innerHTML = ds.map(function (x, i) {
     var sao = Math.max(1, Math.min(5, +x.sao || 5));
-    return '<figure class="cn-the"><div class="sao" aria-label="' + sao + ' trên 5 sao">' +
-      new Array(sao + 1).join('<span>★</span>') + '</div>' +
-      '<blockquote>' + e(x.noi) + '</blockquote>' +
-      (x.ten ? '<figcaption><b>' + e(x.ten) + '</b>' + (x.tu ? '<span>Khách ở ' + e(x.tu) + '</span>' : '') + '</figcaption>' : '') +
-      '</figure>';
+    return '<figure class="cn-the' + (x.anh ? ' co-anh' : '') + '" data-cn="' + i + '">' +
+      (x.anh ? '<div class="cn-anh">' + hinh('img/cam-nhan/' + x.anh, 'Khách của Ngọc Trầm' + (x.ten ? ' — ' + x.ten : ''), 600) + '</div>' : '') +
+      '<div class="cn-noi">' +
+        '<div class="sao" aria-label="' + sao + ' trên 5 sao">' + new Array(sao + 1).join('<span>★</span>') + '</div>' +
+        '<blockquote>' + e(x.noi) + '</blockquote>' +
+        (x.ten ? '<figcaption><b>' + e(x.ten) + '</b>' + (x.tu ? '<span>Khách ở ' + e(x.tu) + '</span>' : '') + '</figcaption>' : '') +
+        (x.ma ? '<a class="cn-mon" href="san-pham.html?ma=' + encodeURIComponent(x.ma) + '" hidden>' +
+          '<span class="h"></span><span class="tt"><small>Món khách đã chọn</small><b></b></span>' +
+          '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>' : '') +
+      '</div></figure>';
   }).join('');
+  /* món khách đã mua: lấy tên + ảnh từ kho, không có thì giấu dòng đó đi */
+  taiDuLieu.then(function () {
+    ds.forEach(function (x, i) {
+      if (!x.ma) return;
+      var mon = window.ds.filter(function (y) { return String(y.ma) === String(x.ma) || String(khoa(y)) === String(x.ma); })[0];
+      var a = $('.cn-the[data-cn="' + i + '"] .cn-mon'); if (!a || !mon) return;
+      a.querySelector('.h').innerHTML = hinh(mon.anh[0], mon.ten, 120);
+      a.querySelector('b').textContent = mon.ten;
+      a.hidden = false;
+    });
+  }).catch(function () {});
   theoDoi(muc);
   var bang = $('#dsCamNhan');
   $('#cam-nhan').addEventListener('click', function (ev) {

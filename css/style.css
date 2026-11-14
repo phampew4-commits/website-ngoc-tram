@@ -1238,7 +1238,20 @@ body.khoa-cuon{overflow:hidden}
 .cn-ds{display:flex;gap:20px;overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none;padding:4px;flex:1}
 .cn-ds::-webkit-scrollbar{display:none}
 .cn-the{flex:0 0 calc((100% - 40px)/3);scroll-snap-align:start;margin:0;background:var(--the);border:1px solid var(--vien);border-radius:10px;
-  padding:30px 28px;display:flex;flex-direction:column;gap:16px}
+  overflow:hidden;display:flex;flex-direction:column}
+.cn-noi{padding:28px 26px 26px;display:flex;flex-direction:column;gap:15px;flex:1}
+.cn-the:not(.co-anh) .cn-noi{justify-content:center}
+.cn-anh{display:block;aspect-ratio:4/3;background:var(--giay2);overflow:hidden}
+.cn-anh img{width:100%;height:100%;object-fit:cover;transition:scale 1.4s var(--muot)}
+.cn-the:hover .cn-anh img{scale:1.04}
+.cn-mon{display:flex;align-items:center;gap:11px;margin-top:13px;color:var(--muc)}
+.cn-mon .h{flex:none;width:40px;height:40px;border-radius:5px;overflow:hidden;background:var(--giay2)}
+.cn-mon .h img{width:100%;height:100%;object-fit:cover}
+.cn-mon .tt{min-width:0;flex:1}
+.cn-mon small{display:block;font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:var(--vang)}
+.cn-mon b{display:block;font:400 12.5px/1.4 var(--sans);color:var(--chu);margin-top:3px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.cn-mon svg{flex:none;width:14px;height:14px;color:var(--mo);transition:translate .35s var(--muot)}
+.cn-mon:hover svg{translate:4px 0;color:var(--muc)}
 .cn-the .sao{display:flex;gap:4px;color:var(--vang2);font-size:15px;line-height:1}
 .cn-the blockquote{margin:0;font:300 17px/1.65 var(--serif);color:var(--muc)}
 .cn-the blockquote::before{content:"“"}
@@ -1258,7 +1271,8 @@ body.khoa-cuon{overflow:hidden}
   .cn-the{flex:0 0 calc((100% - 20px)/2)}
 }
 @media (max-width:620px){
-  .cn-the{flex:0 0 86%;padding:26px 22px}
+  .cn-the{flex:0 0 86%}
+  .cn-noi{padding:24px 22px 22px}
   .cn-lat{display:none}
   .cn-ds{gap:14px}
 }
@@ -1454,4 +1468,19 @@ body.khoa-cuon{overflow:hidden}
   .mega-chan-trong{padding:14px 0;gap:18px}
   .mega-chan a,.mega-chan button{color:#e9e3d6}
   .mega-chan .ghi{margin-left:0;color:rgba(233,227,214,.55);flex:1 0 100%}
+}
+
+/* ---- điện thoại: thanh đầu trang chỉ giữ nút tìm, còn lại nằm trong menu ---- */
+.menu-nhanh{display:none}
+@media (max-width:900px){
+  .dau .phai .nut-yt-dau,.dau .phai .nut-gio,.dau .phai .nut-tk{display:none!important}
+  .mo-menu.co-cham::after{content:"";position:absolute;top:7px;right:-1px;width:6px;height:6px;border-radius:50%;background:var(--vang2)}
+  .menu-nhanh{display:grid;grid-template-columns:repeat(3,1fr);gap:9px;margin-bottom:26px}
+  .menu-nhanh a,.menu-nhanh button{display:flex;flex-direction:column;align-items:center;gap:9px;padding:16px 6px 13px;border-radius:10px;
+    border:1px solid rgba(255,255,255,.16);background:rgba(255,255,255,.05);color:#e9e3d6;font-size:12.5px;transition:background .3s}
+  .menu-nhanh a:active,.menu-nhanh button:active{background:rgba(255,255,255,.12)}
+  .menu-nhanh .h{position:relative;display:grid;place-items:center}
+  .menu-nhanh svg{width:21px;height:21px}
+  .menu-nhanh i{position:absolute;top:-7px;right:-11px;min-width:17px;height:17px;padding:0 4px;border-radius:99px;background:var(--vang);color:#fff;
+    font:500 10.5px/17px var(--sans);font-style:normal;text-align:center}
 }
