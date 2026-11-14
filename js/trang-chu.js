@@ -271,10 +271,10 @@ $('#bang').addEventListener('scroll', function () {
   }
   function chay() { if (the.length > 1 && !GIAM) hen = setInterval(function () { sang(dang + 1); }, 4500); }
   function dung() { clearInterval(hen); hen = 0; }
-  muc.addEventListener('mouseenter', dung);
-  muc.addEventListener('mouseleave', function () { if (!hen) chay(); });
+  function dem_lai() { dung(); chay(); }   // rê vào thẻ nào thì thẻ đó sáng và đếm lại từ đầu
   muc.addEventListener('mouseover', function (ev) {
-    var t = ev.target.closest('.cn-the'); if (t) sang(+t.dataset.cn);
+    var t = ev.target.closest('.cn-the');
+    if (t && +t.dataset.cn !== dang) { sang(+t.dataset.cn); dem_lai(); }
   });
   document.addEventListener('visibilitychange', function () { document.hidden ? dung() : (hen || chay()); });
   chay();
