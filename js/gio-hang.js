@@ -117,7 +117,7 @@ function khungTk(cach, soTien, maDonHang) {
   if (cach === 'cod') return '';
   if (!coTk()) return '<p class="gio-luuy">Đặt xong cửa hàng nhắn Zalo gửi bạn số tài khoản và xác nhận đơn.</p>';
   var qr = TRA.qr !== false && maDonHang ? 'https://img.vietqr.io/image/' + encodeURIComponent(TRA.nganHang) + '-' +
-      encodeURIComponent(TRA.stk) + '-compact2.png?amount=' + soTien + '&addInfo=' + encodeURIComponent(maDonHang) +
+      encodeURIComponent(TRA.stk) + '-compact2.png?amount=' + soTien +
       (TRA.chuTk ? '&accountName=' + encodeURIComponent(TRA.chuTk) : '') : '';
   return '<div class="ck-hop">' +
     (qr ? '<img class="ck-qr" src="' + qr + '" alt="Mã QR chuyển khoản" width="230" height="230" loading="lazy">' : '') +
@@ -126,8 +126,7 @@ function khungTk(cach, soTien, maDonHang) {
       '<dt>Số tài khoản</dt><dd><b>' + e(TRA.stk) + '</b>' + nutChep(TRA.stk) + '</dd>' +
       (TRA.chuTk ? '<dt>Chủ tài khoản</dt><dd>' + e(TRA.chuTk) + '</dd>' : '') +
       '<dt>Số tiền</dt><dd><b>' + gia(soTien) + '</b>' + (cach === 'coc' ? ' <small>cọc ' + PT_COC + '%</small>' : '') + '</dd>' +
-      (maDonHang ? '<dt>Nội dung</dt><dd><b>' + e(maDonHang) + '</b>' + nutChep(maDonHang) + '</dd>'
-                 : '<dt>Nội dung</dt><dd>mã đơn — hiện ngay sau khi bạn đặt</dd>') +
+      (maDonHang ? '<dt>Mã đơn</dt><dd><b>' + e(maDonHang) + '</b>' + nutChep(maDonHang) + '</dd>' : '') +
     '</dl></div>';
 }
 function nutChep(s) { return ' <button type="button" class="chep-nho" data-chep-tho="' + e(s) + '">Chép</button>'; }
