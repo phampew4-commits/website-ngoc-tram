@@ -207,7 +207,40 @@
         "dap": "Được. Bạn chọn chuỗi và các charm trong mục Charm, gửi mã cho cửa hàng để phối và báo giá trọn bộ."
       }
     ],
-    "camNhan": [],
+    "camNhan": [
+      {
+        "ten": "Chị Hương",
+        "noi": "Ngọc trong và mát tay hơn cả trong ảnh. Shop quay video cho xem trước khi gửi nên mình yên tâm hẳn, hộp cũng đẹp, tặng mẹ là vừa.",
+        "sao": 5,
+        "tu": "Hà Nội",
+        "anh": "mau-1.jpg",
+        "ma": "M26260"
+      },
+      {
+        "ten": "Chị Mai Anh",
+        "noi": "Mình nhờ shop phối charm theo tuổi, chị tư vấn rất kỹ mà không hề giục mua. Đeo một tháng rồi, vàng vẫn sáng, dây chắc.",
+        "sao": 5,
+        "tu": "Bắc Ninh",
+        "anh": "mau-2.jpg",
+        "ma": "25362"
+      },
+      {
+        "ten": "Anh Tuấn",
+        "noi": "Đặt từ Sài Gòn, ba ngày là nhận được. Có mã riêng từng món nên mua xong vẫn tra lại được, rất rõ ràng.",
+        "sao": 5,
+        "tu": "TP. Hồ Chí Minh",
+        "anh": "mau-3.jpg",
+        "ma": "M26127"
+      },
+      {
+        "ten": "Chị Linh",
+        "noi": "Lần đầu mua ngọc online nên hơi lo, nhưng nhận hàng thì đúng y ảnh. Sẽ quay lại mua tặng bạn.",
+        "sao": 5,
+        "tu": "Hải Phòng",
+        "anh": "",
+        "ma": "26242"
+      }
+    ],
     "gioiThieu": "Phỉ thuý & trang sức vàng, chọn tay từng món từ năm 2015."
   }
 }
