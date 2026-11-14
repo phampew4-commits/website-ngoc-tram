@@ -24,7 +24,10 @@ service cloud.firestore {
                     && request.resource.data.ten.size() <= 80
                     && request.resource.data.sdt.size() <= 20
                     && request.resource.data.diaChi.size() <= 300
-                    && request.resource.data.ghiChu.size() <= 500;
+                    && request.resource.data.ghiChu.size() <= 500
+                    && request.resource.data.traTien in ['cod', 'ck', 'coc']
+                    && request.resource.data.canTra is number
+                    && request.resource.data.canTra >= 0;
       allow read: if request.auth != null && resource.data.uid == request.auth.uid;
       allow update, delete: if false;
     }

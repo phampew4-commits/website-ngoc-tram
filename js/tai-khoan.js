@@ -111,6 +111,7 @@ function veHoSo() {
 
 /* ---------- đơn đã đặt (Firestore donHang của chính mình) ---------- */
 var TEN_TT = {moi: 'Cửa hàng đã nhận', dangGoi: 'Đang chuẩn bị gửi', daGui: 'Đã gửi đi', xong: 'Đã giao xong', huy: 'Đã huỷ'};
+var TEN_TRA = {cod: 'Trả khi nhận', ck: 'Chuyển khoản trước', coc: 'Cọc trước'};
 function veDonCuaToi() {
   var khung = $('#tkDon'); if (!khung) return;
   KHACH.db.collection('donHang').where('uid', '==', KHACH.user.uid).limit(30).get().then(function (kq) {
@@ -119,7 +120,7 @@ function veDonCuaToi() {
       var ng = d.luc && d.luc.seconds ? new Date(d.luc.seconds * 1000).toLocaleDateString('vi-VN') : '';
       return '<li><div class="don-dau"><b>' + e(d.ma || '') + '</b><span class="chip-don tt-' + e(d.trangThai || 'moi') + '">' + e(TEN_TT[d.trangThai] || 'Cửa hàng đã nhận') + '</span></div>' +
         '<div class="don-mon">' + (d.mon || []).map(function (m) { return e(m.ten) + ' <small>#' + e(m.ma) + '</small>'; }).join(' · ') + '</div>' +
-        '<div class="don-chan"><span>' + ng + '</span><b>' + gia(d.tong || 0) + '</b></div></li>';
+        '<div class="don-chan"><span>' + ng + (d.traTien ? ' · ' + e(TEN_TRA[d.traTien] || TEN_TRA.cod) : '') + '</span><b>' + gia(d.tong || 0) + '</b></div></li>';
     }).join('') + '</ul>' : '<p class="dan">Chưa có đơn nào. Chọn món rồi bấm “Thêm vào giỏ” để đặt mua.</p>');
   }).catch(function () {
     khung.innerHTML = '<h2>Đơn đã đặt</h2><p class="dan">Chưa xem được danh sách đơn. Bạn nhắn Zalo cửa hàng để hỏi về đơn của mình nhé.</p>';

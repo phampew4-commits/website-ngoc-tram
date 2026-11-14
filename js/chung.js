@@ -135,7 +135,7 @@ function dungChanTrang() {
         '<a class="chi-duong" href="' + e(LIEN_HE.banDo) + '" target="_blank" rel="noopener">Chỉ đường <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M7 17L17 7M9 7h8v8"/></svg></a>' +
       '</div>' +
     '</div></div>' +
-    '<div class="dai-tt"><div class="khung"><span>Thanh toán: Chuyển khoản · COD</span><span>Giao hàng: Vietnam Post · Toàn quốc</span><span>Ship miễn phí đơn từ 1.500.000đ chuyển khoản trước</span></div></div>' +
+    '<div class="dai-tt"><div class="khung"><span>Thanh toán: ' + cachTraNgan() + '</span><span>Giao hàng: Vietnam Post · Toàn quốc</span><span>Ship miễn phí đơn từ 1.500.000đ chuyển khoản trước</span></div></div>' +
     '<div class="ban-quyen"><span>© ' + new Date().getFullYear() + ' Ngọc Trầm Store</span><span>Jade &amp; Agarwood · Việt Nam · Est. 2015</span></div>' +
     '<div class="chu-lon" aria-hidden="true"><span>Ngọc Trầm</span></div>';
   // dải "Mới về": 6 món mới nhất (ưu tiên chuỗi, nhẫn, khuyên, mặt dây)
@@ -343,6 +343,13 @@ function the(x, i) {
     '</div></div>' +
     '<h3>' + e(x.ten) + '</h3><div class="g">' + gia(x.gia) + '<span class="ma">#' + e(x.ma) + '</span></div></div>';
 }
+function cachTraNgan() {
+  var t = CAU_HINH.thanhToan || {}, a = [];
+  if (t.ck !== false) a.push('Chuyển khoản');
+  if (t.cod !== false) a.push('COD');
+  if (t.coc) a.push('Cọc trước');
+  return a.join(' · ') || 'Nhắn Zalo để chốt';
+}
 var hb; function baoTin(s) { var t = $('#thongBao'); t.textContent = s; t.classList.add('hien'); clearTimeout(hb); hb = setTimeout(function () { t.classList.remove('hien'); }, 2600); }
 
 document.addEventListener('click', function (ev) {
@@ -351,6 +358,23 @@ document.addEventListener('click', function (ev) {
   if (navigator.clipboard) navigator.clipboard.writeText(chu).catch(function () {});
   baoTin('Đã chép mã ' + c.dataset.chep + ' — dán vào tin nhắn nhé');
 });
+
+/* ---------- rời trang: kéo màn giấy lại rồi mới sang trang mới ---------- */
+addEventListener('load', function () { setTimeout(function () { document.documentElement.classList.add('da-nap'); }, 320); });
+(function () {
+  if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  document.addEventListener('click', function (ev) {
+    if (ev.defaultPrevented || ev.button || ev.metaKey || ev.ctrlKey || ev.shiftKey || ev.altKey) return;
+    var a = ev.target.closest('a[href]');
+    if (!a || a.hasAttribute('download') || (a.target && a.target !== '_self')) return;
+    var u; try { u = new URL(a.getAttribute('href'), location.href); } catch (e) { return; }
+    if (u.origin !== location.origin || u.pathname === location.pathname || !/\.html?$/.test(u.pathname)) return;
+    ev.preventDefault();
+    document.documentElement.classList.add('roi-trang');
+    setTimeout(function () { location.href = u.href; }, 220);
+  });
+  addEventListener('pageshow', function (ev) { if (ev.persisted) document.documentElement.classList.remove('roi-trang'); });
+})();
 
 /* ---------- cuộn mượt, chậm khi bấm link trong trang (menu, nút "Xem sản phẩm"…) ---------- */
 (function () {

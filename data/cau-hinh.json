@@ -103,6 +103,17 @@
     "toiDaCharm": 12,
     "vongGia": 3
   },
+  "thanhToan": {
+    "cod": true,
+    "ck": true,
+    "coc": true,
+    "cocPhanTram": 30,
+    "nganHang": "",
+    "tenNganHang": "",
+    "stk": "",
+    "chuTk": "",
+    "qr": true
+  },
   "seo": {
     "choGoogle": false
   },

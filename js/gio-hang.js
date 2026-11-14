@@ -3,6 +3,23 @@
    Giỏ chỉ giữ mã món (chung.js › GIO); tên, giá, trạng thái lấy mới từ data/san-pham.json mỗi lần mở trang. */
 var noiGio = $('#gioNoi'), MON = [], dangGui = false;
 
+/* ---------- cách thanh toán (bật/tắt trong app › Quản trị web › Thanh toán) ---------- */
+var TRA = CAU_HINH.thanhToan || {};
+var PT_COC = Math.max(5, Math.min(100, +TRA.cocPhanTram || 30));
+function coTk() { return !!(TRA.stk && TRA.nganHang); }
+function cachTra() {
+  var a = [];
+  if (TRA.cod !== false) a.push({k: 'cod', ten: 'Trả khi nhận hàng', mo: 'Bưu tá giao tới, bạn kiểm tra món rồi mới trả tiền.'});
+  if (TRA.ck !== false) a.push({k: 'ck', ten: 'Chuyển khoản trước', mo: 'Chuyển đủ tiền trước, cửa hàng gói và gửi đi ngay.'});
+  if (TRA.coc) a.push({k: 'coc', ten: 'Cọc trước ' + PT_COC + '%', mo: 'Cọc để giữ món, phần còn lại trả khi nhận hàng.'});
+  return a.length ? a : [{k: 'cod', ten: 'Trả khi nhận hàng', mo: ''}];
+}
+function tienTra(cach, tong) {
+  if (cach === 'ck') return tong;
+  if (cach === 'coc') return Math.max(1000, Math.round(tong * PT_COC / 100 / 1000) * 1000);
+  return 0;
+}
+
 taiDuLieu.then(function () { if (KHACH.bat) KHACH.san.then(function () { KHACH.nghe.push(veGio); veGio(); }); else veGio(); });
 
 function monTrongGio() {
@@ -77,11 +94,50 @@ function veDat(muaDuoc, tong) {
     '<label>Số điện thoại<input name="sdt" type="tel" inputmode="numeric" autocomplete="tel" value="' + e(h.sdt || '') + '" required></label>' +
     '<label>Địa chỉ giao hàng<textarea name="diaChi" rows="2" autocomplete="street-address" required>' + e(h.diaChi || '') + '</textarea></label>' +
     '<label>Ghi chú <small>(không bắt buộc)</small><textarea name="ghiChu" rows="2" placeholder="Cỡ tay, cách gói, giờ nhận hàng…"></textarea></label>' +
+    veCachTra(tong) +
     '<p class="loi-tk" id="loiDat" hidden></p>' +
     '<button class="nut dac" type="submit" id="nutDat">Đặt mua · ' + gia(tong) + '</button>' +
     '<p class="gio-luuy">Đặt xong cửa hàng nhắn lại để xác nhận. Chưa cần trả trước.</p>' +
     '</form>';
   $('#fDat').onsubmit = function (ev) { ev.preventDefault(); guiDon(muaDuoc, tong); };
+  $('#fDat').addEventListener('change', function (ev) { if (ev.target.name === 'traTien') doiCachTra(tong); });
+  doiCachTra(tong);
+}
+
+function veCachTra(tong) {
+  var ds = cachTra();
+  return '<h3>Cách thanh toán</h3><div class="gio-tra">' + ds.map(function (c, i) {
+    var st = tienTra(c.k, tong);
+    return '<label class="tra-o"><input type="radio" name="traTien" value="' + c.k + '"' + (i ? '' : ' checked') + '>' +
+      '<span class="tra-tt"><b>' + c.ten + (st ? ' · ' + gia(st) : '') + '</b><small>' + c.mo + '</small></span></label>';
+  }).join('') + '</div><div class="tra-tk" id="traTk" hidden></div>';
+}
+
+function khungTk(cach, soTien, maDonHang) {
+  if (cach === 'cod') return '';
+  if (!coTk()) return '<p class="gio-luuy">Đặt xong cửa hàng nhắn Zalo gửi bạn số tài khoản và xác nhận đơn.</p>';
+  var qr = TRA.qr !== false && maDonHang ? 'https://img.vietqr.io/image/' + encodeURIComponent(TRA.nganHang) + '-' +
+      encodeURIComponent(TRA.stk) + '-compact2.png?amount=' + soTien + '&addInfo=' + encodeURIComponent(maDonHang) +
+      (TRA.chuTk ? '&accountName=' + encodeURIComponent(TRA.chuTk) : '') : '';
+  return '<div class="ck-hop">' +
+    (qr ? '<img class="ck-qr" src="' + qr + '" alt="Mã QR chuyển khoản" width="230" height="230" loading="lazy">' : '') +
+    '<dl class="ck-tt">' +
+      '<dt>Ngân hàng</dt><dd>' + e(TRA.tenNganHang || TRA.nganHang) + '</dd>' +
+      '<dt>Số tài khoản</dt><dd><b>' + e(TRA.stk) + '</b>' + nutChep(TRA.stk) + '</dd>' +
+      (TRA.chuTk ? '<dt>Chủ tài khoản</dt><dd>' + e(TRA.chuTk) + '</dd>' : '') +
+      '<dt>Số tiền</dt><dd><b>' + gia(soTien) + '</b>' + (cach === 'coc' ? ' <small>cọc ' + PT_COC + '%</small>' : '') + '</dd>' +
+      (maDonHang ? '<dt>Nội dung</dt><dd><b>' + e(maDonHang) + '</b>' + nutChep(maDonHang) + '</dd>'
+                 : '<dt>Nội dung</dt><dd>mã đơn — hiện ngay sau khi bạn đặt</dd>') +
+    '</dl></div>';
+}
+function nutChep(s) { return ' <button type="button" class="chep-nho" data-chep-tho="' + e(s) + '">Chép</button>'; }
+
+function doiCachTra(tong) {
+  var f = $('#fDat'), hop = $('#traTk'); if (!f || !hop) return;
+  var cach = f.traTien ? f.traTien.value : 'cod';
+  hop.innerHTML = khungTk(cach, tienTra(cach, tong), '');
+  hop.hidden = !hop.innerHTML;
+  var n = $('#nutDat'); if (n && !dangGui) n.textContent = 'Đặt mua · ' + gia(tong);
 }
 
 function maDon() {
@@ -97,13 +153,16 @@ function guiDon(muaDuoc, tong) {
   if (sdt.replace(/\D/g, '').length < 9) return loi('Số điện thoại chưa đúng.');
   if (diaChi.length < 8) return loi('Bạn điền địa chỉ giao hàng đầy đủ hơn nhé.');
 
+  var cach = f.traTien ? f.traTien.value : 'cod';
+  if (['cod', 'ck', 'coc'].indexOf(cach) < 0) cach = 'cod';
   dangGui = true; $('#nutDat').disabled = true; $('#nutDat').textContent = 'Đang gửi đơn…';
   var ma = maDon();
   var don = {
     ma: ma, uid: KHACH.user.uid, email: KHACH.user.email || '',
     ten: ten.slice(0, 80), sdt: sdt.slice(0, 20), diaChi: diaChi.slice(0, 300), ghiChu: ghiChu.slice(0, 500),
     mon: muaDuoc.map(function (g) { return {ma: String(g.x.ma), k: String(khoa(g.x)), ten: String(g.x.ten).slice(0, 150), gia: g.x.gia, anh: (g.x.anh || [])[0] || ''}; }),
-    soMon: muaDuoc.length, tong: tong, trangThai: 'moi', daXem: false,
+    soMon: muaDuoc.length, tong: tong, traTien: cach, canTra: tienTra(cach, tong),
+    trangThai: 'moi', daXem: false,
     luc: firebase.firestore.FieldValue.serverTimestamp()
   };
   KHACH.db.collection('donHang').add(don)
@@ -120,6 +179,9 @@ function veXong(don) {
     '<div class="dau-tick"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12.5l5 5L20 7"/></svg></div>' +
     '<span class="nho">Đã nhận đơn</span><h1>Cảm ơn <em>' + e(don.ten.split(' ').pop()) + '</em></h1>' +
     '<p class="dan">Đơn <b>' + e(don.ma) + '</b> · ' + don.soMon + ' món · ' + gia(don.tong) + '<br>Cửa hàng đã nhận được và sẽ nhắn vào số ' + e(don.sdt) + ' để xác nhận, gửi video món thật rồi mới giao.</p>' +
+    (don.traTien === 'cod' ? '' : '<div class="xong-ck"><h3>' + (don.traTien === 'coc' ? 'Cọc giữ món' : 'Chuyển khoản cho đơn này') + '</h3>' +
+      khungTk(don.traTien, don.canTra, don.ma) +
+      '<p class="gio-luuy">Chuyển xong bạn nhắn Zalo giúp cửa hàng, đơn được xác nhận nhanh hơn.</p></div>') +
     '<div class="hang giua-hang"><a class="nut dac zalo" href="' + linkZalo() + '" target="_blank" data-chep="' + e(don.ma) + '">Nhắn Zalo kèm mã đơn</a>' +
     '<a class="nut" href="tai-khoan.html">Xem đơn của tôi</a></div>' +
     '<a class="sang-trang" href="index.html#san-pham">Xem thêm sản phẩm <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a></div>';
@@ -127,6 +189,12 @@ function veXong(don) {
 }
 
 noiGio.addEventListener('click', function (ev) {
+  var c = ev.target.closest('[data-chep-tho]');
+  if (c) {
+    if (navigator.clipboard) navigator.clipboard.writeText(c.dataset.chepTho).catch(function () {});
+    baoTin('Đã chép ' + c.dataset.chepTho);
+    return;
+  }
   var b = ev.target.closest('[data-bo]'); if (!b) return;
   GIO.bo(b.dataset.bo); veGio();
 });
