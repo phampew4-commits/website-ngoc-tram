@@ -107,11 +107,11 @@
     "cod": true,
     "ck": true,
     "coc": true,
-    "cocPhanTram": 30,
-    "nganHang": "",
-    "tenNganHang": "",
-    "stk": "",
-    "chuTk": "",
+    "cocPhanTram": 20,
+    "nganHang": "970424",
+    "tenNganHang": "ShinhanBank",
+    "stk": "0943222402",
+    "chuTk": "NGUYEN THI KIM LOAN",
     "qr": true
   },
   "seo": {
@@ -173,7 +173,10 @@
       "hd.moTa": "Mọi điều về đặt hàng, giao hàng và chăm sóc ngọc. Chưa thấy câu bạn cần? Nhắn cho chúng tôi.",
       "lh.nho": "Liên hệ",
       "lh.tieu": "Cần tư vấn?\n*Nhắn cho Ngọc Trầm.*",
-      "lh.moTa": "Gửi mã sản phẩm hoặc ảnh mẫu bạn thích, cửa hàng sẽ tìm và phối giúp bạn."
+      "lh.moTa": "Gửi mã sản phẩm hoặc ảnh mẫu bạn thích, cửa hàng sẽ tìm và phối giúp bạn.",
+      "cn.nho": "",
+      "cn.tieu": "",
+      "cn.moTa": ""
     },
     "camKet": [
       "Ngọc tự nhiên",
@@ -204,6 +207,7 @@
         "dap": "Được. Bạn chọn chuỗi và các charm trong mục Charm, gửi mã cho cửa hàng để phối và báo giá trọn bộ."
       }
     ],
+    "camNhan": [],
     "gioiThieu": "Phỉ thuý & trang sức vàng, chọn tay từng món từ năm 2015."
   }
 }
