@@ -208,53 +208,76 @@ $('#bang').addEventListener('scroll', function () {
 }, {passive: true});
 
 
-/* ---------- cảm nhận khách hàng (sửa trong app › Nội dung trang) ---------- */
+/* ---------- cảm nhận khách hàng (sửa trong app › Nội dung trang) ----------
+   Trái: tiêu đề đè lên ảnh lớn · Phải: cột thẻ, một thẻ sáng lên và tự đổi mỗi 4,5 giây. */
 (function () {
-  var ds = (ND.camNhan || []).filter(function (x) { return x && x.noi; });
-  var muc = $('#cam-nhan'); if (!muc || !ds.length) return;
+  var cn = (ND.camNhan || []).filter(function (x) { return x && x.noi; }).slice(0, 6);
+  var muc = $('#cam-nhan'); if (!muc || !cn.length) return;
   muc.hidden = false;
-  var kho = {};
-  ds.forEach(function (x) { if (x.ma) kho[String(x.ma)] = null; });
-  $('#dsCamNhan').innerHTML = ds.map(function (x, i) {
+
+  /* ảnh lớn bên trái: xếp chồng sẵn ảnh của từng cảm nhận, đổi thẻ nào thì ảnh đó mờ hiện lên */
+  var hinh = $('#cnHinh'), lop = [], anhCua = [];
+  cn.forEach(function (x) {
+    if (!x.anh) { anhCua.push(-1); return; }
+    anhCua.push(lop.length);
+    lop.push('<img src="img/cam-nhan/' + encodeURIComponent(x.anh) + '" alt="Khách của Ngọc Trầm' + (x.ten ? ' — ' + e(x.ten) : '') +
+      '"' + (lop.length ? ' loading="lazy"' : '') + ' decoding="async">');
+  });
+  if (lop.length) {
+    hinh.innerHTML = lop.join('') + '<span class="cn-dau">Từ 2015<small>Jade &amp; Agarwood</small></span>';
+    hinh.querySelector('img').classList.add('hien-anh');
+  } else {
+    hinh.remove();
+    muc.querySelector('.cn-bo').classList.add('khong-hinh');
+  }
+  var dsAnh = hinh ? [].slice.call(hinh.querySelectorAll('img')) : [];
+
+  $('#dsCamNhan').innerHTML = cn.map(function (x, i) {
     var sao = Math.max(1, Math.min(5, +x.sao || 5));
-    return '<figure class="cn-the' + (x.anh ? ' co-anh' : '') + '" data-cn="' + i + '">' +
-      (x.anh ? '<div class="cn-anh">' + hinh('img/cam-nhan/' + x.anh, 'Khách của Ngọc Trầm' + (x.ten ? ' — ' + x.ten : ''), 600) + '</div>' : '') +
-      '<div class="cn-noi">' +
-        '<div class="sao" aria-label="' + sao + ' trên 5 sao">' + new Array(sao + 1).join('<span>★</span>') + '</div>' +
-        '<blockquote>' + e(x.noi) + '</blockquote>' +
-        (x.ten ? '<figcaption><b>' + e(x.ten) + '</b>' + (x.tu ? '<span>Khách ở ' + e(x.tu) + '</span>' : '') + '</figcaption>' : '') +
-        (x.ma ? '<a class="cn-mon" href="san-pham.html?ma=' + encodeURIComponent(x.ma) + '" hidden>' +
-          '<span class="h"></span><span class="tt"><small>Món khách đã chọn</small><b></b></span>' +
-          '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>' : '') +
-      '</div></figure>';
+    var ten = x.ten || 'Khách của Ngọc Trầm';
+    return '<article class="cn-the' + (i ? '' : ' sang') + '" data-cn="' + i + '" data-hien style="transition-delay:' + (i * 90) + 'ms">' +
+      '<div class="sao" aria-label="' + sao + ' trên 5 sao">' + new Array(sao + 1).join('<span>★</span>') + '</div>' +
+      '<blockquote>' + e(x.noi) + '</blockquote>' +
+      '<footer><span class="ai">' + (x.anh
+          ? '<img src="img/cam-nhan/' + encodeURIComponent(x.anh) + '" alt="" loading="lazy" decoding="async">'
+          : e((ten.trim().split(/\s+/).pop() || 'K')[0].toUpperCase())) + '</span>' +
+        '<span class="ten"><b>' + e(ten) + '</b>' + (x.tu ? '<small>Khách ở ' + e(x.tu) + '</small>' : '') + '</span></footer>' +
+      (x.ma ? '<a class="cn-di" href="san-pham.html?ma=' + encodeURIComponent(x.ma) + '" hidden aria-label="Xem món khách đã chọn">' +
+        '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M7 17L17 7M9 7h8v8"/></svg></a>' : '') +
+      '</article>';
   }).join('');
-  /* món khách đã mua: lấy tên + ảnh từ kho, không có thì giấu dòng đó đi */
+
+  /* món khách đã chọn: lấy tên thật từ kho, món đã ẩn / gõ sai mã thì giấu nút đi */
   taiDuLieu.then(function () {
-    ds.forEach(function (x, i) {
+    cn.forEach(function (x, i) {
       if (!x.ma) return;
-      var mon = window.ds.filter(function (y) { return String(y.ma) === String(x.ma) || String(khoa(y)) === String(x.ma); })[0];
-      var a = $('.cn-the[data-cn="' + i + '"] .cn-mon'); if (!a || !mon) return;
-      a.querySelector('.h').innerHTML = hinh(mon.anh[0], mon.ten, 120);
-      a.querySelector('b').textContent = mon.ten;
+      var mon = ds.filter(function (y) { return String(y.ma) === String(x.ma) || String(khoa(y)) === String(x.ma); })[0];
+      var a = $('.cn-the[data-cn="' + i + '"] .cn-di'); if (!a || !mon) return;
       a.hidden = false;
+      a.title = 'Món khách đã chọn: ' + mon.ten;
+      a.setAttribute('aria-label', a.title);
     });
   }).catch(function () {});
+
   theoDoi(muc);
-  var bang = $('#dsCamNhan');
-  $('#cam-nhan').addEventListener('click', function (ev) {
-    var b = ev.target.closest('[data-cn-lat]'); if (!b) return;
-    var the = bang.querySelector('.cn-the'); if (!the) return;
-    var buoc = the.getBoundingClientRect().width + 20;
-    bang.scrollBy({left: buoc * (+b.dataset.cnLat), behavior: 'smooth'});
-  });
-  function dauLat() {
-    var het = bang.scrollWidth - bang.clientWidth - 4;
-    $('.cn-lat.truoc').disabled = bang.scrollLeft <= 2;
-    $('.cn-lat.sau').disabled = bang.scrollLeft >= het;
-    $('.cn-khung').classList.toggle('du', het <= 2);
+
+  /* thẻ sáng tự chạy vòng — rê chuột vào thì dừng lại */
+  var the = $$('#dsCamNhan .cn-the'), dang = 0, hen = 0;
+  function sang(i) {
+    dang = (i + the.length) % the.length;
+    the.forEach(function (t, j) { t.classList.toggle('sang', j === dang); });
+    var k = anhCua[dang];                       // thẻ không có ảnh thì giữ nguyên ảnh đang hiện
+    if (k >= 0) dsAnh.forEach(function (im, j) { im.classList.toggle('hien-anh', j === k); });
   }
-  bang.addEventListener('scroll', dauLat, {passive: true});
-  addEventListener('resize', dauLat); setTimeout(dauLat, 60);
+  function chay() { if (the.length > 1 && !GIAM) hen = setInterval(function () { sang(dang + 1); }, 4500); }
+  function dung() { clearInterval(hen); hen = 0; }
+  muc.addEventListener('mouseenter', dung);
+  muc.addEventListener('mouseleave', function () { if (!hen) chay(); });
+  muc.addEventListener('mouseover', function (ev) {
+    var t = ev.target.closest('.cn-the'); if (t) sang(+t.dataset.cn);
+  });
+  document.addEventListener('visibilitychange', function () { document.hidden ? dung() : (hen || chay()); });
+  chay();
 })();
 
 /* mở trang kèm #loai-… (từ menu lớn hoặc chân trang ở trang khác) → lọc sẵn đúng loại rồi cuộn tới lưới */

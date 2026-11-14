@@ -14,7 +14,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+Display:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Be+Vietnam+Pro:wght@300;400;500;600&display=swap" rel="stylesheet">
 <link rel="preload" href="data/san-pham.json?v=c4df211b73" as="fetch" crossorigin="anonymous"><link rel="preload" href="data/thiet-ke.json?v=1368b80d8b" as="fetch" crossorigin="anonymous"><link rel="preconnect" href="https://lh3.googleusercontent.com" crossorigin>
-<link rel="stylesheet" href="css/style.css?v=849cb9fb2a">
+<link rel="stylesheet" href="css/style.css?v=7acd502329">
 </head>
 <body>
 
@@ -189,15 +189,20 @@
 <!-- ========== CẢM NHẬN KHÁCH HÀNG ========== -->
 <section class="muc cam-nhan" id="cam-nhan" hidden>
   <div class="khung">
-    <div class="giua">
-      <span class="nho" data-hien data-nd="cn.nho">Cảm nhận</span>
-      <h2 class="tieu-de" data-nd="cn.tieu"><span class="dong-chu"><span>Khách nói gì về <em>Ngọc Trầm</em></span></span></h2>
-      <p data-hien data-nd="cn.moTa">Những lời nhắn khách gửi lại sau khi nhận món.</p>
+    <div class="cn-bo">
+      <div class="cn-trai">
+        <div class="cn-tieu" data-hien>
+          <span class="nho" data-nd="cn.nho">Cảm nhận</span>
+          <h2 class="tieu-de" data-nd="cn.tieu"><span class="dong-chu"><span>Khách nói gì về <em>Ngọc Trầm</em></span></span></h2>
+          <p data-nd="cn.moTa">Những lời nhắn khách gửi lại sau khi nhận món.</p>
+        </div>
+        <div class="cn-hinh" data-mo-anh id="cnHinh"></div>
+      </div>
+      <div class="cn-phai" id="dsCamNhan"></div>
     </div>
-    <div class="cn-khung" data-hien>
-      <button class="cn-lat truoc" data-cn-lat="-1" aria-label="Xem cảm nhận trước"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M15 5l-7 7 7 7"/></svg></button>
-      <div class="cn-ds" id="dsCamNhan"></div>
-      <button class="cn-lat sau" data-cn-lat="1" aria-label="Xem cảm nhận sau"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M9 5l7 7-7 7"/></svg></button>
+    <div class="cn-moi" data-hien>
+      <b data-nd="cn.moi">Bạn sẽ là người tiếp theo?</b>
+      <a class="nut sang" href="#san-pham" data-nd="cn.nut">Xem sản phẩm</a>
     </div>
   </div>
 </section>
@@ -257,7 +262,7 @@
 <script src="js/cau-hinh.js?v=a9bedb3de1"></script>
 <script src="js/chung.js?v=c95cf5b1cb"></script>
 <script src="js/khach.js?v=18271233fc"></script>
-<script src="js/trang-chu.js?v=ea6da67934"></script>
+<script src="js/trang-chu.js?v=d76bfc33c9"></script>
 <script src="js/tk-3d.js?v=f42438428d"></script>
 </body>
 </html>
