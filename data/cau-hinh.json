@@ -130,6 +130,7 @@
       "link": ""
     },
     "heroAnh": [],
+    "heroVid": {},
     "heroCheDo": "ngaunhien",
     "heroLoai": [
       "chuoi",
@@ -177,8 +178,7 @@
       "cn.nho": "",
       "cn.tieu": "",
       "cn.moTa": "",
-      "quy.video": "vd-quy-trinh.mp4",
-      "hero.video": "vd-dau-trang.mp4"
+      "quy.video": "sp/23284.mp4"
     },
     "camKet": [
       "Ngọc tự nhiên",

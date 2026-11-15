@@ -112,7 +112,7 @@ html.da-nap body::before,html.da-nap body::after{animation:none;opacity:0;visibi
 .hero .chieu figure.on{opacity:1}
 .hero .chieu img{width:100%;height:100%;object-fit:cover}
 .hero .chieu figure.on img{animation:troi 9s linear both}
-.hero .chieu .hero-video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.hero .chieu video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
 @keyframes troi{from{transform:scale(1.04)}to{transform:scale(1.16) translate3d(-1.5%,-1%,0)}}
 .hero::after{content:"";position:absolute;inset:0;z-index:-1;
   background:radial-gradient(ellipse at 50% 45%,rgba(14,28,34,.35),rgba(14,28,34,.78) 75%),linear-gradient(180deg,rgba(14,28,34,.5),transparent 30%,transparent 60%,rgba(14,28,34,.7))}
@@ -198,6 +198,13 @@ section[id]{scroll-margin-top:68px}
 .quy-video{position:relative;justify-self:center;width:100%;max-width:400px;aspect-ratio:9/16;border-radius:22px;overflow:hidden;
   background:rgba(255,255,255,.05);box-shadow:0 40px 70px -40px rgba(0,0,0,.7),0 0 0 1px rgba(232,223,204,.14)}
 .quy-video video{display:block;width:100%;height:100%;object-fit:cover}
+.quy-video::after{content:"";position:absolute;inset:auto 0 0;height:42%;pointer-events:none;background:linear-gradient(to top,rgba(14,28,34,.78),transparent)}
+.quy-mon{position:absolute;left:22px;right:22px;bottom:20px;z-index:2;display:grid;gap:4px;color:#fff;text-align:left}
+.quy-mon small{font-size:10px;letter-spacing:.24em;text-transform:uppercase;color:var(--vang2)}
+.quy-mon b{font:300 21px/1.25 var(--serif)}
+.quy-mon span{display:inline-flex;align-items:center;gap:8px;font-size:13px;opacity:.85}
+.quy-mon svg{width:14px;height:14px;transition:translate .35s var(--muot)}
+.quy-mon:hover svg{translate:4px 0}
 .quy h2 em{color:var(--vang2)}
 .buoc{display:grid;gap:70px}
 .buoc article{display:grid;grid-template-columns:150px 1fr;gap:34px;align-items:center}
