@@ -378,6 +378,11 @@ $('#bang').addEventListener('scroll', function () {
   o.innerHTML = '<video muted loop playsinline autoplay preload="metadata" poster="' + bia + '" aria-label="Video cửa hàng Ngọc Trầm">' +
     '<source src="video/' + ten + '" type="video/mp4"></video>';
   var v = o.querySelector('video');
+  /* khung theo đúng khổ video: video vuông mà nhét vào khung dọc 9:16 thì bị cắt dải giữa rồi phóng gần gấp đôi → mềm */
+  function datKhuon(w, h) { if (w && h) { o.style.aspectRatio = w + ' / ' + h; o.classList.toggle('vuong-k', w / h > .7); } }
+  var maV = (/^sp\/(.+)\.mp4$/.exec(ten) || [])[1];
+  if (maV) dsVideo.then(function (dsv) { (dsv || []).forEach(function (k) { if (k && String(k.ma) === maV) datKhuon(k.w, k.h); }); });
+  v.addEventListener('loadedmetadata', function () { datKhuon(v.videoWidth, v.videoHeight); });
   /* món gắn với video: admin chọn (quy.ma) > mã lấy từ tên video sản phẩm sp/<mã>.mp4 */
   var maMon = String((ND.van || {})['quy.ma'] || ((/^sp\/(.+)\.mp4$/.exec(ten) || [])[1]) || '').trim();
   if (maMon) taiDuLieu.then(function () {
