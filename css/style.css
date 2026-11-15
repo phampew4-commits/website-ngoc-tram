@@ -113,16 +113,27 @@ html.da-nap body::before,html.da-nap body::after{animation:none;opacity:0;visibi
 .hero .chieu img{width:100%;height:100%;object-fit:cover}
 .hero .chieu figure.on img{animation:troi 9s linear both}
 .hero .chieu video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
-/* màn ngang (máy tính, máy tính bảng nằm): video sản phẩm chỉ rộng 540–720px → không kéo phủ kín (vỡ hạt).
-   Giữ video đúng khổ dọc, cao bằng khung, đặt giữa; hai bên là ảnh bìa của chính video phóng to + làm mờ */
+/* ---- đầu trang dạng ô: máy tính 3 ô mỗi slide (mỗi ô gần đúng khổ 9:16 của video dọc → nét), điện thoại 1 ô ---- */
+.hero .o-hero{position:absolute;top:0;bottom:0;left:0;width:100%;overflow:hidden;background:#0e1c22;opacity:0;transition:opacity 1.2s ease}
+.hero .o-hero.on{opacity:1}
+.hero .o-hero video,.hero .o-hero img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.hero .o-hero.on img{animation:troi 9s linear both}
 @media (min-aspect-ratio:1/1){
-  .hero .chieu figure.co-vid{overflow:hidden;background:#0e1c22}
-  .hero .chieu figure.co-vid::before{content:"";position:absolute;inset:-60px;background:var(--bia) center/cover no-repeat;
-    filter:blur(38px) brightness(.55) saturate(1.15)}
-  /* khung video nổi giữa: cao trừ hao trên dưới → video dọc 960px gần như không phóng, video vuông 540px chỉ phóng ~1,3 lần */
-  .hero .chieu figure.co-vid video{top:50%;left:50%;right:auto;bottom:auto;height:min(calc(100% - 150px),1000px);width:auto;max-width:none;
-    aspect-ratio:auto 9/16;translate:-50% -46%;object-fit:cover;border-radius:18px;box-shadow:0 50px 100px -30px rgba(0,0,0,.75)}
+  .hero .o-hero{width:calc(100% / 3);box-shadow:inset 1px 0 0 rgba(255,255,255,.07)}
 }
+.hero.co-o .vong{display:none}
+.nhan-o{position:absolute;left:0;right:0;bottom:70px;z-index:1;display:grid;grid-template-columns:repeat(3,1fr);pointer-events:none}
+@media (max-aspect-ratio:1/1){.nhan-o{grid-template-columns:1fr;bottom:62px}}
+@keyframes nhan-vao{from{opacity:0;translate:0 14px}to{opacity:1;translate:0 0}}
+.o-nhan{pointer-events:auto;justify-self:start;display:grid;gap:5px;padding:0 32px;color:#fff;max-width:100%;animation:nhan-vao .8s var(--muot) both}
+.o-nhan small{font-size:10px;letter-spacing:.24em;text-transform:uppercase;color:var(--vang2)}
+.o-nhan b{font:300 clamp(18px,1.55vw,24px)/1.25 var(--serif);text-shadow:0 2px 14px rgba(0,0,0,.35)}
+.o-nhan span{display:inline-flex;align-items:center;gap:8px;font-size:13px;opacity:.88;font-variant-numeric:lining-nums}
+.o-nhan svg{width:14px;height:14px;transition:translate .35s var(--muot)}
+.o-nhan:hover svg{translate:4px 0}
+@media (max-width:620px){.o-nhan{padding:0 20px}}
+@media (prefers-reduced-motion:reduce){.o-nhan{animation:none}}
+
 @keyframes troi{from{transform:scale(1.04)}to{transform:scale(1.16) translate3d(-1.5%,-1%,0)}}
 .hero::after{content:"";position:absolute;inset:0;z-index:-1;
   background:radial-gradient(ellipse at 50% 45%,rgba(14,28,34,.35),rgba(14,28,34,.78) 75%),linear-gradient(180deg,rgba(14,28,34,.5),transparent 30%,transparent 60%,rgba(14,28,34,.7))}

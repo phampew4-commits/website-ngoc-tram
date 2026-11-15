@@ -13,77 +13,89 @@ taiDuLieu.then(function () {
 
 /* ---------- HERO: trình chiếu ---------- */
 var THOI_GIAN = 6000;
-function dungHero() { dsVideo.then(function (vids) { dungHeroVoi(vids.map(String)); }); }
+function dungHero() { dsVideo.then(function (vids) { dungHeroVoi(vids || []); }); }
+/* Trình chiếu đầu trang dạng ô — màn ngang (máy tính): 3 ô mỗi slide, màn dọc (điện thoại): 1 ô.
+   Ô có video (video/sp/<mã>.mp4) thì chạy video, không có thì hiện ảnh. Tên + giá nằm trong từng ô, bấm là mở món. */
 function dungHeroVoi(vids) {
-  var coVid = function (x) { return vids.indexOf(String(x.ma)) >= 0; };
-  var chonVid = (cheDoTay() && ND.heroVid) || {};
-  /* video của một slide: admin chọn riêng (chế độ tự chọn) > video của chính món > không có (hiện ảnh) */
-  var vidCua = function (x) {
+  var kt = {};   // mã → {w, h} (ds.json mới) — vẫn đọc được dạng cũ chỉ có mã
+  vids.forEach(function (v) { if (v && typeof v === 'object') kt[String(v.ma)] = v; else kt[String(v)] = {ma: String(v)}; });
+  var coVid = function (x) { return !!kt[String(x.ma)]; };
+  var doc = function (x) { var k = kt[String(x.ma)]; return !!(k && k.h && k.w && k.h / k.w >= 1.5); };   // video dọc: khít ô, nét nhất
+  var cheDo = ND.heroCheDo || ((ND.heroAnh || []).length ? 'tay' : 'gia');
+  var chonVid = (cheDo === 'tay' && ND.heroVid) || {};
+  var vidCua = function (x) {   // admin chọn riêng > video của chính món > không có (hiện ảnh)
     var v = String(chonVid[x.ma] || '').replace(/[^\w.\/-]/g, '').replace(/\.\.+/g, '.');
     return v || (coVid(x) ? 'sp/' + x.ma + '.mp4' : '');
   };
-  function cheDoTay() { return (ND.heroCheDo || ((ND.heroAnh || []).length ? 'tay' : 'gia')) === 'tay'; }
-  var c = conHang('chuoi'), cac = [c[0], conHang('khuyen')[0], c[2], conHang('nhan')[0]].filter(Boolean);
-  // ảnh trình chiếu: 'gia' = món giá cao (mặc định) · 'ngaunhien' = ngẫu nhiên theo loại · 'tay' = mã admin nhập
-  var cheDo = ND.heroCheDo || ((ND.heroAnh || []).length ? 'tay' : 'gia'), soAnh = Math.min(6, Math.max(2, +ND.heroSo || 4));
   var tron = function (a) { for (var i = a.length - 1; i > 0; i--) { var j = Math.floor(Math.random() * (i + 1)), t = a[i]; a[i] = a[j]; a[j] = t; } return a; };
+  var soAnh = Math.min(6, Math.max(2, +ND.heroSo || 4)), soMon = Math.max(3, Math.ceil(soAnh / 3) * 3);   // tròn bội 3 cho đủ ô
+  var cac = [];
   if (cheDo === 'tay') {
-    var chonAnh = (ND.heroAnh || []).map(function (m) { return ds.filter(function (x) { return x.ma === String(m) || x.id === String(m); })[0]; }).filter(Boolean);
-    if (chonAnh.length) cac = chonAnh.slice(0, 6);
-  } else {
-    if (cheDo === 'ngaunhien') {
-      var loaiDs = tron(((ND.heroLoai && ND.heroLoai.length) ? ND.heroLoai : ['chuoi', 'nhan', 'khuyen', 'matday']).slice());
-      var kho = loaiDs.map(function (l) { return tron(conHang(l).slice()); }).filter(function (k) { return k.length; });
-      var lay = [];   // lấy xen kẽ từng loại để không toàn chuỗi
-      while (lay.length < soAnh && kho.some(function (k) { return k.length; })) kho.forEach(function (k) { if (k.length && lay.length < soAnh) lay.push(k.shift()); });
-      if (lay.length) cac = lay;
-    }
-    /* có video thì ưu tiên món có video: 'gia' lấy món đắt nhất, 'ngaunhien' xáo ngẫu nhiên; thiếu thì bù bằng ảnh */
-    var monVid = conHang('').filter(coVid);
-    if (cheDo === 'ngaunhien') tron(monVid);
-    if (monVid.length) {
-      var them = cac.filter(function (x) { return monVid.indexOf(x) < 0; });
-      cac = monVid.slice(0, soAnh).concat(them).slice(0, soAnh);
-    }
+    cac = (ND.heroAnh || []).map(function (m) { return ds.filter(function (x) { return x.ma === String(m) || x.id === String(m); })[0]; }).filter(Boolean).slice(0, 6);
   }
+  if (!cac.length) {
+    /* tự chọn: món có video dọc trước (khít ô), rồi video vuông, rồi món chỉ có ảnh */
+    var con = conHang('');
+    if (cheDo === 'ngaunhien') {
+      var loai = (ND.heroLoai && ND.heroLoai.length) ? ND.heroLoai : ['chuoi', 'nhan', 'khuyen', 'matday'];
+      con = tron(con.filter(function (x) { return loai.indexOf(x.loai) >= 0; }));
+    }
+    var hang = function (x) { return doc(x) ? 0 : coVid(x) ? 1 : 2; };
+    cac = con.slice().sort(function (a, b) { return hang(a) - hang(b); }).slice(0, soMon);
+  }
+  if (!cac.length) return;
+  var hero = $('.hero'), N = cac.length;
+  hero.classList.add('co-o');
+  var tem = $('#temHero'); if (tem) tem.remove();
   $('#chieu').innerHTML = cac.map(function (x, i) {
-    var v = vidCua(x);
-    /* --bia: ảnh bìa của video, làm nền mờ hai bên trên máy tính (video dọc giữ đúng khổ cho khỏi vỡ hạt) */
-    if (v) { var bia = 'video/' + v.replace(/\.\w+$/, '') + '.jpg';
-      // url() trong biến CSS được tính theo thư mục css/ → phải đưa đường dẫn tuyệt đối
-      return '<figure class="co-vid' + (i ? '' : ' on') + '" style="--bia:url(\'' + new URL(bia, location.href).href + '\')"><video muted loop playsinline preload="' + (i ? 'none' : 'auto') + '" poster="' +
-      bia + '" aria-hidden="true"><source src="video/' + v + '" type="video/mp4"></video></figure>'; }
-    return '<figure' + (i ? '' : ' class="on"') + '>' + hinh(x.anh[0], x.ten, 1600, i ? '' : ' fetchpriority="high"').replace(' loading="lazy"', i ? ' loading="lazy"' : '') + '</figure>';
+    var v = vidCua(x), nen;
+    if (v) {
+      var bia = 'video/' + v.replace(/\.\w+$/, '') + '.jpg';
+      nen = '<video muted loop playsinline preload="' + (i < 3 ? 'metadata' : 'none') + '" poster="' + bia + '" aria-hidden="true"><source src="video/' + v + '" type="video/mp4"></video>';
+    } else nen = hinh(x.anh[0], x.ten, 1200, i ? '' : ' fetchpriority="high"');
+    return '<div class="o-hero" data-i="' + i + '">' + nen + '</div>';
   }).join('');
-  var dsHinh = $$('#chieu figure');
-  $('#tienTrinh').style.setProperty('--tg', THOI_GIAN + 'ms');
-  $('#tienTrinh').innerHTML = cac.map(function (_, i) { return '<button' + (i ? '' : ' class="on"') + ' aria-label="Ảnh ' + (i + 1) + '">' + ('0' + (i + 1)) + '<i></i></button>'; }).join('');
-  var i = 0, hen;
-  function phat(n) {   // chỉ video của slide đang hiện chạy, các slide khác dừng cho nhẹ máy
-    dsHinh.forEach(function (f, j) {
-      var v = f.querySelector('video'); if (!v) return;
-      if (j === n && !GIAM) { v.preload = 'auto'; try { v.currentTime = 0; } catch (er) {} var p = v.play(); if (p && p.catch) p.catch(function () {}); }
+  var nhan = $('#nhanO');
+  if (!nhan) { nhan = document.createElement('div'); nhan.className = 'nhan-o'; nhan.id = 'nhanO'; hero.appendChild(nhan); }
+  var o = $$('#chieu .o-hero'), ngang = matchMedia('(min-aspect-ratio: 1/1)'), n = 0, hen, trongMan = true;
+  function moiSlide() { return ngang.matches ? Math.min(3, N) : 1; }
+  function soSlide() { return Math.ceil(N / moiSlide()); }
+  function oCua(sl) { var k = moiSlide(), r = []; for (var j = 0; j < k; j++) r.push((sl * k + j) % N); return r; }
+  function phat(hien) {   // chỉ video các ô đang hiện chạy; cuộn khỏi đầu trang thì dừng hết
+    o.forEach(function (t, i) {
+      var v = t.querySelector('video'); if (!v) return;
+      if (trongMan && !GIAM && hien.indexOf(i) >= 0) { v.preload = 'auto'; try { v.currentTime = 0; } catch (er) {} var p = v.play(); if (p && p.catch) p.catch(function () {}); }
       else v.pause();
     });
   }
-  function toi(n) {
-    i = (n + cac.length) % cac.length;
-    dsHinh.forEach(function (f, j) { f.classList.toggle('on', j === i); });
-    phat(i);
-    $$('#tienTrinh button').forEach(function (b, j) { b.classList.remove('on'); if (j === i) { void b.offsetWidth; b.classList.add('on'); } });
-    var x = cac[i];
-    var tem = $('#temHero'), dong = function (s) { return '<span class="d"><span>' + s + '</span></span>'; };
-    var moi = '<small>' + dong('Mã ' + e(x.ma) + ' · ' + LOAI[x.loai].ngan) + '</small><b>' + dong(e(x.ten.replace(/ mix charm.*/i, ''))) + '</b>' + dong(gia(x.gia));
-    var dat = function () { tem.href = '#sp/' + encodeURIComponent(khoa(x)); tem.innerHTML = moi; tem.classList.remove('roi'); void tem.offsetWidth; tem.classList.add('vao'); };
-    clearTimeout(tem._hen);
-    if (GIAM || !tem.innerHTML) dat();                      // lần đầu / giảm chuyển động: hiện luôn
-    else { tem.classList.remove('vao'); tem.classList.add('roi'); tem._hen = setTimeout(dat, 450); }   // chữ cũ trượt lên rồi chữ mới trồi lên
-    clearTimeout(hen); if (!GIAM) hen = setTimeout(function () { toi(i + 1); }, THOI_GIAN);
+  function veSo() {
+    var k = soSlide();
+    $('#tienTrinh').style.setProperty('--tg', THOI_GIAN + 'ms');
+    $('#tienTrinh').innerHTML = k > 1 ? Array.apply(null, Array(k)).map(function (_, i) {
+      return '<button aria-label="Nhóm ' + (i + 1) + '">' + ('0' + (i + 1)) + '<i></i></button>'; }).join('') : '';
+  }
+  function toi(sl) {
+    var k = soSlide(); n = ((sl % k) + k) % k;
+    var hien = oCua(n), m = moiSlide();
+    o.forEach(function (t, i) {
+      var j = hien.indexOf(i);
+      t.classList.toggle('on', j >= 0);
+      if (j >= 0) t.style.left = (j * 100 / m) + '%';
+    });
+    phat(hien);
+    nhan.innerHTML = hien.map(function (i, j) {
+      var x = cac[i];
+      return '<a class="o-nhan" href="' + linkSp(x) + '" style="animation-delay:' + (j * 120) + 'ms"><small>Mã ' + e(x.ma) + ' · ' + LOAI[x.loai].ngan + '</small>' +
+        '<b>' + e(x.ten.replace(/ mix charm.*/i, '')) + '</b><span>' + gia(x.gia) +
+        '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span></a>';
+    }).join('');
+    $$('#tienTrinh button').forEach(function (b, j) { b.classList.remove('on'); if (j === n) { void b.offsetWidth; b.classList.add('on'); } });
+    clearTimeout(hen); if (!GIAM && k > 1) hen = setTimeout(function () { toi(n + 1); }, THOI_GIAN);
   }
   $('#tienTrinh').onclick = function (ev) { var b = ev.target.closest('button'); if (b) toi([].indexOf.call(b.parentNode.children, b)); };
-  /* cuộn khỏi đầu trang thì dừng video cho nhẹ máy, quay lại thì chạy tiếp */
-  new IntersectionObserver(function (es) { es.forEach(function (x) { if (x.isIntersecting) phat(i); else phat(-1); }); }).observe($('.hero'));
-  toi(0);
+  (ngang.addEventListener ? ngang.addEventListener.bind(ngang, 'change') : ngang.addListener.bind(ngang))(function () { veSo(); toi(0); });
+  new IntersectionObserver(function (es) { es.forEach(function (x) { trongMan = x.isIntersecting; phat(trongMan ? oCua(n) : []); }); }).observe(hero);
+  veSo(); toi(0);
 }
 
 function dungNoiBat() {
