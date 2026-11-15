@@ -140,11 +140,14 @@ function dungChanTrang() {
     '<div class="chu-lon" aria-hidden="true"><span>Ngọc Trầm</span></div>';
   // dải "Mới về": 6 món mới nhất (ưu tiên chuỗi, nhẫn, khuyên, mặt dây)
   taiDuLieu.then(function () {
-    var r = ds.slice().sort(function (a, b) { return (a.loai === 'charm') - (b.loai === 'charm') || ngaySo(b.ngay) - ngaySo(a.ngay); }).slice(0, 6);
-    var l = $('#luoiMv'); if (!l) return;
-    l.innerHTML = r.map(function (x) {
-      return '<a href="' + linkSp(x) + '"><span class="h">' + hinh(x.anh[0], x.ten, 400) + '</span><span class="tt-mv"><b>' + e(x.ten) + '</b>' + gia(x.gia) + '</span></a>';
-    }).join('');
+    var r = ds.slice().sort(function (a, b) { return (a.loai === 'charm') - (b.loai === 'charm') || ngaySo(b.ngay) - ngaySo(a.ngay); }).slice(0, 12);
+    var l = $('#luoiMv'); if (!l || !r.length) return;
+    var the = function (x, gia_) { return '<a href="' + linkSp(x) + '"' + (gia_ ? ' tabindex="-1" aria-hidden="true"' : '') + '><span class="h">' +
+      hinh(x.anh[0], gia_ ? '' : x.ten, 400) + '</span><span class="tt-mv"><b>' + e(x.ten) + '</b>' + gia(x.gia) + '</span></a>'; };
+    /* dải chạy liên tục: dựng 2 lượt giống nhau, trượt đúng nửa chiều dài thì quay về đầu → không thấy chỗ nối.
+       Tốc độ cố định ~32px/giây dù bao nhiêu món (nhiều món thì một vòng dài hơn). */
+    l.innerHTML = '<div class="bang-mv">' + r.map(function (x) { return the(x); }).join('') + r.map(function (x) { return the(x, 1); }).join('') + '</div>';
+    l.style.setProperty('--tg-mv', Math.max(40, Math.round(r.length * 212 / 32)) + 's');
   }).catch(function () {});
 }
 
@@ -797,6 +800,38 @@ addEventListener('load', function () { setTimeout(function () { document.documen
     setTimeout(function () { location.href = u.href; }, 220);
   });
   addEventListener('pageshow', function (ev) { if (ev.persisted) document.documentElement.classList.remove('roi-trang'); });
+})();
+
+/* ---------- hỏi đáp & khung mở rộng: <details> mở / đóng mượt mọi lần ----------
+   <details> gốc giấu nội dung ngay khi bỏ [open] nên lúc đóng không có hiệu ứng, còn lần mở sau
+   nội dung được vẽ thẳng ở trạng thái mở nên cũng không trượt → tự điều khiển cả hai chiều. */
+(function () {
+  if (GIAM) return;
+  function huy(d, tl) {   // huỷ lượt đóng đang dở (bấm lại giữa chừng)
+    clearTimeout(d._hen);
+    if (d._nghe) { tl.removeEventListener('transitionend', d._nghe); d._nghe = null; }
+  }
+  document.addEventListener('click', function (ev) {
+    var s = ev.target.closest('summary'); if (!s) return;
+    var d = s.parentNode; if (!d || d.tagName !== 'DETAILS') return;
+    var tl = d.querySelector(':scope > .tl'); if (!tl) return;
+    ev.preventDefault();
+    huy(d, tl);
+    if (d.open && !d.classList.contains('dang-dong')) {          // đóng: co lại xong mới bỏ [open]
+      d.classList.add('dang-dong');
+      var xong = function () { huy(d, tl); d.open = false; d.classList.remove('dang-dong'); };
+      d._nghe = function (e) { if (e.target === tl && e.propertyName === 'grid-template-rows') xong(); };
+      tl.addEventListener('transitionend', d._nghe);
+      d._hen = setTimeout(xong, 950);                               // lưới an toàn nếu transitionend không tới
+    } else {                                                         // mở (hoặc bấm lại khi đang đóng dở)
+      d.classList.remove('dang-dong');
+      if (!d.open) {
+        d.classList.add('dang-mo'); d.open = true;
+        void tl.offsetHeight;                                        // vẽ một lần ở 0fr làm điểm xuất phát
+        d.classList.remove('dang-mo');
+      }
+    }
+  });
 })();
 
 /* ---------- cuộn mượt, chậm khi bấm link trong trang (menu, nút "Xem sản phẩm"…) ---------- */

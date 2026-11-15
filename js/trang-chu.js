@@ -11,6 +11,20 @@ taiDuLieu.then(function () {
 /* ---------- HERO: trình chiếu ---------- */
 var THOI_GIAN = 6000;
 function dungHero() {
+  /* có video nền (chọn trong app › Nội dung trang › Đầu trang) → một video phủ kín, bỏ trình chiếu ảnh */
+  var vid = String((ND.van || {})['hero.video'] || '').replace(/[^\w.-]/g, '');
+  if (vid) {
+    $('#chieu').innerHTML = '<video class="hero-video" muted loop playsinline autoplay preload="auto" poster="video/' +
+      vid.replace(/\.\w+$/, '') + '.jpg" aria-hidden="true"><source src="video/' + vid + '" type="video/mp4"></video>';
+    ['#tienTrinh', '#temHero'].forEach(function (s) { var o = $(s); if (o) o.remove(); });   // số 01–04 và tên món theo ảnh: không còn ý nghĩa
+    var v = $('#chieu video');
+    if (GIAM) { v.removeAttribute('autoplay'); v.pause(); }
+    else {
+      var p = v.play(); if (p && p.catch) p.catch(function () {});
+      new IntersectionObserver(function (es) { es.forEach(function (x) { x.isIntersecting ? v.play().catch(function () {}) : v.pause(); }); }).observe($('.hero'));
+    }
+    return;
+  }
   var c = conHang('chuoi'), cac = [c[0], conHang('khuyen')[0], c[2], conHang('nhan')[0]].filter(Boolean);
   // ảnh trình chiếu: 'gia' = món giá cao (mặc định) · 'ngaunhien' = ngẫu nhiên theo loại · 'tay' = mã admin nhập
   var cheDo = ND.heroCheDo || ((ND.heroAnh || []).length ? 'tay' : 'gia'), soAnh = Math.min(6, Math.max(2, +ND.heroSo || 4));
@@ -263,12 +277,38 @@ $('#bang').addEventListener('scroll', function () {
 
   /* thẻ sáng tự chạy vòng — rê chuột vào thì dừng lại */
   var the = $$('#dsCamNhan .cn-the'), dang = 0, hen = 0;
-  function sang(i) {
+  /* điện thoại / máy tính bảng: các thẻ thành một hàng vuốt ngang, có chấm báo đang ở thẻ nào */
+  var khay = $('#dsCamNhan'), laTruot = function () { return getComputedStyle(khay).overflowX === 'auto'; };
+  var cham = document.createElement('div'); cham.className = 'cn-cham';
+  cham.innerHTML = the.map(function (_, i) { return '<button type="button" aria-label="Cảm nhận ' + (i + 1) + '"></button>'; }).join('');
+  khay.after(cham);
+  function truotToi(i, muot) {
+    if (!laTruot()) return;
+    var t = the[i];
+    khay.scrollTo({left: t.offsetLeft - (khay.clientWidth - t.offsetWidth) / 2, behavior: muot ? 'smooth' : 'auto'});
+  }
+  function sang(i, khongTruot) {
     dang = (i + the.length) % the.length;
     the.forEach(function (t, j) { t.classList.toggle('sang', j === dang); });
+    [].forEach.call(cham.children, function (b, j) { b.classList.toggle('on', j === dang); });
     var k = anhCua[dang];                       // thẻ không có ảnh thì giữ nguyên ảnh đang hiện
     if (k >= 0) dsAnh.forEach(function (im, j) { im.classList.toggle('hien-anh', j === k); });
+    if (!khongTruot) truotToi(dang, true);
   }
+  var henCuon;
+  khay.addEventListener('scroll', function () {    // khách tự vuốt: dừng tay rồi thì thẻ nằm giữa khung thành thẻ sáng
+    clearTimeout(henCuon);
+    henCuon = setTimeout(function () {
+      var giua = khay.scrollLeft + khay.clientWidth / 2, gan = 0, kc = 1e9;
+      the.forEach(function (t, j) { var d = Math.abs(t.offsetLeft + t.offsetWidth / 2 - giua); if (d < kc) { kc = d; gan = j; } });
+      if (gan !== dang) { sang(gan, true); dem_lai(); }
+    }, 120);
+  }, {passive: true});
+  cham.addEventListener('click', function (ev) {
+    var b = ev.target.closest('button'); if (!b) return;
+    sang([].indexOf.call(cham.children, b)); dem_lai();
+  });
+  [].forEach.call(cham.children, function (b, j) { b.classList.toggle('on', j === 0); });
   function chay() { if (the.length > 1 && !GIAM) hen = setInterval(function () { sang(dang + 1); }, 4500); }
   function dung() { clearInterval(hen); hen = 0; }
   function dem_lai() { dung(); chay(); }   // rê vào thẻ nào thì thẻ đó sáng và đếm lại từ đầu
@@ -287,4 +327,24 @@ $('#bang').addEventListener('scroll', function () {
     chonLoai(m[1]);
     setTimeout(function () { cuonToi($('#san-pham')); }, 260);
   });
+})();
+
+/* ---------- video mục "Cách Ngọc Trầm chọn từng món" (chọn trong app › Nội dung trang) ----------
+   Tự chạy lặp, không tiếng (autoplay để chắc chắn chạy); cuộn ra khỏi màn hình thì tạm dừng cho nhẹ máy. */
+(function () {
+  var ten = String((ND.van || {})['quy.video'] || '').replace(/[^\w.-]/g, '');
+  var o = $('#quyVideo'); if (!o) return;
+  if (!ten) { o.remove(); $('#quyLuoi').classList.add('khong-video'); return; }
+  var bia = 'video/' + ten.replace(/\.\w+$/, '') + '.jpg';
+  o.hidden = false;
+  o.innerHTML = '<video muted loop playsinline autoplay preload="metadata" poster="' + bia + '" aria-label="Video cửa hàng Ngọc Trầm">' +
+    '<source src="video/' + ten + '" type="video/mp4"></video>';
+  var v = o.querySelector('video');
+  if (GIAM) { v.removeAttribute('autoplay'); v.removeAttribute('loop'); v.controls = true; return; }   // giảm chuyển động: khách tự bấm xem
+  new IntersectionObserver(function (es) {
+    es.forEach(function (x) {
+      if (x.isIntersecting) { v.preload = 'auto'; var p = v.play(); if (p && p.catch) p.catch(function () {}); }
+      else v.pause();
+    });
+  }, {threshold: .25}).observe(o);
 })();
