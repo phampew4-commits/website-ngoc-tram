@@ -19,16 +19,18 @@ function dungHero() { dsVideo.then(function (vids) { dungHeroVoi(vids || []); })
 function dungHeroVoi(vids) {
   var kt = {};   // mã → {w, h} (ds.json mới) — vẫn đọc được dạng cũ chỉ có mã
   vids.forEach(function (v) { if (v && typeof v === 'object') kt[String(v.ma)] = v; else kt[String(v)] = {ma: String(v)}; });
-  var coVid = function (x) { return !!kt[String(x.ma)]; };
+  var dungVideo = (ND.heroKieu || 'video') !== 'anh';   // app › Đầu trang › Trình chiếu: Video / Ảnh
+  var coVid = function (x) { return dungVideo && !!kt[String(x.ma)]; };
   var doc = function (x) { var k = kt[String(x.ma)]; return !!(k && k.h && k.w && k.h / k.w >= 1.5); };   // video dọc: khít ô, nét nhất
   var cheDo = ND.heroCheDo || ((ND.heroAnh || []).length ? 'tay' : 'gia');
   var chonVid = (cheDo === 'tay' && ND.heroVid) || {};
   var vidCua = function (x) {   // admin chọn riêng > video của chính món > không có (hiện ảnh)
     var v = String(chonVid[x.ma] || '').replace(/[^\w.\/-]/g, '').replace(/\.\.+/g, '.');
+    if (!dungVideo) return '';
     return v || (coVid(x) ? 'sp/' + x.ma + '.mp4' : '');
   };
   var tron = function (a) { for (var i = a.length - 1; i > 0; i--) { var j = Math.floor(Math.random() * (i + 1)), t = a[i]; a[i] = a[j]; a[j] = t; } return a; };
-  var soAnh = Math.min(6, Math.max(2, +ND.heroSo || 4)), soMon = Math.max(3, Math.ceil(soAnh / 3) * 3);   // tròn bội 3 cho đủ ô
+  var soAnh = Math.min(9, Math.max(2, +ND.heroSo || 6)), soMon = Math.max(3, Math.ceil(soAnh / 3) * 3);   // tròn bội 3 cho đủ ô
   var cac = [];
   if (cheDo === 'tay') {
     cac = (ND.heroAnh || []).map(function (m) { return ds.filter(function (x) { return x.ma === String(m) || x.id === String(m); })[0]; }).filter(Boolean).slice(0, 6);
