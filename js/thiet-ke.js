@@ -651,22 +651,23 @@ addEventListener('keydown', function (ev) { if (ev.key === 'Escape') dongHopLuu(
 /* ---------- điện thoại: vòng thu nhỏ nổi góc màn hình khi đang chọn charm (khỏi phải kéo lên xem) ---------- */
 var mini = document.createElement('button'), ngoaiSan = false;
 mini.type = 'button'; mini.className = 'vong-mini'; mini.setAttribute('aria-label', 'Xem chuỗi đang thiết kế');
-mini.innerHTML = '<svg viewBox="0 0 400 400" aria-hidden="true"></svg><img alt="" hidden><b></b>';
+mini.innerHTML = '<svg viewBox="0 0 400 400" aria-hidden="true"></svg><canvas width="220" height="220" hidden></canvas><b></b>';
 document.body.appendChild(mini);
 function anhNho(w) {   // ảnh chụp vòng 3D thu nhỏ (dataURL)
   var c3 = V3D.anh(), c = document.createElement('canvas'), h = Math.round(w * c3.height / c3.width); c.width = w; c.height = h;
   c.getContext('2d').drawImage(c3, 0, 0, w, h); return c.toDataURL('image/png');
 }
-var henMini = 0;
 function capMini() {
   if (!mini) return;
-  if (window.V3D) {   // chỉ chụp khi vòng thu nhỏ đang hiện, gom các lần đổi liên tiếp
+  var hien = ngoaiSan && !!chon.day && innerWidth < 900;
+  if (window.V3D) {   // 3D: vòng nhỏ chép trực tiếp từng khung hình của vòng lớn → cũng tự xoay
     mini.querySelector('svg').style.display = 'none';
-    clearTimeout(henMini); if (ngoaiSan && innerWidth < 900) henMini = setTimeout(function () { var im = mini.querySelector('img'); im.hidden = false; im.src = anhNho(200); }, 250);
+    var c = mini.querySelector('canvas'); c.hidden = false;
+    V3D.mini(hien ? c : null);
   } else mini.querySelector('svg').innerHTML = $('#vong').innerHTML;
   var n = cuaVong(vongDang).length;
   mini.querySelector('b').textContent = (chon.vong > 1 ? 'Vòng ' + (vongDang + 1) + ' · ' : '') + n + ' charm';
-  mini.classList.toggle('hien', ngoaiSan && !!chon.day && innerWidth < 900);
+  mini.classList.toggle('hien', hien);
 }
 function nhayMini() { mini.classList.remove('nhay'); void mini.offsetWidth; mini.classList.add('nhay'); }
 mini.onclick = function () { $('.tk-san').scrollIntoView({behavior: 'smooth', block: 'start'}); };

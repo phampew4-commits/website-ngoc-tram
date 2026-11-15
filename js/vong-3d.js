@@ -269,9 +269,10 @@
     function chay() { if (dangChay || !tt) return; dangChay = true; truoc = performance.now(); requestAnimationFrame(f); }
     function f(t) {
       var dt = Math.min(.05, (t - truoc) / 1000); truoc = t;
-      if (!thay || document.hidden) { dangChay = false; return; }
+      if ((!thay && !mini) || document.hidden) { dangChay = false; return; }
       buoc(dt);
       R.render(canh, cam);
+      if (mini) veMini();
       if (V.khi.khung) V.khi.khung();
       /* đứng yên hẳn (không kéo, không lướt, con lắc tắt) → nghỉ vẽ cho đỡ tốn pin */
       var dong = keo || canNhin || hatDong || (!GIAM && tt.cheDo !== 'deo' && !chonO) ||   // thiết kế: chạy tiếp để tự xoay (kể cả lúc chờ 4 giây sau khi khách chạm) cam.position.distanceToSquared(cT) > 1e-6 || Math.abs(vX) > 1e-4 || (tt.cheDo === 'deo' && tuSpin) || vongChon.visible;
@@ -317,7 +318,19 @@
       if (!dangChay && tt) for (var i = 0; i < 80; i++) buoc(.05);
       var v = vongChon.visible; vongChon.visible = false; R.render(canh, cam); vongChon.visible = v; return cv; }
 
-    var V = window.V3D = { ve: ve, viTri: viTri, anh: anh, bien: function (id) { return (X.bien || {})[id] || null; }, khi: {} };
+    /* vòng thu nhỏ nổi (điện thoại): chép từng khung hình vào ô nhỏ → vòng nhỏ cũng xoay như vòng lớn */
+    var mini = null, gMini = null;
+    function veMini() {
+      var w = mini.width, h = mini.height, s = Math.min(w / cv.width, h / cv.height), dw = cv.width * s, dh = cv.height * s;
+      gMini.clearRect(0, 0, w, h);
+      gMini.drawImage(cv, (w - dw) / 2, (h - dh) / 2, dw, dh);
+    }
+    function datMini(c) {   // c: <canvas> của vòng thu nhỏ, null = tắt
+      mini = c || null; gMini = mini ? mini.getContext('2d') : null;
+      if (mini) { for (var i = 0; i < 80 && !dangChay; i++) buoc(.05); R.render(canh, cam); veMini(); chay(); }
+    }
+
+    var V = window.V3D = { ve: ve, viTri: viTri, anh: anh, mini: datMini, bien: function (id) { return (X.bien || {})[id] || null; }, khi: {} };
     document.querySelector('.tk-san').classList.add('co-3d');
     dispatchEvent(new Event('vong3d'));
   }

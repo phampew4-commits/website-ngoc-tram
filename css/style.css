@@ -1986,3 +1986,6 @@ body.khoa-cuon{overflow:hidden}
 @media (max-width:900px) and (prefers-reduced-motion:reduce){.co-mega.mo .mega-trong > *,.co-mega.mo .mega-chan{animation:none}}
 .cn-phai.dang-truot{scroll-snap-type:none}
 @media (hover:none){.cn-the:hover{translate:none;box-shadow:none}.cn-the.sang:hover{box-shadow:0 24px 40px -28px rgba(14,28,34,.65)}}
+
+/* vòng mini 3D: ô vẽ trực tiếp (xoay theo vòng lớn) */
+.vong-mini canvas{width:100px;height:100px;display:block}
