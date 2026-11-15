@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="robots" content="noindex">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Quà tặng · Ngọc Trầm Store</title>
+<meta name="description" content="Gợi ý quà phỉ thuý, chuỗi mix charm vàng theo ngân sách — đóng hộp cẩn thận, quay video trước khi gửi, giao toàn quốc.">
+<meta property="og:title" content="Ngọc Trầm Store">
+<meta property="og:description" content="Phỉ thuý & trang sức vàng — mỗi món một mã, ảnh thật, giá rõ ràng.">
+<meta property="og:image" content="img/logo.png">
+<meta name="theme-color" content="#14262e">
+<link rel="icon" href="img/hoa.png">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+Display:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Be+Vietnam+Pro:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="preload" href="data/san-pham.json?v=c4df211b73" as="fetch" crossorigin="anonymous"><link rel="preconnect" href="https://lh3.googleusercontent.com" crossorigin>
+<link rel="stylesheet" href="css/style.css?v=cdba7d914d">
+</head>
+
+<body class="trang-trong trang-phu" data-trang="qua-tang">
+
+<header class="dau" id="dau">
+  <div class="khung">
+    <a class="hieu" href="index.html"><img src="img/hoa.png" alt=""><b>Ngọc Trầm</b></a>
+    <nav class="menu" id="menu" aria-label="Danh mục chính"></nav>
+    <div class="phai">
+      <button class="mo-menu" id="moMenu" aria-label="Mở menu"><i></i><i></i></button>
+    </div>
+  </div>
+</header>
+
+<main class="tp" id="noi">
+<section class="tp-dau qt-dau"><div class="khung">
+  <nav class="duong" aria-label="Đường dẫn"><a href="index.html">Trang chủ</a><span>/</span><span>Quà tặng</span></nav>
+  <span class="nho" data-hien>Quà tặng</span>
+  <h1 class="tieu-de"><span class="dong-chu"><span>Chọn quà</span></span><span class="dong-chu"><span><em>theo ngân sách</em></span></span></h1>
+  <p class="dan" data-hien>Mỗi món là một viên ngọc riêng, không trùng với ai — chọn tầm giá, Ngọc Trầm gợi ý những món hợp để tặng.</p>
+</div></section>
+
+<section class="qt-ngan"><div class="khung">
+  <div class="qt-the-ds" id="qtNgan" role="tablist" aria-label="Chọn ngân sách"></div>
+  <div class="luoi qt-luoi" id="qtLuoi"></div>
+  <div class="them"><a class="nut" id="qtTatCa" href="cua-hang.html">Xem tất cả</a></div>
+</div></section>
+<section class="qt-kem" id="qtKem" hidden><div class="khung">
+  <div class="qt-kem-dau"><span class="nho">Quà nhỏ xinh</span><h2>Charm vàng <em>làm quà kèm</em></h2><p>Gắn thêm vào chuỗi sẵn có của người nhận, hoặc tặng riêng trong hộp nhỏ.</p>
+  <a class="nut" href="cua-hang.html?loai=charm&sx=tang">Xem tất cả charm</a></div>
+  <div class="qt-kem-ds" id="qtKemDs"></div>
+</div></section>
+<section class="muc qt-dv"><div class="khung">
+  <div class="giua"><span class="nho" data-hien>Món quà trọn vẹn</span>
+  <h2 class="tieu-de"><span class="dong-chu"><span>Ngọc Trầm lo phần còn lại</span></span></h2></div>
+  <div class="qt-dv-ds" id="qtDv"></div>
+  <div class="qt-hoi" data-hien><div><b>Chưa biết chọn gì?</b><p>Nhắn tầm giá và người nhận, cửa hàng gửi vài món hợp kèm video thật để bạn chọn.</p></div>
+  <a class="nut dac" href="#" data-zalo style="background:#0068ff;border-color:#0068ff">Nhờ chọn quà qua Zalo</a></div>
+</div></section>
+</main>
+
+
+<footer class="lh" id="lien-he">
+  <div class="tren">
+    <img class="hoa-nen" src="img/hoa.png" alt="">
+    <span class="nho" data-hien data-nd="lh.nho">Liên hệ</span>
+    <h2 class="tieu-de" data-nd="lh.tieu">
+      <span class="dong-chu"><span>Cần tư vấn?</span></span>
+      <span class="dong-chu"><span><em>Nhắn cho Ngọc Trầm.</em></span></span>
+    </h2>
+    <p data-hien data-nd="lh.moTa">Gửi mã sản phẩm hoặc ảnh mẫu bạn thích, cửa hàng sẽ tìm và phối giúp bạn.</p>
+    <div class="hang" data-hien>
+      <a class="nut dac" href="#" data-zalo style="background:#0068ff;border-color:#0068ff">Nhắn Zalo</a>
+      <a class="nut sang" href="#" data-fb>Messenger</a>
+    </div>
+  </div>
+  <div id="chanTrang"></div>
+</footer>
+<div class="thong-bao" id="thongBao"></div>
+
+<script src="js/cau-hinh.js?v=6b70518097"></script>
+<script src="js/chung.js?v=3ff46caf44"></script>
+<script src="js/khach.js?v=18271233fc"></script>
+<script src="js/cua-hang.js?v=2ead4c8e94"></script>
+</body>
+</html>

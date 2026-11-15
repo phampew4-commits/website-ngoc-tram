@@ -1,0 +1,125 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="robots" content="noindex">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Hướng dẫn chọn size · Ngọc Trầm Store</title>
+<meta name="description" content="Cách đo cỡ tay để chọn chuỗi, vòng ngọc vừa vặn và bảng size nhẫn — kèm công cụ tính số hạt theo cỡ hạt.">
+<meta property="og:title" content="Ngọc Trầm Store">
+<meta property="og:description" content="Phỉ thuý & trang sức vàng — mỗi món một mã, ảnh thật, giá rõ ràng.">
+<meta property="og:image" content="img/logo.png">
+<meta name="theme-color" content="#14262e">
+<link rel="icon" href="img/hoa.png">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+Display:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Be+Vietnam+Pro:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="preload" href="data/san-pham.json?v=c4df211b73" as="fetch" crossorigin="anonymous"><link rel="preconnect" href="https://lh3.googleusercontent.com" crossorigin>
+<link rel="stylesheet" href="css/style.css?v=cdba7d914d">
+</head>
+
+<body class="trang-trong trang-phu" data-trang="chon-size">
+
+<header class="dau" id="dau">
+  <div class="khung">
+    <a class="hieu" href="index.html"><img src="img/hoa.png" alt=""><b>Ngọc Trầm</b></a>
+    <nav class="menu" id="menu" aria-label="Danh mục chính"></nav>
+    <div class="phai">
+      <button class="mo-menu" id="moMenu" aria-label="Mở menu"><i></i><i></i></button>
+    </div>
+  </div>
+</header>
+
+<main class="tp" id="noi">
+<section class="tp-dau"><div class="khung">
+  <nav class="duong" aria-label="Đường dẫn"><a href="index.html">Trang chủ</a><span>/</span><span>Chọn size</span></nav>
+  <span class="nho" data-hien>Hướng dẫn</span>
+  <h1 class="tieu-de"><span class="dong-chu"><span>Chọn size <em>vừa tay</em></span></span></h1>
+  <p class="dan" data-hien>Chuỗi ngọc vừa tay đeo mới đẹp và bền dây. Đo một lần mất chưa tới một phút — rồi cứ thế chọn món.</p>
+</div></section>
+
+<div class="khung tp-muc-luc" data-hien>
+  <a href="#vong">Chuỗi &amp; vòng tay</a><a href="#nhieu-vong">Chuỗi quấn nhiều vòng</a><a href="#nhan">Nhẫn</a><a href="#khac">Khuyên tai &amp; mặt dây</a>
+</div>
+<section class="tp-phan" id="vong"><div class="khung sz-luoi">
+  <div class="sz-trai">
+    <span class="so-phan">01</span><h2>Chuỗi &amp; vòng tay</h2>
+    <ol class="sz-buoc">
+      <li><b>Lấy thước dây</b><span>Không có thước dây thì dùng một sợi chỉ hoặc dải giấy, đánh dấu rồi đo lại bằng thước kẻ.</span></li>
+      <li><b>Quấn quanh cổ tay</b><span>Ngay dưới xương cổ tay, chỗ bạn hay đeo vòng. Quấn sát da nhưng không siết.</span></li>
+      <li><b>Báo số đo cho cửa hàng</b><span>Đó là cỡ tay của bạn. Khi xâu, cửa hàng tự cộng thêm khoảng 1,5 cm để đeo thoải mái — bạn không cần cộng.</span></li>
+    </ol>
+    <p class="sz-meo">Thích đeo rộng, buông nhẹ trên cổ tay? Cộng thêm 0,5–1 cm vào số đo rồi báo cửa hàng.</p>
+  </div>
+  <div class="sz-tinh" id="szTinh" data-hien>
+    <span class="nho">Tính nhanh</span>
+    <label for="szTay">Cỡ tay của bạn</label>
+    <div class="sz-gt"><b id="szGt">15 cm</b></div>
+    <input type="range" id="szTay" min="12" max="20" step="0.5" value="15">
+    <div class="vach"><span>12 cm</span><span>20 cm</span></div>
+    <ul class="sz-kq" id="szKq"></ul>
+    <a class="nut dac" id="szTk" href="thiet-ke.html?t=15">Tự thiết kế chuỗi cỡ này<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+  </div>
+</div>
+<div class="khung"><div class="sz-bang-boc" data-hien><table class="sz-bang" id="szBang"></table></div>
+<p class="sz-chu">Số hạt là ước tính cho một vòng; thực tế có thể chênh 1–2 hạt tuỳ charm và hạt chặn.</p></div>
+</section>
+<section class="tp-phan" id="nhieu-vong"><div class="khung sz-hai">
+  <div><span class="so-phan">02</span><h2>Chuỗi quấn nhiều vòng</h2>
+  <p>Chuỗi quấn 2–5 vòng dùng cùng một cỡ tay. Chiều dài cả dây ≈ (cỡ tay + 1,5 cm) × số vòng — ví dụ cỡ tay 15 cm, quấn 3 vòng thì dây dài khoảng 49,5 cm.</p>
+  <p>Ở trang Tự thiết kế, bạn chọn số vòng và cỡ tay là thấy ngay số hạt, giá ước tính và vòng 3D đúng kích thước.</p>
+  <a class="nut" href="thiet-ke.html">Mở xưởng phối chuỗi<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a></div>
+  <div class="sz-vong" aria-hidden="true"><i></i><i></i><i></i></div>
+</div></section>
+<section class="tp-phan" id="nhan"><div class="khung sz-luoi">
+  <div class="sz-trai">
+    <span class="so-phan">03</span><h2>Nhẫn</h2>
+    <ol class="sz-buoc">
+      <li><b>Có sẵn nhẫn vừa tay</b><span>Đo đường kính trong của nhẫn (mép trong sang mép trong) bằng thước, tính bằng mm.</span></li>
+      <li><b>Chưa có nhẫn</b><span>Quấn sợi chỉ quanh chân ngón tay muốn đeo, đánh dấu chỗ giao nhau rồi đo độ dài — đó là chu vi ngón.</span></li>
+      <li><b>Tra bảng hoặc nhập vào ô bên cạnh</b><span>Đo vào cuối ngày, khi ngón tay hơi to hơn buổi sáng. Khớp ngón to thì đo qua khớp để nhẫn không bị kẹt.</span></li>
+    </ol>
+  </div>
+  <div class="sz-tinh" data-hien>
+    <span class="nho">Đổi ra size nhẫn</span>
+    <div class="sz-kieu" role="tablist"><button type="button" class="on" data-kieu="cv">Chu vi ngón</button><button type="button" data-kieu="dk">Đường kính nhẫn</button></div>
+    <label for="szMm" id="szNhanNhan">Chu vi ngón tay (mm)</label>
+    <input type="number" id="szMm" inputmode="decimal" min="10" max="80" step="0.5" placeholder="Ví dụ 52">
+    <div class="sz-ra" id="szRa"><small>Size nhẫn của bạn</small><b>—</b><span>Nhập số đo để xem</span></div>
+  </div>
+</div>
+<div class="khung"><div class="sz-bang-boc" data-hien><table class="sz-bang" id="szBangNhan"></table></div>
+<p class="sz-chu">Bảng size nhẫn Việt Nam thông dụng: chu vi (mm) = size + 40. Nằm giữa hai size thì chọn size lớn hơn.</p></div>
+</section>
+<section class="tp-phan" id="khac"><div class="khung sz-hai">
+  <div><span class="so-phan">04</span><h2>Khuyên tai &amp; mặt dây</h2>
+  <p>Khuyên tai và mặt dây không cần chọn size. Muốn phối mặt dây với dây chuyền, nhắn cửa hàng để được tư vấn độ dài hợp cổ và kiểu áo hay mặc.</p></div>
+  <div class="tp-hoi"><b>Đo xong vẫn chưa chắc?</b><p>Nhắn số đo cho Ngọc Trầm, cửa hàng kiểm tra lại giúp trước khi xâu.</p>
+  <a class="nut dac" href="#" data-zalo style="background:#0068ff;border-color:#0068ff">Nhắn Zalo</a></div>
+</div></section>
+</main>
+
+
+<footer class="lh" id="lien-he">
+  <div class="tren">
+    <img class="hoa-nen" src="img/hoa.png" alt="">
+    <span class="nho" data-hien data-nd="lh.nho">Liên hệ</span>
+    <h2 class="tieu-de" data-nd="lh.tieu">
+      <span class="dong-chu"><span>Cần tư vấn?</span></span>
+      <span class="dong-chu"><span><em>Nhắn cho Ngọc Trầm.</em></span></span>
+    </h2>
+    <p data-hien data-nd="lh.moTa">Gửi mã sản phẩm hoặc ảnh mẫu bạn thích, cửa hàng sẽ tìm và phối giúp bạn.</p>
+    <div class="hang" data-hien>
+      <a class="nut dac" href="#" data-zalo style="background:#0068ff;border-color:#0068ff">Nhắn Zalo</a>
+      <a class="nut sang" href="#" data-fb>Messenger</a>
+    </div>
+  </div>
+  <div id="chanTrang"></div>
+</footer>
+<div class="thong-bao" id="thongBao"></div>
+
+<script src="js/cau-hinh.js?v=6b70518097"></script>
+<script src="js/chung.js?v=3ff46caf44"></script>
+<script src="js/khach.js?v=18271233fc"></script>
+<script src="js/trang-phu.js?v=0b892991a9"></script>
+</body>
+</html>

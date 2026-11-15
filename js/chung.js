@@ -111,7 +111,7 @@ function dungChanTrang() {
   var cot = function (tieu, ds) { return '<div class="cot-lk"><h4>' + tieu + '</h4><ul>' + ds.map(function (x) { return '<li><a href="' + x[1] + '"' + (x[2] ? ' target="_blank" rel="noopener"' : '') + '>' + e(x[0]) + '</a></li>'; }).join('') + '</ul></div>'; };
   o.outerHTML =
     '<div class="moi-ve"><div class="khung">' +
-      '<div class="dau-mv"><span class="nho">Mới về tại cửa hàng</span><a href="' + veTrang + '#san-pham">Xem tất cả <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a></div>' +
+      '<div class="dau-mv"><span class="nho">Mới về tại cửa hàng</span><a href="cua-hang.html">Xem tất cả <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a></div>' +
       '<div class="luoi-mv" id="luoiMv"></div>' +
     '</div></div>' +
     '<div class="duoi"><div class="khung ct-luoi">' +
@@ -126,9 +126,11 @@ function dungChanTrang() {
         '<div class="mxh">' + mxh + '</div>' +
         (LIEN_HE.nhomZalo ? '<a class="nut sang nho-tin" href="' + e(LIEN_HE.nhomZalo) + '" target="_blank" rel="noopener">Nhận tin món mới qua Zalo</a>' : '') +
       '</div>' +
-      cot('Mua sắm', THU_TU.map(function (l) { return [LOAI[l].ten, veTrang + '#loai-' + l]; }).concat([['Tự thiết kế chuỗi', 'thiet-ke.html']])) +
-      cot('Hỗ trợ', [['Giao hàng', veTrang + '#hd-giao'], ['Đổi trả', veTrang + '#hd-doi'], ['Bảo hành', veTrang + '#hd-bh'], ['Lưu ý charm vàng', veTrang + '#hd-luuy'], ['Hỏi đáp', veTrang + '#hoi-dap']]) +
-      cot('Ngọc Trầm', [['Câu chuyện', veTrang + '#cau-chuyen'], ['Liên hệ', '#lien-he']].concat(LIEN_HE.fanpage.map(function (f) { return [f.ten, f.link, 1]; }))) +
+      cot('Mua sắm', [['Tất cả sản phẩm', 'cua-hang.html']].concat(THU_TU.map(function (l) { return [LOAI[l].ten, 'cua-hang.html?loai=' + l]; }))
+        .concat([['Quà tặng theo ngân sách', 'qua-tang.html'], ['Tự thiết kế chuỗi', 'thiet-ke.html']])) +
+      cot('Hỗ trợ', [['Chính sách giao hàng', 'chinh-sach.html#giao-hang'], ['Thanh toán', 'chinh-sach.html#thanh-toan'], ['Đổi trả', 'chinh-sach.html#doi-tra'], ['Bảo hành', 'chinh-sach.html#bao-hanh'],
+        ['Chọn size vòng & nhẫn', 'chon-size.html'], ['Cẩm nang ngọc', 'cam-nang.html'], ['Hỏi đáp', veTrang + '#hoi-dap']]) +
+      cot('Ngọc Trầm', [['Về Ngọc Trầm', 've-ngoc-tram.html'], ['Liên hệ & cửa hàng', 'lien-he.html'], ['Bảo mật thông tin', 'chinh-sach.html#bao-mat']].concat(LIEN_HE.fanpage.map(function (f) { return [f.ten, f.link, 1]; }))) +
       '<div class="cot-bd">' +
         '<div class="ban-do"><iframe title="Bản đồ Ngọc Trầm Store" loading="lazy" referrerpolicy="no-referrer-when-downgrade" src="https://maps.google.com/maps?q=' + encodeURIComponent(LIEN_HE.toaDo) + '&z=16&hl=vi&output=embed"></iframe></div>' +
         '<p>' + e(LIEN_HE.diaChi) + '</p>' +
@@ -158,6 +160,12 @@ function dungChanTrang() {
    Điện thoại: mỗi mục là một khay gập trong màn hình menu.
    ========================================================= */
 var NGOC_TIM = ['Phỉ thuý', 'Lam băng', 'Lục đế', 'Hoà điền', 'Ngọc bích', 'Trầm hương', 'Hoàng long'];
+function slug(s) { return boDau(s).replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, ''); }
+function ngocCua(x) {   // dòng ngọc của món — chỉ xét TÊN món (mô tả có tên charm đi kèm, dễ nhận nhầm)
+  var t = boDau(x.ten), r = NGOC_TIM.filter(function (n) { return t.indexOf(boDau(n)) >= 0; });
+  if (x.tram && r.indexOf('Trầm hương') < 0) r.push('Trầm hương');
+  return r;
+}
 function dungMenu() {
   var m = $('#menu'); if (!m) return;
   var v = $('.hero') ? '' : 'index.html';   // ở trang khác thì phải quay về trang chủ
@@ -170,13 +178,16 @@ function dungMenu() {
     '<div class="mega-trong">' +
       '<div class="mega-cot"><h3>Theo loại</h3><ul class="mega-ds" id="megaLoai"><li class="mega-cho">Đang tải…</li></ul></div>' +
       '<div class="mega-cot"><h3>Theo dòng ngọc</h3><ul class="mega-ds" id="megaNgoc"></ul></div>' +
+      '<div class="mega-cot"><h3>Theo ngân sách</h3><ul class="mega-ds" id="megaGia">' +
+        lk([['Dưới 3 triệu', 'qua-tang.html#duoi-3'], ['3 – 7 triệu', 'qua-tang.html#3-7'], ['7 – 12 triệu', 'qua-tang.html#7-12'], ['Trên 12 triệu', 'qua-tang.html#tren-12']]) +
+        '<li><a class="mega-qua" href="qua-tang.html">Gợi ý quà tặng →</a></li></ul></div>' +
       '<div class="mega-cot"><h3>Mới về</h3><div class="mega-mon" id="megaMoi"></div></div>' +
       '<a class="mega-the" id="megaThe" href="' + v + '#noi-bat"><span class="h"></span>' +
         '<span class="nho">Tuyển chọn</span><b>Món nổi bật tuần này</b>' +
         '<span class="di">Xem ngay<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span></a>' +
     '</div>' +
     '<div class="mega-chan"><div class="mega-chan-trong">' +
-      '<a href="' + v + '#san-pham">Tất cả sản phẩm</a><a href="' + v + '#bo-suu-tap">Bộ sưu tập</a>' +
+      '<a href="cua-hang.html">Tất cả sản phẩm</a><a href="cua-hang.html?sx=moi">Mới về</a><a href="chon-size.html">Hướng dẫn chọn size</a>' +
       '<button type="button" data-mo-tim>Tìm theo tên hoặc mã</button>' +
       '<span class="ghi">Mỗi món chỉ có một — ai chốt trước giữ trước.</span>' +
     '</div></div></div>';
@@ -200,12 +211,12 @@ function dungMenu() {
 
   var megaHt = '<div class="mega" id="megaHt">' +
     '<div class="mega-trong ht">' +
-      '<div class="mega-cot"><h3>Mua sắm &amp; giao nhận</h3><ul class="mega-ds">' +
-        lk([['Giao hàng', v + '#hd-giao'], ['Đổi trả', v + '#hd-doi'], ['Bảo hành', v + '#hd-bh'],
-            ['Lưu ý charm vàng', v + '#hd-luuy'], ['Hỏi & đáp', v + '#hoi-dap']]) + '</ul></div>' +
-      '<div class="mega-cot"><h3>Ngọc Trầm</h3><ul class="mega-ds">' +
-        lk([['Câu chuyện cửa hàng', v + '#cau-chuyen'], ['Cảm nhận khách hàng', v + '#cam-nhan'],
-            ['Tài khoản của bạn', 'tai-khoan.html'], ['Giỏ hàng', 'gio-hang.html'], ['Đơn đã đặt', 'tai-khoan.html']]) + '</ul></div>' +
+      '<div class="mega-cot"><h3>Chính sách</h3><ul class="mega-ds">' +
+        lk([['Giao hàng', 'chinh-sach.html#giao-hang'], ['Thanh toán', 'chinh-sach.html#thanh-toan'], ['Đổi trả', 'chinh-sach.html#doi-tra'],
+            ['Bảo hành', 'chinh-sach.html#bao-hanh'], ['Bảo mật thông tin', 'chinh-sach.html#bao-mat']]) + '</ul></div>' +
+      '<div class="mega-cot"><h3>Hướng dẫn</h3><ul class="mega-ds">' +
+        lk([['Chọn size vòng & nhẫn', 'chon-size.html'], ['Cẩm nang ngọc', 'cam-nang.html'], ['Giữ ngọc & trầm luôn đẹp', 'cam-nang.html#giu-ngoc'],
+            ['Hỏi & đáp', v + '#hoi-dap'], ['Đơn đã đặt', 'tai-khoan.html']]) + '</ul></div>' +
       '<div class="mega-cot nhan">' +
         '<h3>Nhắn cho cửa hàng</h3>' +
         '<div class="mo-cua' + (tt.mo ? ' mo' : '') + '"><i></i>' + tt.chu + '</div>' +
@@ -216,6 +227,20 @@ function dungMenu() {
       '</div>' +
     '</div></div>';
 
+  var megaVe = '<div class="mega" id="megaVe">' +
+    '<div class="mega-trong ve">' +
+      '<div class="mega-cot"><h3>Về chúng tôi</h3><ul class="mega-ds">' +
+        lk([['Câu chuyện Ngọc Trầm', 've-ngoc-tram.html'], ['Cách chọn từng món', 've-ngoc-tram.html'], ['Cảm nhận khách hàng', v + '#cam-nhan'], ['Liên hệ & cửa hàng', 'lien-he.html']]) + '</ul></div>' +
+      '<div class="mega-cot"><h3>Theo dõi</h3><ul class="mega-ds">' +
+        lk([['Facebook', (LIEN_HE.fanpage[0] || {}).link, 1], ['Instagram', LIEN_HE.instagram, 1], ['TikTok', LIEN_HE.tiktok, 1]].filter(function (x) { return x[1]; })) + '</ul></div>' +
+      '<a class="mega-the" id="megaTheVe" href="ve-ngoc-tram.html"><span class="h"></span>' +
+        '<span class="nho">Từ năm 2015</span><b>Mỗi viên ngọc mang một câu chuyện riêng</b>' +
+        '<span class="di">Đọc câu chuyện<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span></a>' +
+      '<a class="mega-the" id="megaTheLh" href="lien-he.html"><span class="h"></span>' +
+        '<span class="nho">' + e(LIEN_HE.diaChi || 'Cửa hàng') + '</span><b>Ghé xem ngọc tận tay</b>' +
+        '<span class="di">Bản đồ &amp; giờ mở cửa<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span></a>' +
+    '</div></div>';
+
   m.innerHTML =
     '<div class="menu-nhanh">' +
       '<a href="gio-hang.html"><span class="h">' + IC_GIO + '<i id="menuSoGio" hidden></i></span>Giỏ hàng</a>' +
@@ -224,9 +249,10 @@ function dungMenu() {
     '</div>' +
     '<ul class="menu-ds">' +
     '<li class="co-mega"><button type="button" class="menu-nut" aria-expanded="false" aria-controls="megaSp">' + ten('Sản phẩm') + mui + '</button>' + megaSp + '</li>' +
+    '<li><a class="menu-nut" href="qua-tang.html">' + ten('Quà tặng') + '</a></li>' +
     '<li class="co-mega"><button type="button" class="menu-nut" aria-expanded="false" aria-controls="megaTk">' + ten('Tự thiết kế') + mui + '</button>' + megaTk + '</li>' +
     '<li class="co-mega"><button type="button" class="menu-nut" aria-expanded="false" aria-controls="megaHt">' + ten('Hỗ trợ') + mui + '</button>' + megaHt + '</li>' +
-    '<li><a class="menu-nut" href="' + v + '#cau-chuyen">' + ten('Câu chuyện') + '</a></li>' +
+    '<li class="co-mega"><button type="button" class="menu-nut" aria-expanded="false" aria-controls="megaVe">' + ten('Ngọc Trầm') + mui + '</button>' + megaVe + '</li>' +
     '</ul>';
 
   soTrongMenu('menuSoGio', GIO.so()); soTrongMenu('menuSoYt', YT.so());   // hàng nút nhanh vừa dựng xong
@@ -236,12 +262,11 @@ function dungMenu() {
     var dem = {};
     ds.forEach(function (x) { dem[x.loai] = (dem[x.loai] || 0) + 1; });
     $('#megaLoai').innerHTML = THU_TU.filter(function (l) { return dem[l]; }).map(function (l) {
-      return '<li><a href="' + v + '#loai-' + l + '">' + LOAI[l].ten + '<i>' + dem[l] + '</i></a></li>';
+      return '<li><a href="cua-hang.html?loai=' + l + '">' + LOAI[l].ten + '<i>' + dem[l] + '</i></a></li>';
     }).join('');
     $('#megaNgoc').innerHTML = NGOC_TIM.map(function (t) {
-      var q = boDau(t), n = 0;
-      ds.forEach(function (x) { if (boDau(x.ten + ' ' + (x.mo_ta || '')).indexOf(q) >= 0) n++; });
-      return n ? '<li><button type="button" data-tim="' + e(t) + '">' + e(t) + '<i>' + n + '</i></button></li>' : '';
+      var n = ds.filter(function (x) { return x.tt !== 'Đã bán' && ngocCua(x).indexOf(t) >= 0; }).length;
+      return n ? '<li><a href="cua-hang.html?ngoc=' + slug(t) + '">' + e(t) + '<i>' + n + '</i></a></li>' : '';
     }).join('');
     var moi = ds.slice().sort(function (a, b) { return (a.loai === 'charm') - (b.loai === 'charm') || ngaySo(b.ngay) - ngaySo(a.ngay); }).slice(0, 3);
     $('#megaMoi').innerHTML = moi.map(function (x) {
@@ -253,6 +278,9 @@ function dungMenu() {
     var day = ds.filter(function (x) { return x.loai === 'tron' || x.loai === 'chuoi'; });
     var mau = day[Math.floor(Math.random() * day.length)];
     if (mau) $('#megaTheTk').querySelector('.h').innerHTML = hinh(mau.anh[0], '', 500);
+    var ve = day.filter(function (x) { return x.anh[1]; });
+    if (ve[1]) $('#megaTheVe').querySelector('.h').innerHTML = hinh(ve[1].anh[1], '', 500);
+    if (ve[2]) $('#megaTheLh').querySelector('.h').innerHTML = hinh(ve[2].anh[1], '', 500);
     if (dem.charm) $('#megaSoCharm').textContent = dem.charm + ' charm vàng 14K – 18K';
   }).catch(function () {});
 }
