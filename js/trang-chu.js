@@ -322,11 +322,26 @@ $('#bang').addEventListener('scroll', function () {
   var cham = document.createElement('div'); cham.className = 'cn-cham';
   cham.innerHTML = the.map(function (_, i) { return '<button type="button" aria-label="Cảm nhận ' + (i + 1) + '"></button>'; }).join('');
   khay.after(cham);
+  /* tự trượt bằng tay mình (không dùng 'smooth' của trình duyệt — Safari điện thoại vừa trượt vừa hút thẻ nên giật):
+     tắt hút thẻ trong lúc trượt, đường cong êm, xong bật lại */
+  var dangTruot = 0, tayCham = false;
   function truotToi(i, muot) {
     if (!laTruot()) return;
-    var t = the[i];
-    khay.scrollTo({left: t.offsetLeft - (khay.clientWidth - t.offsetWidth) / 2, behavior: muot ? 'smooth' : 'auto'});
+    var t = the[i], den = Math.max(0, Math.min(khay.scrollWidth - khay.clientWidth, t.offsetLeft - (khay.clientWidth - t.offsetWidth) / 2));
+    cancelAnimationFrame(dangTruot);
+    if (!muot || GIAM) { khay.scrollLeft = den; return; }
+    var tu = khay.scrollLeft, quang = den - tu; if (Math.abs(quang) < 2) return;
+    var lau = Math.min(1100, 620 + Math.abs(quang) * .35), bd = performance.now();
+    khay.classList.add('dang-truot');
+    (function buoc(bay) {
+      var p = Math.min(1, (bay - bd) / lau), e = p < .5 ? 4 * p * p * p : 1 - Math.pow(-2 * p + 2, 3) / 2;
+      khay.scrollLeft = tu + quang * e;
+      if (p < 1 && !tayCham) dangTruot = requestAnimationFrame(buoc);
+      else { dangTruot = 0; khay.classList.remove('dang-truot'); }
+    })(bd);
   }
+  khay.addEventListener('touchstart', function () { tayCham = true; dung(); cancelAnimationFrame(dangTruot); khay.classList.remove('dang-truot'); }, {passive: true});
+  khay.addEventListener('touchend', function () { tayCham = false; dem_lai(); }, {passive: true});
   function sang(i, khongTruot) {
     dang = (i + the.length) % the.length;
     the.forEach(function (t, j) { t.classList.toggle('sang', j === dang); });
@@ -338,7 +353,9 @@ $('#bang').addEventListener('scroll', function () {
   var henCuon;
   khay.addEventListener('scroll', function () {    // khách tự vuốt: dừng tay rồi thì thẻ nằm giữa khung thành thẻ sáng
     clearTimeout(henCuon);
+    if (dangTruot) return;   // đang tự trượt thì không tính lại thẻ giữa
     henCuon = setTimeout(function () {
+      if (tayCham) return;
       var giua = khay.scrollLeft + khay.clientWidth / 2, gan = 0, kc = 1e9;
       the.forEach(function (t, j) { var d = Math.abs(t.offsetLeft + t.offsetWidth / 2 - giua); if (d < kc) { kc = d; gan = j; } });
       if (gan !== dang) { sang(gan, true); dem_lai(); }
@@ -349,7 +366,7 @@ $('#bang').addEventListener('scroll', function () {
     sang([].indexOf.call(cham.children, b)); dem_lai();
   });
   [].forEach.call(cham.children, function (b, j) { b.classList.toggle('on', j === 0); });
-  function chay() { if (the.length > 1 && !GIAM) hen = setInterval(function () { sang(dang + 1); }, 4500); }
+  function chay() { if (the.length > 1 && !GIAM && !tayCham) hen = setInterval(function () { sang(dang + 1); }, 4500); }
   function dung() { clearInterval(hen); hen = 0; }
   function dem_lai() { dung(); chay(); }   // rê vào thẻ nào thì thẻ đó sáng và đếm lại từ đầu
   muc.addEventListener('mouseover', function (ev) {

@@ -289,10 +289,38 @@ var megaMo = null, megaHen;
 function moMega(li) {
   clearTimeout(megaHen);
   if (megaMo === li) return;
-  if (megaMo) megaMo.classList.remove('mo'), megaMo.querySelector('.menu-nut').setAttribute('aria-expanded', 'false');
+  var cu = megaMo, gap = dienThoai() && !GIAM && $('#menu').classList.contains('mo');
+  var ds = [cu, li].filter(Boolean).map(function (x) {   // điện thoại: đo chiều cao trước khi đổi
+    var m = x.querySelector('.mega'), h = m.getBoundingClientRect().height;
+    if (m._a) m._a.cancel();
+    return {m: m, tu: h};
+  });
+  var neo = gap && li ? li.querySelector('.menu-nut') : null, neoTren = neo ? neo.getBoundingClientRect().top : 0;
+  if (cu) cu.classList.remove('mo'), cu.querySelector('.menu-nut').setAttribute('aria-expanded', 'false');
   megaMo = li;
   if (li) { li.classList.add('mo'); li.querySelector('.menu-nut').setAttribute('aria-expanded', 'true'); }
   dau.classList.toggle('mo-mega', !!li);
+  if (!gap) return;
+  /* mục mở ra / gập lại trượt theo chiều cao, không bật tắt đột ngột */
+  ds.forEach(function (o) {
+    var den = o.m.getBoundingClientRect().height;
+    if (Math.abs(den - o.tu) < 1) return;
+    o.m._a = o.m.animate([{height: o.tu + 'px'}, {height: den + 'px'}], {duration: 520, easing: 'cubic-bezier(.22,1,.36,1)'});
+    o.m._a.onfinish = o.m._a.oncancel = function () { o.m._a = null; };
+  });
+  /* mục đang mở nằm phía trên gập lại thì giữ nút vừa bấm đứng yên, không bị kéo tụt lên */
+  if (neo) {
+    var nav = $('#menu'), het = performance.now() + 560, tay = false;
+    var thoi = function () { tay = true; };
+    nav.addEventListener('touchstart', thoi, {once: true, passive: true});
+    (function giu() {
+      if (tay) return;
+      var lech = neo.getBoundingClientRect().top - neoTren;
+      if (Math.abs(lech) > .5) nav.scrollTop += lech;
+      if (performance.now() < het) requestAnimationFrame(giu);
+      else nav.removeEventListener('touchstart', thoi);
+    })();
+  }
 }
 function dongMega(tre) {
   clearTimeout(megaHen);
