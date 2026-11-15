@@ -48,8 +48,11 @@ function dungHeroVoi(vids) {
   }
   $('#chieu').innerHTML = cac.map(function (x, i) {
     var v = vidCua(x);
-    if (v) return '<figure class="co-vid' + (i ? '' : ' on') + '"><video muted loop playsinline preload="' + (i ? 'none' : 'auto') + '" poster="video/' +
-      v.replace(/\.\w+$/, '') + '.jpg" aria-hidden="true"><source src="video/' + v + '" type="video/mp4"></video></figure>';
+    /* --bia: ảnh bìa của video, làm nền mờ hai bên trên máy tính (video dọc giữ đúng khổ cho khỏi vỡ hạt) */
+    if (v) { var bia = 'video/' + v.replace(/\.\w+$/, '') + '.jpg';
+      // url() trong biến CSS được tính theo thư mục css/ → phải đưa đường dẫn tuyệt đối
+      return '<figure class="co-vid' + (i ? '' : ' on') + '" style="--bia:url(\'' + new URL(bia, location.href).href + '\')"><video muted loop playsinline preload="' + (i ? 'none' : 'auto') + '" poster="' +
+      bia + '" aria-hidden="true"><source src="video/' + v + '" type="video/mp4"></video></figure>'; }
     return '<figure' + (i ? '' : ' class="on"') + '>' + hinh(x.anh[0], x.ten, 1600, i ? '' : ' fetchpriority="high"').replace(' loading="lazy"', i ? ' loading="lazy"' : '') + '</figure>';
   }).join('');
   var dsHinh = $$('#chieu figure');
