@@ -47,9 +47,9 @@ function veGio() {
       '<h1 class="tieu-de"><span class="dong-chu"><span>Món bạn <em>đã chọn</em></span></span></h1>' +
       '<p data-hien>Mỗi món chỉ có một, nên giỏ không có số lượng. Đặt xong, cửa hàng nhắn lại ngay để xác nhận và gửi video món thật trước khi giao.</p></div>' +
     '<div class="gio-luoi">' +
-      '<div class="gio-ds">' + MON.map(dongMon).join('') + '</div>' +
+      '<div class="gio-ds">' + MON.map(dongMon).join('') + goiY(GIO.ds()) + '</div>' +
       '<aside class="gio-ben"><div class="gio-tom">' +
-        '<div class="hang-tom"><span>' + muaDuoc.length + ' món đặt được</span><b>' + gia(tong) + '</b></div>' +
+        '<div class="hang-tom"><span>' + muaDuoc.length + ' món đặt được</span><b>' + gia(tong) + '</b></div>' + thanhShip(tong) +
         (MON.length > muaDuoc.length ? '<p class="gio-luuy">' + (MON.length - muaDuoc.length) + ' món không đặt được, bạn bỏ khỏi giỏ giúp cửa hàng nhé.</p>' : '') +
         '<p class="gio-luuy">Chưa tính phí gửi. Cửa hàng báo phí khi xác nhận đơn.</p>' +
         '</div><div id="gioDat"></div></aside>' +

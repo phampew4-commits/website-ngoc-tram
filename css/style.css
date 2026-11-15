@@ -1907,3 +1907,37 @@ body.khoa-cuon{overflow:hidden}
 @media (max-width:520px){.qt-kem-ds{grid-template-columns:minmax(0,1fr)}}
 .qt-nho{grid-template-columns:54px minmax(0,1fr)}.qt-nho .tt{min-width:0}
 @media (max-width:480px){.qt-the small{display:none}}
+
+/* ---------- UPSALE ---------- */
+.thanh-ship{margin:0 0 14px;padding:12px 14px;border-radius:10px;background:rgba(168,130,58,.09);font-size:12.5px;color:var(--chu)}
+.thanh-ship p{margin:0 0 8px;line-height:1.5}
+.thanh-ship b{color:var(--muc);font-weight:600}
+.vach-ship{display:block;height:4px;border-radius:9px;background:rgba(29,58,70,.1);overflow:hidden}
+.vach-ship i{display:block;height:100%;width:var(--p);border-radius:inherit;background:linear-gradient(90deg,var(--vang2),var(--vang));transition:width .8s var(--muot)}
+.thanh-ship.du{background:rgba(61,122,98,.1)}
+.thanh-ship.du b{color:var(--ngoc)}
+.thanh-ship.du i{background:var(--ngoc)}
+.gio-tom .thanh-ship{margin:14px 0 4px}
+.gio-ds .ngan-goi{margin-top:30px}
+.nhan-goi{display:block;font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--ngoc);margin-bottom:2px}
+.ship-sp{display:flex;align-items:center;gap:10px;margin:14px 0 0;padding:11px 14px;border-radius:10px;background:var(--the);border:1px solid var(--vien);font-size:13.5px;color:var(--mo)}
+.ship-sp svg{flex:none;width:20px;height:20px;color:var(--vang)}
+.ship-sp b{color:var(--muc);font-weight:600}
+.phoi-charm{margin:22px 0 0;padding:20px;border-radius:14px;background:var(--the);border:1px solid var(--vien)}
+.pc-dau{display:flex;justify-content:space-between;align-items:baseline;gap:12px}
+.pc-dau b{font:400 20px/1.2 var(--serif);color:var(--muc)}
+.pc-dau a{display:inline-flex;align-items:center;gap:6px;font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--mo)}
+.pc-dau a svg{width:13px;height:13px}
+.phoi-charm > p{margin:6px 0 16px;font-size:13px;color:var(--mo)}
+.pc-ds{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.pc-mon{display:flex;flex-direction:column;gap:4px;min-width:0}
+.pc-mon .h{display:block;aspect-ratio:1;border-radius:10px;overflow:hidden;background:var(--giay2)}
+.pc-mon .h img{width:100%;height:100%;object-fit:cover;transition:scale .8s var(--muot)}
+.pc-mon:hover .h img{scale:1.06}
+.pc-mon .ten{margin-top:6px;font-size:12.5px;line-height:1.35;color:var(--chu);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.pc-mon .g{font:500 14px/1.2 var(--serif);color:var(--muc);font-variant-numeric:lining-nums}
+.pc-them{margin-top:6px;padding:8px 0;border-radius:99px;border:1px solid var(--vien);font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--muc);transition:background .3s,color .3s,border-color .3s}
+.pc-them:hover,.pc-them.da{background:var(--muc);border-color:var(--muc);color:#fff}
+.tron-bo{padding-bottom:40px}
+@media (max-width:480px){.phoi-charm{padding:16px}.pc-ds{gap:8px}}
+.ngan-goi .ngan-mon.nho{font-size:inherit;letter-spacing:normal;text-transform:none;font-weight:400}

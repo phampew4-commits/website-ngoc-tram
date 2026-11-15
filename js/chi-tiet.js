@@ -15,6 +15,8 @@ taiDuLieu.then(function () {
   dungTrang(x);
   dungXemKi(x);
   dungQuy();
+  dungPhoiCharm(x);
+  dungTronBo(x);
   dungLienQuan(x);
   dungHd(x);
   dungDaXem(x);
@@ -72,6 +74,10 @@ function dungTrang(x) {
           '<button class="nut nut-yt" id="nutYt" data-ma="' + e(x.ma) + '"><span>♡</span> Lưu vào yêu thích</button>' +
         '</div>' +
         '<p class="ghi-ct" data-hien>Bấm nút, câu hỏi kèm mã ' + e(x.ma) + ' được chép sẵn — bạn chỉ cần dán vào tin nhắn.</p>' +
+        (x.gia && !/bán/i.test(tt) ? '<p class="ship-sp" data-hien><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M3 7h11v9H3zM14 10h4l3 3v3h-7"/><circle cx="7" cy="17.5" r="1.8"/><circle cx="17" cy="17.5" r="1.8"/></svg>' +
+          (x.gia >= NGUONG_SHIP ? '<span>Món này được <b>miễn ship</b> khi chuyển khoản trước.</span>'
+                                : '<span>Mua thêm <b>' + gia(NGUONG_SHIP - x.gia) + '</b> để được <b>miễn ship</b> (chuyển khoản trước).</span>') + '</p>' : '') +
+        '<div id="phoiCharm"></div>' +
         '<ul class="cam-ket-sp" data-hien>' +
           '<li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><rect x="3" y="6" width="18" height="13" rx="2"/><circle cx="12" cy="12.5" r="3.5"/><path d="M8 6l1.5-2h5L16 6"/></svg><span>Ảnh thật<small>Chụp đúng món</small></span></li>' +
           '<li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><rect x="3" y="6" width="13" height="12" rx="2"/><path d="M16 10.5l5-3v9l-5-3z"/></svg><span>Xem video<small>Gửi trước khi chốt</small></span></li>' +
@@ -215,6 +221,45 @@ function dungDaXem(x) {
   k.hidden = false;
   k.querySelector('.xoa-dx').onclick = function () { try { localStorage.setItem('daXem', JSON.stringify([kx])); } catch (er) {} k.hidden = true; };
 }
+
+/* ---------- UPSALE: phối thêm charm (trang chuỗi) ---------- */
+function dungPhoiCharm(x) {
+  var o = $('#phoiCharm'); if (!o || (x.loai !== 'chuoi' && x.loai !== 'tron') || x.tt === 'Đã bán') return;
+  var ch = charmHop(x, 3); if (!ch.length) return;
+  var ngoc = ngocCua(x).filter(function (t) { return t !== 'Phỉ thuý'; })[0];
+  o.className = 'phoi-charm'; o.setAttribute('data-hien', '');
+  o.innerHTML = '<div class="pc-dau"><b>Phối thêm charm</b><a href="cua-hang.html?loai=charm' + (ngoc ? '&ngoc=' + slug(ngoc) : '') + '">Xem thêm' + MUI_CT + '</a></div>' +
+    '<p>Gắn thêm charm vàng hợp tông, cửa hàng xâu sẵn trước khi gửi.</p>' +
+    '<div class="pc-ds">' + ch.map(function (c) {
+      return '<div class="pc-mon"><a class="h" href="' + linkSp(c) + '">' + hinh(c.anh[0], c.ten, 240) + '</a>' +
+        '<a class="ten" href="' + linkSp(c) + '">' + e(c.ten.replace(/^charm\s*/i, '').replace(/^./, function (k) { return k.toUpperCase(); })) + '</a><span class="g">' + gia(c.gia) + '</span>' +
+        '<button type="button" class="pc-them" data-gio="' + e(khoa(c)) + '">+ Thêm</button></div>';
+    }).join('') + '</div>';
+  theoDoi(o.parentNode); veNutThem();
+}
+
+/* ---------- UPSALE: trọn bộ cùng dòng ngọc (khác loại với món đang xem) ---------- */
+function dungTronBo(x) {
+  var ngoc = ngocCua(x); if (!ngoc.length) return;
+  var rieng = ngoc.filter(function (t) { return t !== 'Phỉ thuý'; });   // "lam băng", "lục đế"… sát hơn chữ "phỉ thuý" chung
+  var tim = rieng.length ? rieng : ngoc;
+  var nhom = x.loai === 'tron' ? 'chuoi' : x.loai;
+  var mon = conHang('').filter(function (y) {
+    var l = y.loai === 'tron' ? 'chuoi' : y.loai;
+    return y !== x && l !== nhom && y.gia && (x.loai === 'charm' ? (y.loai === 'chuoi' || y.loai === 'tron') : y.loai !== 'charm') &&
+      ngocCua(y).some(function (t) { return tim.indexOf(t) >= 0; });
+  }).sort(function (a, b) { return ngaySo(b.ngay) - ngaySo(a.ngay); }).slice(0, 4);
+  if (!mon.length) return;
+  var s = document.createElement('section');
+  s.className = 'muc tron-bo'; s.id = 'tronBo';
+  s.innerHTML = '<div class="khung"><div class="giua"><span class="nho" data-hien>' + (x.loai === 'charm' ? 'Gắn charm lên' : 'Trọn bộ cùng dòng ngọc') + '</span>' +
+    '<h2 class="tieu-de"><span class="dong-chu"><span>' + (x.loai === 'charm' ? 'Chuỗi hợp với <em>charm này</em>' : 'Đeo cùng <em>' + e(tim[0].toLowerCase()) + '</em>') + '</span></span></h2></div>' +
+    '<div class="luoi" style="margin-top:56px">' + mon.map(the).join('') + '</div>' +
+    '<div class="them"><a class="nut" href="cua-hang.html?ngoc=' + slug(tim[0]) + '">Xem tất cả món ' + e(tim[0].toLowerCase()) + MUI_CT + '</a></div></div>';
+  $('#lienQuan').parentNode.insertBefore(s, $('#lienQuan'));
+  theoDoi(s);
+}
+var MUI_CT = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M5 12h14M13 6l6 6-6 6"/></svg>';
 
 function dungLienQuan(x) {
   var cung = ds.filter(function (y) { return y !== x && y.loai === x.loai && y.tt !== 'Đã bán'; });

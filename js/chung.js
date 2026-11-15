@@ -435,6 +435,7 @@ function veNutThem() {   // cập nhật mọi nút "Thêm vào giỏ" đang hi�
     var co = GIO.co(b.dataset.gio);
     b.classList.toggle('da', co);
     if (b.classList.contains('tron')) { b.setAttribute('aria-label', co ? 'Đã có trong giỏ' : 'Thêm vào giỏ'); b.title = b.getAttribute('aria-label'); return; }
+    if (b.classList.contains('pc-them')) { b.textContent = co ? '✓ Trong giỏ' : '+ Thêm'; return; }
     b.textContent = co ? '✓ Đã trong giỏ · Xem giỏ' : 'Thêm vào giỏ';
   });
 }
@@ -596,7 +597,7 @@ function veNgan() {
         (g.mua ? '<div class="gia">' + gia(g.x.gia) + '</div>' : '<p class="het">' + (g.x.tt === 'Đã bán' ? 'Món này đã có chủ.' : 'Chưa có giá — nhắn Zalo nhé.') + '</p>') +
         '</div><button class="bo" data-bo-ngan="' + e(g.k) + '">Bỏ</button></div>';
     }).join('') + goiY(ma);
-    chan.innerHTML = '<div class="dong-tong"><span>Tạm tính · ' + mua.length + ' món</span><b>' + gia(tong) + '</b></div>' +
+    chan.innerHTML = thanhShip(tong) + '<div class="dong-tong"><span>Tạm tính · ' + mua.length + ' món</span><b>' + gia(tong) + '</b></div>' +
       '<p class="nhe">Chưa tính phí gửi. Cửa hàng báo phí khi xác nhận đơn.</p>' +
       '<a class="nut dac" href="gio-hang.html">Đặt mua</a>' +
       '<button class="tiep" data-dong-gio>Tiếp tục xem</button>';
@@ -637,15 +638,54 @@ function veNganYt() {
   });
 }
 
+/* ---------- UPSALE ----------
+   Miễn ship theo đúng chính sách: đặt online, chuyển khoản trước toàn bộ, đơn từ NGUONG_SHIP. */
+var NGUONG_SHIP = +((CH.thanhToan || {}).mienShip) || 1500000;
+function thanhShip(tong) {
+  var du = tong >= NGUONG_SHIP, p = Math.min(100, Math.round(tong / NGUONG_SHIP * 100));
+  return '<div class="thanh-ship' + (du ? ' du' : '') + '" style="--p:' + p + '%">' +
+    '<p>' + (du ? '<b>Đơn đủ điều kiện miễn ship</b> khi chuyển khoản trước toàn bộ.'
+                : 'Thêm <b>' + gia(NGUONG_SHIP - tong) + '</b> nữa để được <b>miễn ship</b> (chuyển khoản trước).') + '</p>' +
+    '<span class="vach-ship"><i></i></span></div>';
+}
+function charmHop(x, n, bo) {   // charm hợp với chuỗi x: cùng dòng ngọc, cùng loại vàng; bỏ charm chuỗi đã gắn sẵn
+  var ngoc = ngocCua(x).map(boDau).filter(function (t) { return t !== 'phi thuy'; }), vang = (/vàng\s*(\d\dK)/i.exec(x.ten) || [])[1];
+  var daCo = (x.tp || []).map(function (t) { return boDau(t); });
+  bo = bo || [];
+  return conHang('charm').filter(function (c) {
+    return c.gia && daCo.indexOf(boDau(c.ten)) < 0 && bo.indexOf(String(khoa(c))) < 0 && bo.indexOf(String(c.ma)) < 0;
+  }).map(function (c) {
+    var t = boDau(c.ten), d = 0;
+    ngoc.forEach(function (g) { if (t.indexOf(g) >= 0) d += 3; });
+    if (vang && new RegExp(vang, 'i').test(c.ten)) d += 1;
+    return {c: c, d: d};
+  }).sort(function (a, b) { return b.d - a.d || ngaySo(b.c.ngay) - ngaySo(a.c.ngay); }).slice(0, n).map(function (o) { return o.c; });
+}
+function dongGoiY(x, nhan) {
+  return '<div class="ngan-mon nho"><a class="anh" href="' + linkSp(x) + '">' + hinh(x.anh[0], x.ten, 200) + '</a>' +
+    '<div class="tt">' + (nhan ? '<small class="nhan-goi">' + nhan + '</small>' : '') + '<h3><a href="' + linkSp(x) + '">' + e(x.ten) + '</a></h3><div class="gia">' + gia(x.gia) + '</div></div>' +
+    '<button class="tron" data-gio="' + e(khoa(x)) + '" aria-label="Thêm vào giỏ">' + IC_GIO + '</button></div>';
+}
+/* gợi ý trong giỏ: thiếu tiền miễn ship → món vừa đủ bù; có chuỗi → charm hợp chuỗi; còn lại → món ngẫu nhiên */
 function goiY(dangCo) {
-  var con = conHang('').filter(function (x) { return dangCo.indexOf(String(khoa(x))) < 0 && dangCo.indexOf(String(x.ma)) < 0; });
+  var trong = function (x) { return dangCo.indexOf(String(khoa(x))) >= 0 || dangCo.indexOf(String(x.ma)) >= 0; };
+  var gio = ds.filter(trong).filter(function (x) { return x.tt !== 'Đã bán' && x.gia; });
+  var tong = gio.reduce(function (s, x) { return s + x.gia; }, 0), thieu = NGUONG_SHIP - tong;
+  var con = conHang('').filter(function (x) { return !trong(x) && x.gia; });
   if (!con.length) return '';
+  var chuoi = gio.filter(function (x) { return x.loai === 'chuoi' || x.loai === 'tron'; })[0];
+  if (chuoi) {
+    var ch = charmHop(chuoi, 2, dangCo);
+    if (ch.length) return '<div class="ngan-goi"><h3>Phối thêm charm cho chuỗi</h3>' + ch.map(function (c) {
+      return dongGoiY(c, c.gia >= thieu && thieu > 0 ? 'Thêm món này là đủ miễn ship' : '');
+    }).join('') + '</div>';
+  }
+  if (thieu > 0 && tong > 0) {
+    var bu = con.filter(function (x) { return x.gia >= thieu; }).sort(function (a, b) { return a.gia - b.gia; }).slice(0, 2);
+    if (bu.length) return '<div class="ngan-goi"><h3>Thêm một món là được miễn ship</h3>' + bu.map(function (x) { return dongGoiY(x); }).join('') + '</div>';
+  }
   var i = Math.floor(Math.random() * Math.max(1, con.length - 2));
-  return '<div class="ngan-goi"><h3>Có thể bạn cũng thích</h3>' + con.slice(i, i + 2).map(function (x) {
-    return '<div class="ngan-mon nho"><a class="anh" href="' + linkSp(x) + '">' + hinh(x.anh[0], x.ten, 200) + '</a>' +
-      '<div class="tt"><h3><a href="' + linkSp(x) + '">' + e(x.ten) + '</a></h3><div class="gia">' + gia(x.gia) + '</div></div>' +
-      '<button class="tron" data-gio="' + e(khoa(x)) + '" aria-label="Thêm vào giỏ">' + IC_GIO + '</button></div>';
-  }).join('') + '</div>';
+  return '<div class="ngan-goi"><h3>Có thể bạn cũng thích</h3>' + con.slice(i, i + 2).map(function (x) { return dongGoiY(x); }).join('') + '</div>';
 }
 
 /* =========================================================
