@@ -1941,3 +1941,31 @@ body.khoa-cuon{overflow:hidden}
 .tron-bo{padding-bottom:40px}
 @media (max-width:480px){.phoi-charm{padding:16px}.pc-ds{gap:8px}}
 .ngan-goi .ngan-mon.nho{font-size:inherit;letter-spacing:normal;text-transform:none;font-weight:400}
+
+/* ---- đầu trang Cửa hàng gọn: tiêu đề trái + số món, hàng ô danh mục tròn ---- */
+.ch-dau2{padding:30px 0 34px;border-bottom:1px solid var(--vien);background:linear-gradient(180deg,var(--the),transparent)}
+.ch-dau2 .duong{margin-bottom:14px}
+.ch-dau-hang{display:flex;align-items:flex-end;justify-content:space-between;gap:10px 24px;flex-wrap:wrap}
+.ch-dau2 h1{font-size:clamp(32px,3.6vw,50px);color:var(--muc);line-height:1.1}
+.ch-dau2 h1 em{color:var(--vang)}
+.ch-tong{margin:0 0 6px;font-size:13px;color:var(--mo);letter-spacing:.04em}
+.ch-tong b{font:400 20px/1 var(--serif);color:var(--muc);margin-right:2px;font-variant-numeric:lining-nums}
+.ch-dm{display:flex;gap:26px;margin-top:28px;overflow-x:auto;scrollbar-width:none;padding:4px 2px 2px}
+.ch-dm::-webkit-scrollbar{display:none}
+.dm-o{flex:none;display:flex;flex-direction:column;align-items:center;gap:3px;width:96px;text-align:center;animation:nhan-vao .7s var(--muot) both;animation-delay:calc(var(--i) * 60ms)}
+.dm-o .h{display:block;width:84px;height:84px;border-radius:50%;overflow:hidden;background:var(--giay2);margin-bottom:9px;
+  outline:1px solid var(--vien);outline-offset:4px;transition:outline-color .35s,outline-offset .35s}
+.dm-o .h img{width:100%;height:100%;object-fit:cover;transition:scale .9s var(--muot)}
+.dm-o:hover .h img{scale:1.08}
+.dm-o:hover .h{outline-color:rgba(29,58,70,.35)}
+.dm-o.on .h{outline:2px solid var(--vang);outline-offset:3px}
+.dm-o b{font:400 14.5px/1.25 var(--sans);color:var(--chu)}
+.dm-o.on b{color:var(--muc);font-weight:600}
+.dm-o small{font-size:11px;color:var(--mo)}
+.ch-dau2 + .ch-than{padding-top:34px}
+@media (max-width:640px){
+  .ch-dau2{padding:20px 0 22px}
+  .ch-dm{gap:14px;margin:20px -24px 0;padding:4px 24px 2px}
+  .dm-o{width:74px}.dm-o .h{width:64px;height:64px;margin-bottom:7px}.dm-o b{font-size:12.5px}.dm-o small{font-size:10.5px}
+}
+@media (prefers-reduced-motion:reduce){.dm-o{animation:none}}

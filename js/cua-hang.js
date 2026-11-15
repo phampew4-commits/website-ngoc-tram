@@ -79,16 +79,41 @@ if (document.body.dataset.trang === 'cua-hang') (function () {
   }
   function tieuDe() {   // tiêu đề đổi theo bộ lọc: chọn đúng một loại thì hiện tên loại
     var t = chon.loai.length === 1 ? LOAI[chon.loai[0]].ten : chon.ngoc.length === 1 ? NHOM.ngoc.ds().filter(function (m) { return m.v === chon.ngoc[0]; }).map(function (m) { return m.ten; })[0] : '';
-    var h = $('.tp-dau h1');
-    h.innerHTML = '<span class="dong-chu"><span>' + (t ? '<em>' + e(t) + '</em>' : 'Tất cả <em>sản phẩm</em>') + '</span></span>';
-    h.classList.add('hien');
+    $('#chTieu').innerHTML = '<span class="dong-chu"><span>' + (t ? '<em>' + e(t) + '</em>' : 'Tất cả <em>sản phẩm</em>') + '</span></span>';
     document.title = (t || 'Cửa hàng') + ' · Ngọc Trầm Store';
-    $('.duong span:last-child').textContent = t || 'Cửa hàng';
+    $('#chDuong').textContent = t || 'Cửa hàng';
+    $$('#chDm .dm-o').forEach(function (o) {   // ô danh mục đang chọn
+      var l = o.dataset.loai;
+      o.classList.toggle('on', l ? chon.loai.length === 1 && chon.loai[0] === l : !chon.loai.length);
+    });
+  }
+  function veDm() {   // hàng ô danh mục tròn: ảnh món mới nhất của từng loại
+    var tat = conTrenWeb(), dem = {};
+    tat.forEach(function (x) { dem[x.loai] = (dem[x.loai] || 0) + 1; });
+    var anhCua = function (l) {
+      var r = tat.filter(function (x) { return (!l ? x.loai !== 'charm' : x.loai === l) && x.anh && x.anh[0]; })
+        .sort(function (a, b) { return ngaySo(b.ngay) - ngaySo(a.ngay); })[0];
+      return r ? hinh(r.anh[0], '', 300) : '';
+    };
+    $('#chDm').innerHTML = [{l: '', ten: 'Tất cả', n: tat.length}].concat(THU_TU.filter(function (l) { return dem[l]; }).map(function (l) {
+      return {l: l, ten: LOAI[l].ten, n: dem[l]};
+    })).map(function (o, i) {
+      return '<button type="button" class="dm-o" role="listitem" data-loai="' + o.l + '" style="--i:' + i + '"><span class="h">' + anhCua(o.l) + '</span>' +
+        '<b>' + e(o.ten) + '</b><small>' + o.n + ' món</small></button>';
+    }).join('');
+    $('#chDm').onclick = function (ev) {
+      var b = ev.target.closest('.dm-o'); if (!b) return;
+      var l = b.dataset.loai;
+      chon.loai = !l || (chon.loai.length === 1 && chon.loai[0] === l) ? [] : [l];
+      doi();
+      var luoi = $('.ch-thanh'); if (luoi && luoi.getBoundingClientRect().top > innerHeight * .8) cuonToi(luoi);
+    };
   }
   function veLuoi(lai) {
     var r = ketQua(), l = $('#chLuoi');
     if (lai) { hienCh = 0; l.innerHTML = ''; }
     $('#chSo').innerHTML = '<b>' + r.length + '</b> món';
+    $('#chTong').textContent = r.length;
     $('#chXemKq').textContent = 'Xem ' + r.length + ' món';
     if (!r.length) {
       l.innerHTML = '<div class="rong ch-rong"><p>Chưa có món nào khớp bộ lọc này.</p><button type="button" class="nut" data-xoa-loc>Xoá bộ lọc</button>' +
@@ -121,7 +146,7 @@ if (document.body.dataset.trang === 'cua-hang') (function () {
   $('#chDongLoc').onclick = $('#chLocNen').onclick = $('#chXemKq').onclick = function () { moLoc(false); };
   addEventListener('keydown', function (ev) { if (ev.key === 'Escape') moLoc(false); });
 
-  taiDuLieu.then(function () { veLoc(); tieuDe(); veLuoi(true); })
+  taiDuLieu.then(function () { veDm(); veLoc(); tieuDe(); veLuoi(true); })
     .catch(function () { $('#chLuoi').innerHTML = '<p class="rong">Chưa tải được danh sách sản phẩm.</p>'; });
 })();
 

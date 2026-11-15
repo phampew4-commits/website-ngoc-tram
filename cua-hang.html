@@ -14,7 +14,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+Display:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Be+Vietnam+Pro:wght@300;400;500;600&display=swap" rel="stylesheet">
 <link rel="preload" href="data/san-pham.json?v=c4df211b73" as="fetch" crossorigin="anonymous"><link rel="preconnect" href="https://lh3.googleusercontent.com" crossorigin>
-<link rel="stylesheet" href="css/style.css?v=8d4e5f8174">
+<link rel="stylesheet" href="css/style.css?v=5f7eebcbfa">
 </head>
 
 <body class="trang-trong trang-phu" data-trang="cua-hang">
@@ -30,11 +30,13 @@
 </header>
 
 <main class="tp" id="noi">
-<section class="tp-dau ch-dau"><div class="khung">
-  <nav class="duong" aria-label="Đường dẫn"><a href="index.html">Trang chủ</a><span>/</span><span>Cửa hàng</span></nav>
-  <span class="nho" data-hien>Đang có tại cửa hàng</span>
-  <h1 class="tieu-de"><span class="dong-chu"><span>Tất cả <em>sản phẩm</em></span></span></h1>
-  <p class="dan" data-hien>Mỗi món chỉ có một — ai chốt trước giữ trước. Lọc theo loại, dòng ngọc hay mức giá để tìm nhanh món hợp ý.</p>
+<section class="ch-dau2"><div class="khung">
+  <nav class="duong" aria-label="Đường dẫn"><a href="index.html">Trang chủ</a><span>/</span><span id="chDuong">Cửa hàng</span></nav>
+  <div class="ch-dau-hang">
+    <h1 class="tieu-de hien" id="chTieu"><span class="dong-chu"><span>Tất cả <em>sản phẩm</em></span></span></h1>
+    <p class="ch-tong"><b id="chTong">—</b> món · mỗi món chỉ có một</p>
+  </div>
+  <div class="ch-dm" id="chDm" role="list" aria-label="Danh mục"></div>
 </div></section>
 
 <div class="khung ch-than">
@@ -87,6 +89,6 @@
 <script src="js/cau-hinh.js?v=6b70518097"></script>
 <script src="js/chung.js?v=866173d011"></script>
 <script src="js/khach.js?v=18271233fc"></script>
-<script src="js/cua-hang.js?v=2ead4c8e94"></script>
+<script src="js/cua-hang.js?v=5fa03cb971"></script>
 </body>
 </html>
