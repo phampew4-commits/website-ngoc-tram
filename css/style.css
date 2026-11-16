@@ -1,11 +1,26 @@
 /* =========================================================
    MÀU & CHỮ
    ========================================================= */
+
+/* Chữ đ/Đ: Noto Serif Display vẽ gạch ngang mảnh tới mức mất hẳn ở cỡ chữ thường
+   ("điều" đọc thành "diều"), nên mượn riêng hai chữ này từ Noto Serif cùng họ.
+   unicode-range chỉ lấy đúng U+0110-0111, mọi chữ khác vẫn là Noto Serif Display. */
+@font-face{
+  font-family:"ChuD"; font-style:normal; font-weight:100 900; font-display:swap;
+  src:url(https://fonts.gstatic.com/s/notoserif/v33/ga6daw1J5X9T9RW6j9bNVls-hfgvz8JcMofYTYf1D33WsNFHuQk.woff2) format("woff2");
+  unicode-range:U+0110-0111;
+}
+@font-face{
+  font-family:"ChuD"; font-style:italic; font-weight:100 900; font-display:swap;
+  src:url(https://fonts.gstatic.com/s/notoserif/v33/ga6faw1J5X9T9RW6j9bNfFIMZhhWnFTyNZIQD1-_P3Dct_NFiQhhYQ.woff2) format("woff2");
+  unicode-range:U+0110-0111;
+}
+
 :root{
   --giay:#f4eee3; --giay2:#ebe2d2; --the:#fbf8f2;
   --muc:#1d3a46; --dem:#14262e; --chu:#1f2a2e; --mo:#6e6a62; --vien:rgba(29,58,70,.14);
   --vang:#a8823a; --vang2:#d1ad66; --ngoc:#3d7a62; --do:#a8452f;
-  --serif:"Noto Serif Display",Georgia,serif; --sans:"Be Vietnam Pro",-apple-system,system-ui,sans-serif;
+  --serif:"ChuD","Noto Serif Display",Georgia,serif; --sans:"Be Vietnam Pro",-apple-system,system-ui,sans-serif;
   --muot:cubic-bezier(.16,1,.3,1);
 }
 *{box-sizing:border-box}
@@ -1989,3 +2004,21 @@ body.khoa-cuon{overflow:hidden}
 
 /* vòng mini 3D: ô vẽ trực tiếp (xoay theo vòng lớn) */
 .vong-mini canvas{width:100px;height:100px;display:block}
+
+/* ---- nút lên đầu trang ---- */
+.len-dau{position:fixed;right:22px;bottom:calc(22px + var(--nang,0px) + env(safe-area-inset-bottom));z-index:36;width:48px;height:48px;border-radius:50%;
+  display:grid;place-items:center;color:var(--muc);background:color-mix(in srgb,var(--the) 90%,transparent);
+  -webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);box-shadow:0 12px 26px -12px rgba(14,28,34,.45),inset 0 0 0 1px var(--vien);
+  opacity:0;visibility:hidden;translate:0 16px;scale:.9;
+  transition:opacity .45s var(--muot),translate .5s var(--muot),scale .5s var(--muot),visibility .45s,bottom .5s var(--muot),background .3s,color .3s}
+.len-dau.hien{opacity:1;visibility:visible;translate:0 0;scale:1}
+.len-dau .vien{position:absolute;inset:0;width:100%;height:100%;rotate:-90deg;pointer-events:none}
+.len-dau .vien circle{fill:none;stroke:var(--vang);stroke-width:1.5;stroke-dasharray:100;stroke-dashoffset:100;stroke-linecap:round}
+.len-dau .mui{width:18px;height:18px;transition:translate .4s var(--muot)}
+@media (hover:hover){
+  .len-dau:hover{background:var(--muc);color:#fff}
+  .len-dau:hover .mui{translate:0 -3px}
+}
+.len-dau:active{scale:.94}
+@media (max-width:900px){.len-dau{right:16px;bottom:calc(16px + var(--nang,0px) + env(safe-area-inset-bottom));width:44px;height:44px}}
+@media (prefers-reduced-motion:reduce){.len-dau,.len-dau .mui{transition:opacity .2s,visibility .2s}}

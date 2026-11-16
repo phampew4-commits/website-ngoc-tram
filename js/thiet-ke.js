@@ -497,7 +497,7 @@ function ghepAnh(im, iw, ih, ok, loi) {   // khung 1080×1350: hình vòng + tê
         var g = x.createRadialGradient(W / 2, 520, 60, W / 2, 520, 470); g.addColorStop(0, '#fbf7f0'); g.addColorStop(1, '#efe5d3');
         x.fillStyle = g; x.beginPath(); x.arc(W / 2, 520, 440, 0, 7); x.fill();
         x.drawImage(im, W / 2 - iw / 2, 520 - ih / 2, iw, ih);
-        x.fillStyle = '#1d3a46'; x.font = '400 46px "Noto Serif Display", Georgia, serif';
+        x.fillStyle = '#1d3a46'; x.font = '400 46px "ChuD", "Noto Serif Display", Georgia, serif';
         x.fillText(chon.day.ten, W / 2, 1010, W - 120);
         x.font = '400 28px "Be Vietnam Pro", sans-serif'; x.fillStyle = '#5b6b70';
         x.fillText('Quấn ' + chon.vong + ' vòng · cỡ tay ' + String(chon.tay).replace('.', ',') + ' cm · ' + tongHat() + ' hạt · ' + chon.gan.length + ' charm', W / 2, 1060, W - 120);
@@ -505,7 +505,7 @@ function ghepAnh(im, iw, ih, ok, loi) {   // khung 1080×1350: hình vòng + tê
         ds.forEach(function (s) { var t2 = dong ? dong + ' · ' + s : s; if (x.measureText(t2).width > W - 140 && dong) { dongs.push(dong); dong = s; } else dong = t2; });
         if (dong) dongs.push(dong);
         x.font = '400 24px "Be Vietnam Pro", sans-serif'; dongs.slice(0, 3).forEach(function (s, i) { x.fillText(s + (i === 2 && dongs.length > 3 ? ' …' : ''), W / 2, 1110 + i * 34, W - 120); });
-        x.fillStyle = '#a8823a'; x.font = '500 40px "Noto Serif Display", Georgia, serif'; x.fillText('Tổng ước tính ' + uoc(tong()), W / 2, 1250);
+        x.fillStyle = '#a8823a'; x.font = '500 40px "ChuD", "Noto Serif Display", Georgia, serif'; x.fillText('Tổng ước tính ' + uoc(tong()), W / 2, 1250);
         x.fillStyle = '#8a8070'; x.font = '400 22px "Be Vietnam Pro", sans-serif'; x.fillText('Ảnh thiết kế từ web Ngọc Trầm Store · giá chính xác cửa hàng báo lại', W / 2, 1300, W - 120);
         c.toBlob(function (b) { b ? ok(b) : loi(); }, 'image/png');
 }

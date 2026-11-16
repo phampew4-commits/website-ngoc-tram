@@ -979,3 +979,28 @@ if (XEM_TRUOC) {
   });
   document.addEventListener('click', function (ev) { var a = ev.target.closest('a'); if (a) ev.preventDefault(); }, true);   // khung xem trước: không mở link
 }
+
+/* ---------- nút lên đầu trang: hiện khi đã cuộn quá 1 màn hình, vòng viền chạy theo phần trang đã đọc ---------- */
+(function () {
+  var b = document.createElement('button');
+  b.type = 'button'; b.className = 'len-dau'; b.setAttribute('aria-label', 'Lên đầu trang');
+  b.innerHTML = '<svg class="vien" viewBox="0 0 48 48" aria-hidden="true"><circle cx="24" cy="24" r="22.5" pathLength="100"/></svg>' +
+    '<svg class="mui" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M12 19V5M6 11l6-6 6 6"/></svg>';
+  document.body.appendChild(b);
+  var vong = b.querySelector('circle'), hen = 0;
+  function cap() {
+    hen = 0;
+    var cao = document.documentElement.scrollHeight - innerHeight, y = scrollY;
+    b.classList.toggle('hien', y > innerHeight * 1.2);
+    vong.style.strokeDashoffset = 100 - (cao > 0 ? Math.min(1, y / cao) : 0) * 100;
+    var tm = document.querySelector('.thanh-mua.hien');   // trang sản phẩm (điện thoại): đứng trên thanh mua
+    b.style.setProperty('--nang', tm && tm.offsetHeight ? tm.offsetHeight + 'px' : '0px');
+  }
+  addEventListener('scroll', function () { if (!hen) hen = requestAnimationFrame(cap); }, {passive: true});
+  addEventListener('resize', cap);
+  b.onclick = function () { cuonToi(document.body); };
+  cap();
+  /* thanh mua (trang sản phẩm) hiện / ẩn theo nút Mua chính chứ không theo lúc cuộn → theo dõi riêng để nút nhích lên kịp */
+  function theoThanh() { var tm = document.querySelector('.thanh-mua'); if (tm) new MutationObserver(cap).observe(tm, {attributes: true, attributeFilter: ['class']}); return !!tm; }
+  if (!theoThanh()) addEventListener('load', theoThanh, {once: true});
+})();
