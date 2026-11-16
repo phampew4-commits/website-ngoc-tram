@@ -2,25 +2,11 @@
    MÀU & CHỮ
    ========================================================= */
 
-/* Chữ đ/Đ: Noto Serif Display vẽ gạch ngang mảnh tới mức mất hẳn ở cỡ chữ thường
-   ("điều" đọc thành "diều"), nên mượn riêng hai chữ này từ Noto Serif cùng họ.
-   unicode-range chỉ lấy đúng U+0110-0111, mọi chữ khác vẫn là Noto Serif Display. */
-@font-face{
-  font-family:"ChuD"; font-style:normal; font-weight:100 900; font-display:swap;
-  src:url(https://fonts.gstatic.com/s/notoserif/v33/ga6daw1J5X9T9RW6j9bNVls-hfgvz8JcMofYTYf1D33WsNFHuQk.woff2) format("woff2");
-  unicode-range:U+0110-0111;
-}
-@font-face{
-  font-family:"ChuD"; font-style:italic; font-weight:100 900; font-display:swap;
-  src:url(https://fonts.gstatic.com/s/notoserif/v33/ga6faw1J5X9T9RW6j9bNfFIMZhhWnFTyNZIQD1-_P3Dct_NFiQhhYQ.woff2) format("woff2");
-  unicode-range:U+0110-0111;
-}
-
 :root{
   --giay:#f4eee3; --giay2:#ebe2d2; --the:#fbf8f2;
   --muc:#1d3a46; --dem:#14262e; --chu:#1f2a2e; --mo:#6e6a62; --vien:rgba(29,58,70,.14);
   --vang:#a8823a; --vang2:#d1ad66; --ngoc:#3d7a62; --do:#a8452f;
-  --serif:"ChuD","Noto Serif Display",Georgia,serif; --sans:"Be Vietnam Pro",-apple-system,system-ui,sans-serif;
+  --serif:"Lora",Georgia,serif; --sans:"Be Vietnam Pro",-apple-system,system-ui,sans-serif;
   --muot:cubic-bezier(.16,1,.3,1);
 }
 *{box-sizing:border-box}
@@ -29,7 +15,7 @@ body{margin:0;background:var(--giay);color:var(--chu);font:15px/1.7 var(--sans);
 img{display:block;max-width:100%}
 a{color:inherit;text-decoration:none}
 button{font:inherit;color:inherit;cursor:pointer;background:none;border:0;padding:0}
-h1,h2,h3{font-family:var(--serif);font-weight:300;margin:0;letter-spacing:-.01em;line-height:1.05}
+h1,h2,h3{font-family:var(--serif);font-weight:400;margin:0;letter-spacing:-.01em;line-height:1.05}
 em{font-style:italic}
 .khung{max-width:1240px;margin:0 auto;padding:0 24px}
 .nho{display:inline-block;font-size:10.5px;letter-spacing:.32em;text-transform:uppercase;font-weight:500}
@@ -711,7 +697,6 @@ section[id]{scroll-margin-top:68px}
 .luoi-mv a:hover .tt-mv{opacity:1;translate:0 0}
 @media (hover:none){.luoi-mv .tt-mv{opacity:1;translate:0 0}}
 
-
 .lh .duoi .khung.ct-luoi{grid-template-columns:1.5fr .9fr .9fr 1fr 1.6fr;gap:40px;padding-top:60px;padding-bottom:56px}
 .cot-tt p{opacity:.65;font-size:13.5px;margin:14px 0 18px;max-width:260px}
 .hieu-ct{display:inline-flex;align-items:center;gap:10px}
@@ -800,7 +785,6 @@ details.dang-dong > summary::after{rotate:90deg!important}
 
 .cham-soc{gap:10px}
 .cham-soc b{font-weight:500;color:var(--muc)}
-
 
 /* =========================================================
    TÀI KHOẢN KHÁCH

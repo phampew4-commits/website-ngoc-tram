@@ -7,16 +7,7 @@
 <title>Charm 3D · bản thử · Ngọc Trầm Store</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+Display:wght@400;500&family=Be+Vietnam+Pro:wght@400;500;600&display=swap" rel="stylesheet">
-<style>
-/* Chữ đ/Đ: Noto Serif Display vẽ gạch ngang mảnh tới mức mất hẳn — mượn riêng hai chữ này từ Noto Serif. */
-@font-face{font-family:"ChuD";font-style:normal;font-weight:100 900;font-display:swap;
-  src:url(https://fonts.gstatic.com/s/notoserif/v33/ga6daw1J5X9T9RW6j9bNVls-hfgvz8JcMofYTYf1D33WsNFHuQk.woff2) format("woff2");
-  unicode-range:U+0110-0111;}
-@font-face{font-family:"ChuD";font-style:italic;font-weight:100 900;font-display:swap;
-  src:url(https://fonts.gstatic.com/s/notoserif/v33/ga6faw1J5X9T9RW6j9bNfFIMZhhWnFTyNZIQD1-_P3Dct_NFiQhhYQ.woff2) format("woff2");
-  unicode-range:U+0110-0111;}
-</style>
+<link href="https://fonts.googleapis.com/css2?family=Lora:wght@400;500&family=Be+Vietnam+Pro:wght@400;500;600&display=swap" rel="stylesheet">
 
 <style>
   :root { --nen: #f4efe6; --the: #fbf8f2; --chu: #26302b; --mo: #7d857f; --vang: #a8823a; --ngoc: #1d4a3a; --vien: #e6dfd0; }
@@ -26,14 +17,14 @@
   .khung { max-width: 1180px; margin: 0 auto; padding: 22px 16px 60px; }
   .dau { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; flex-wrap: wrap; margin-bottom: 18px; }
   .dau a { font-size: 13px; color: var(--mo); text-decoration: none; }
-  h1 { font: 500 clamp(26px, 4vw, 38px)/1.15 "ChuD", "Noto Serif Display", Georgia, serif; margin: 0; letter-spacing: -.01em; }
+  h1 { font: 500 clamp(26px, 4vw, 38px)/1.15 "Lora", Georgia, serif; margin: 0; letter-spacing: -.01em; }
   h1 em { font-style: italic; color: var(--vang); }
   .bo { display: grid; grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr); gap: 26px; align-items: start; }
   .san { position: sticky; top: 14px; border-radius: 26px; overflow: hidden; background: radial-gradient(120% 90% at 50% 18%, #fffdf8 0%, #f1e9da 62%, #e4d9c4 100%); border: 1px solid var(--vien); aspect-ratio: 1 / 1; touch-action: none; }
   .san canvas { width: 100%; height: 100%; display: block; cursor: grab; }
   .san.keo canvas { cursor: grabbing; }
   .san .nhan { position: absolute; left: 0; right: 0; bottom: 14px; text-align: center; font-size: 12.5px; color: var(--mo); pointer-events: none; }
-  .san .ten { position: absolute; left: 18px; top: 16px; right: 120px; font: 500 19px/1.25 "ChuD", "Noto Serif Display", Georgia, serif; pointer-events: none; opacity: 0; transition: opacity .35s; }
+  .san .ten { position: absolute; left: 18px; top: 16px; right: 120px; font: 500 19px/1.25 "Lora", Georgia, serif; pointer-events: none; opacity: 0; transition: opacity .35s; }
   .san .ten small { display: block; font: 400 12.5px "Be Vietnam Pro", sans-serif; color: var(--mo); margin-top: 3px; }
   .san.gan .ten { opacity: 1; }
   .san .ve { position: absolute; right: 14px; top: 14px; border: 1px solid var(--vien); background: rgba(255, 255, 255, .85); backdrop-filter: blur(6px); border-radius: 99px; padding: 8px 14px; font: 500 13px "Be Vietnam Pro", sans-serif; color: var(--chu); cursor: pointer; opacity: 0; pointer-events: none; transition: opacity .3s; }
