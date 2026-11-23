@@ -2007,34 +2007,21 @@ body.khoa-cuon{overflow:hidden}
 @media (max-width:900px){.len-dau{right:calc(16px*var(--z));bottom:calc(calc(16px*var(--z)) + var(--nang,0px) + env(safe-area-inset-bottom));width:calc(44px*var(--z));height:calc(44px*var(--z))}}
 @media (prefers-reduced-motion:reduce){.len-dau,.len-dau .mui{transition:opacity .2s,visibility .2s}}
 
-/* ---- cả trang phóng to theo bề ngang màn hình (> 1440px), mỗi bậc 80px ---- */
-@media (min-width:1520px){:root{--z:1.056}}
-@media (min-width:1600px){:root{--z:1.111}}
-@media (min-width:1680px){:root{--z:1.167}}
-@media (min-width:1760px){:root{--z:1.222}}
-@media (min-width:1840px){:root{--z:1.278}}
-@media (min-width:1920px){:root{--z:1.333}}
-@media (min-width:2000px){:root{--z:1.389}}
-@media (min-width:2080px){:root{--z:1.444}}
-@media (min-width:2160px){:root{--z:1.5}}
-@media (min-width:2240px){:root{--z:1.556}}
-@media (min-width:2320px){:root{--z:1.611}}
-@media (min-width:2400px){:root{--z:1.667}}
-@media (min-width:2480px){:root{--z:1.722}}
-@media (min-width:2560px){:root{--z:1.778}}
-@media (min-width:2640px){:root{--z:1.833}}
-@media (min-width:2720px){:root{--z:1.889}}
-@media (min-width:2800px){:root{--z:1.944}}
-@media (min-width:2880px){:root{--z:2}}
-@media (min-width:2960px){:root{--z:2.056}}
-@media (min-width:3040px){:root{--z:2.111}}
-@media (min-width:3120px){:root{--z:2.167}}
-@media (min-width:3200px){:root{--z:2.222}}
-@media (min-width:3280px){:root{--z:2.278}}
-@media (min-width:3360px){:root{--z:2.333}}
-@media (min-width:3440px){:root{--z:2.389}}
-@media (min-width:3520px){:root{--z:2.444}}
-@media (min-width:3600px){:root{--z:2.5}}
-@media (min-width:3680px){:root{--z:2.556}}
-@media (min-width:3760px){:root{--z:2.611}}
-@media (min-width:3840px){:root{--z:2.667}}
+/* ---- cả trang phóng to theo bề ngang màn hình (> 1440px): tăng bằng nửa phần vượt, tối đa 1,45 lần; mỗi bậc 80px ---- */
+@media (min-width:1520px){:root{--z:1.028}}
+@media (min-width:1600px){:root{--z:1.056}}
+@media (min-width:1680px){:root{--z:1.083}}
+@media (min-width:1760px){:root{--z:1.111}}
+@media (min-width:1840px){:root{--z:1.139}}
+@media (min-width:1920px){:root{--z:1.167}}
+@media (min-width:2000px){:root{--z:1.194}}
+@media (min-width:2080px){:root{--z:1.222}}
+@media (min-width:2160px){:root{--z:1.25}}
+@media (min-width:2240px){:root{--z:1.278}}
+@media (min-width:2320px){:root{--z:1.306}}
+@media (min-width:2400px){:root{--z:1.333}}
+@media (min-width:2480px){:root{--z:1.361}}
+@media (min-width:2560px){:root{--z:1.389}}
+@media (min-width:2640px){:root{--z:1.417}}
+@media (min-width:2720px){:root{--z:1.444}}
+@media (min-width:2800px){:root{--z:1.45}}
