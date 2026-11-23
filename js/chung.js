@@ -936,7 +936,7 @@ addEventListener('load', function () { setTimeout(function () { document.documen
   function eo(t) { return t < .5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2; }   // nhanh dần rồi chậm dần
   function viTri(el) {
     if (getComputedStyle(el).position === 'sticky') el = el.parentElement;   // mục dính: lấy theo khối chứa
-    return el.getBoundingClientRect().top + scrollY - 68;                     // trừ chiều cao đầu trang
+    return el.getBoundingClientRect().top + scrollY - (($('#dau') || {}).offsetHeight || 68);   // trừ chiều cao đầu trang (màn hình to: đầu trang cao hơn)
   }
   window.cuonToi = function (el) {
     var tu = scrollY, den = Math.max(0, Math.min(viTri(el), document.documentElement.scrollHeight - innerHeight)), qd = den - tu;
