@@ -14,9 +14,28 @@
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Be+Vietnam+Pro:wght@300;400;500;600&display=swap" rel="stylesheet">
 <link rel="preload" href="data/san-pham.json?v=1b742ea166" as="fetch" crossorigin="anonymous"><link rel="preload" href="data/thiet-ke.json?v=973d958d3a" as="fetch" crossorigin="anonymous"><link rel="preconnect" href="https://lh3.googleusercontent.com" crossorigin>
-<link rel="stylesheet" href="css/style.css?v=839b0a7698">
+<link rel="stylesheet" href="css/style.css?v=22e015f56e">
+<link rel="stylesheet" href="css/trang-chu-hu.css?v=c6c7959ce8">
 </head>
 <body>
+
+<!-- màn chờ đếm % — chỉ lần đầu mỗi phiên khi máy chưa có sẵn dữ liệu (js/trang-chu.js điều khiển) -->
+<div class="tc-nap" id="tcNap" aria-hidden="true" hidden>
+  <i class="tc-nap-a"></i><i class="tc-nap-b"></i>
+  <div class="tc-nap-ten"><img src="img/hoa.png" alt="">Ngọc Trầm</div>
+  <div class="tc-nap-so"><small>Đang bày ngọc ra khay</small><b><span>0</span><i>%</i></b><span class="tc-nap-vach"><i></i></span></div>
+</div>
+<script>(function () {
+  try {
+    var g = document.documentElement, l = document.querySelector('link[rel="preload"][href^="data/san-pham.json"]'),
+        v = l ? (l.getAttribute('href').split('v=')[1] || '') : '', c = localStorage.getItem('dl:data/san-pham.json') || '';
+    if (sessionStorage.getItem('tc-nap') || location.hash || matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    if (v && c.indexOf('{"v":"' + v + '"') === 0) return;   // dữ liệu đã có trong máy → vào thẳng, không bắt chờ
+    sessionStorage.setItem('tc-nap', '1');
+    g.classList.add('tc-cho'); document.getElementById('tcNap').hidden = false;
+    setTimeout(function () { if (g.classList.contains('tc-cho')) { g.classList.remove('tc-cho'); g.classList.add('tc-mo'); } }, 2600);   // lưới an toàn
+  } catch (er) {}
+})();</script>
 
 <header class="dau" id="dau">
   <div class="khung">
@@ -32,7 +51,9 @@
 <!-- ========== HERO ========== -->
 <section class="hero" id="dauTrang">
   <div class="chieu" id="chieu"></div>
+  <div class="tc-hao" id="tcHao" aria-hidden="true"><i></i><i></i><i></i></div>
   <div class="noi">
+    <a class="tc-tin" id="tcTin" href="#hd-giao" data-hien hidden></a>
     <span class="nho" data-hien data-nd="hero.nho">Từ 2015 · Jade &amp; Agarwood</span>
     <h1 class="tieu-de" data-nd="hero.tieu">
       <span class="dong-chu"><span>Ngọc đẹp, chọn</span></span>
@@ -153,6 +174,12 @@
         <div><b id="tongSp">—</b><span>Món đang có</span></div>
       </div>
     </div>
+    <a class="tc-huy" id="tcHuy" href="ve-ngoc-tram.html" aria-label="Về Ngọc Trầm">
+      <svg viewBox="0 0 120 120" aria-hidden="true"><defs><path id="tcVong" d="M60,60 m-45,0 a45,45 0 1,1 90,0 a45,45 0 1,1 -90,0"/></defs>
+        <circle class="tc-huy-vien" cx="60" cy="60" r="56"/><circle class="tc-huy-vien" cx="60" cy="60" r="33"/>
+        <text><textPath href="#tcVong" textLength="282" lengthAdjust="spacing">Ngọc Trầm · Phỉ thuý · Vàng 18K · </textPath></text></svg>
+      <img src="img/hoa.png" alt="">
+    </a>
     <p class="chu-quet" id="chuQuet" data-nd="cc.quet">Không có hai viên ngọc giống nhau. Vì thế mỗi món ở Ngọc Trầm chỉ có một — một mã, một bộ ảnh thật, một mức giá rõ ràng — để bạn biết chính xác thứ mình sẽ đeo trên tay.</p>
   </div>
 </section>
@@ -172,6 +199,7 @@
       <span class="nho" data-hien data-nd="sp.nho">Đang có tại cửa hàng</span>
       <h2 class="tieu-de" data-nd="sp.tieu"><span class="dong-chu"><span>Tất cả <em>sản phẩm</em></span></span></h2>
       <p class="dan" data-hien data-nd="sp.moTa">Mỗi món chỉ có một — ai chốt trước giữ trước. Bấm vào món để xem đủ ảnh và hỏi mua.</p>
+      <p class="tc-dong" id="tcDong" data-hien hidden></p>
     </div>
     <div class="loc">
       <div class="tab" id="tab"></div>
@@ -263,10 +291,10 @@
 <div class="thong-bao" id="thongBao"></div>
 
 <script src="js/cau-hinh.js?v=6b70518097"></script>
-<script src="js/chung.js?v=f1cd774dba"></script>
+<script src="js/chung.js?v=e218c0894e"></script>
 <script src="js/khach.js?v=18271233fc"></script>
-<script src="js/trang-chu.js?v=19f0995cf8"></script>
+<script src="js/trang-chu.js?v=d50380937c"></script>
 <script src="js/tk-3d.js?v=f42438428d"></script>
-<script src="js/lucian-web.js?v=599c7a725b"></script>
+<script src="js/lucian-web.js?v=25ca48f858"></script>
 </body>
 </html>

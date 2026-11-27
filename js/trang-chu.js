@@ -4,7 +4,7 @@ var dsVideo = fetch('video/sp/ds.json', {cache: 'no-cache'}).then(function (r) {
 
 taiDuLieu.then(function () {
   $('#tongSp').textContent = ds.length;
-  dungHero(); dungNoiBat(); dungBst(); dungChay(); dungPhong(); dungTab(); hienLuoi(true);
+  dungHero(); dungNoiBat(); dungBst(); dungChay(); dungPhong(); dungTab(); hienLuoi(true); dungLap();
   moTheoHash();
   var h = location.hash.slice(1), lo = /^loai-(\w+)$/.exec(h), dh = /^hd-/.test(h) && document.getElementById(h);
   if (lo) { chonLoai(lo[1]); setTimeout(function () { cuonToi(document.getElementById('san-pham')); }, 300); }
@@ -111,19 +111,32 @@ function dungNoiBat() {
 function demLoai() { var d = {}; ds.forEach(function (x) { d[x.loai] = (d[x.loai] || 0) + 1; }); return d; }
 
 function dungBst() {
-  var dem = demLoai();
-  $('#dsBst').innerHTML = THU_TU.filter(function (l) { return dem[l]; }).map(function (l) {
-    var a = conHang(l)[Math.min(1, conHang(l).length - 1)];
-    return '<li data-hien><a href="#san-pham" data-loai="' + l + '" data-anh="' + (a ? anh(a.anh[0], 500) : '') + '">' + LOAI[l].ten + '<sup>' + dem[l] + '</sup></a></li>';
+  var dem = demLoai(), ls = THU_TU.filter(function (l) { return dem[l]; });
+  var mon = ls.map(function (l) { var c = conHang(l); return c[Math.min(1, c.length - 1)]; });
+  /* #276: mỗi dòng ngọc một ảnh thật của chính dòng đó — máy tính: ảnh nổi theo chuột; điện thoại: ảnh nhỏ cạnh tên */
+  $('#dsBst').innerHTML = ls.map(function (l, i) {
+    var a = mon[i];
+    return '<li data-hien><a href="#san-pham" data-loai="' + l + '" data-i="' + i + '">' +
+      (a ? '<img class="tc-bst-nho" src="' + anh(a.anh[0], 160) + '" alt="" loading="lazy" decoding="async" referrerpolicy="no-referrer" onerror="this.remove()">' : '') +
+      LOAI[l].ten + '<sup>' + dem[l] + '</sup></a></li>';
   }).join('');
   theoDoi($('#dsBst'));
-  var xem = $('#xemChuot'), mx = 0, my = 0, x = 0, y = 0, chay = false;
+  var xem = $('#xemChuot'), mx = 0, my = 0, x = 0, y = 0, chay = false, dai = null;
   $('#dsBst').addEventListener('click', function (ev) { var a = ev.target.closest('a'); if (a) chonLoai(a.dataset.loai); });
   if (!matchMedia('(hover:hover)').matches) return;
   $('#dsBst').addEventListener('mouseover', function (ev) {
     var a = ev.target.closest('a'); if (!a) return;
     mx = ev.clientX; my = ev.clientY;
-    xem.innerHTML = '<img src="' + a.dataset.anh + '" alt="" referrerpolicy="no-referrer">'; xem.classList.add('on');
+    if (!dai) {   // một dải ảnh xếp dọc — đổi dòng thì dải trượt lên / xuống tới ảnh của dòng mới
+      xem.innerHTML = '<div class="tc-dai">' + mon.map(function (m, i) {
+        return '<img src="' + (m ? anh(m.anh[0], 500) : '') + '" alt="" style="--i:' + i + '" decoding="async" referrerpolicy="no-referrer">'; }).join('') + '</div>';
+      dai = xem.firstChild;
+    }
+    var moi = !xem.classList.contains('on');
+    if (moi) dai.style.transition = 'none';
+    dai.style.translate = '0 ' + (-(+a.dataset.i || 0) * 100) + '%';
+    if (moi) { void dai.offsetWidth; dai.style.transition = ''; }
+    xem.classList.add('on');
     if (!chay) { chay = true; x = mx; y = my; buoc(); }
   });
   $('#dsBst').addEventListener('mouseleave', function () { xem.classList.remove('on'); });
@@ -171,6 +184,17 @@ function khiCuon() {
   if (rq.top < vh && rq.bottom > 0) {
     var tl = Math.min(1, Math.max(0, (vh * .85 - rq.top) / (rq.height + vh * .35))), sp = q.children, n = Math.round(tl * sp.length);
     for (var i = 0; i < sp.length; i++) sp[i].classList.toggle('sang', i < n);
+  }
+  /* #247 video "Cách Ngọc Trầm chọn từng món" nở rộng hai bên khi cuộn tới */
+  var qv = $('#quyVideo');
+  if (qv && !qv.hidden) {
+    var rv = qv.getBoundingClientRect();
+    if (rv.bottom > 0 && rv.top < vh) {
+      var pv = Math.min(1, Math.max(0, (vh - rv.top) / (vh * .8))), ev2 = 1 - Math.pow(1 - pv, 3);
+      qv.classList.toggle('tc-no', ev2 < 1);
+      qv.style.clipPath = ev2 < 1 ? 'inset(0 ' + ((1 - ev2) * 12).toFixed(2) + '% round calc(' + (22 + (1 - ev2) * 60).toFixed(1) + 'px*var(--z)))' : '';
+      qv.style.scale = ev2 < 1 ? (.9 + ev2 * .1).toFixed(4) : '';
+    }
   }
 }
 addEventListener('scroll', function () { if (!cho) { cho = true; requestAnimationFrame(khiCuon); } }, {passive: true});
@@ -419,4 +443,293 @@ $('#bang').addEventListener('scroll', function () {
       else v.pause();
     });
   }, {threshold: .25}).observe(o);
+})();
+
+/* =====================================================================
+   HIỆU ỨNG TRANG CHỦ — ý từ thư viện lucianlabs, viết lại theo kiểu giấy · mực · vàng (CSS: css/trang-chu-hu.css)
+   ===================================================================== */
+var CO_CHUOT = matchMedia('(hover:hover) and (pointer:fine)').matches;
+
+/* ---------- #216 + #357: tách tiêu đề hero thành từng từ (trồi lên lần lượt) và từng chữ (đậm lên gần chuột) ----------
+   Chạy ngay lúc nạp trang, trước khi chung.js gắn .hien cho tiêu đề hero → không hiện hai lần. */
+(function tachTieuDe() {
+  var h = $('.hero .tieu-de'); if (!h) return;
+  var k = 0, chuCai;
+  try { chuCai = new RegExp('\\P{M}\\p{M}*', 'gu'); } catch (er) { chuCai = null; }
+  var tachChu = function (w) { return chuCai ? (w.match(chuCai) || [w]) : Array.from ? Array.from(w) : w.split(''); };
+  h.setAttribute('aria-label', $$('.hero .tieu-de .dong-chu').map(function (d) { return d.textContent.trim(); }).join(' ').replace(/\s+/g, ' ') || h.textContent.trim());
+  function tach(node) {
+    [].slice.call(node.childNodes).forEach(function (n) {
+      if (n.nodeType === 3) {
+        var f = document.createDocumentFragment();
+        n.textContent.split(/(\s+)/).forEach(function (w) {
+          if (!w) return;
+          if (/^\s+$/.test(w)) { f.appendChild(document.createTextNode(w)); return; }
+          var t = document.createElement('span'); t.className = 'tc-tu'; t.style.setProperty('--k', k++);
+          t.innerHTML = tachChu(w).map(function (c) { return '<span class="tc-c">' + e(c) + '</span>'; }).join('');
+          f.appendChild(t);
+        });
+        node.replaceChild(f, n);
+      } else if (n.nodeType === 1) tach(n);
+    });
+  }
+  $$('.hero .tieu-de .dong-chu').forEach(function (d) { d.setAttribute('aria-hidden', 'true'); tach(d.firstElementChild || d); });
+  h.classList.add('tc-tach');
+})();
+
+/* #357: chữ gần con trỏ dày nét lên (viền chữ dày dần, bề rộng chữ giữ nguyên nên dòng không xô lệch) — chỉ máy có chuột */
+(function dayChu() {
+  var h = $('.hero .tieu-de'), hero = $('.hero'); if (!h || GIAM || !CO_CHUOT) return;
+  var chu = $$('.hero .tieu-de .tc-c'), vt = [], cur = chu.map(function () { return 0; }), ptr = null, raf = 0, R = 150, can = true;
+  function doViTri() {
+    var r0 = h.getBoundingClientRect();
+    vt = chu.map(function (c) { var r = c.getBoundingClientRect(); return [r.left + r.width / 2 - r0.left, r.top + r.height / 2 - r0.top]; });
+    R = parseFloat(getComputedStyle(h).fontSize) * 1.6; can = false;
+  }
+  hero.addEventListener('pointerenter', function () { can = true; });
+  addEventListener('resize', function () { can = true; });
+  hero.addEventListener('pointermove', function (ev) {
+    if (ev.pointerType && ev.pointerType !== 'mouse') return;
+    if (can || performance.now() < 3500) doViTri();      // lúc chữ còn đang trồi lên thì đo lại mỗi lần
+    var r0 = h.getBoundingClientRect(); ptr = [ev.clientX - r0.left, ev.clientY - r0.top]; chay();
+  });
+  hero.addEventListener('pointerleave', function () { ptr = null; chay(); });
+  function chay() { if (!raf) raf = requestAnimationFrame(buoc); }
+  function buoc() {
+    raf = 0; var con = false;
+    for (var i = 0; i < chu.length; i++) {
+      var f = 0;
+      if (ptr && vt[i]) { var dx = vt[i][0] - ptr[0], dy = (vt[i][1] - ptr[1]) * 1.3, d = Math.sqrt(dx * dx + dy * dy); f = d < R ? .5 + .5 * Math.cos(d / R * Math.PI) : 0; }
+      var m = cur[i] + (f - cur[i]) * (ptr ? .16 : .08);
+      if (Math.abs(m - f) < .004) m = f; else con = true;
+      if (m !== cur[i]) { cur[i] = m; chu[i].style.setProperty('--sw', m.toFixed(3)); }
+    }
+    if (con) chay();
+  }
+})();
+
+/* ---------- #263: ánh vàng trong chữ nhấn chỉ chảy khi tiêu đề đang trên màn hình ---------- */
+(function () {
+  if (GIAM || !window.IntersectionObserver) return;
+  var io2 = new IntersectionObserver(function (es) { es.forEach(function (x) { x.target.classList.toggle('tc-thay', x.isIntersecting); }); });
+  $$('.hero .tieu-de, .quy h2, .moi-tk h2, .chuyen .phong h2').forEach(function (h) { io2.observe(h); });
+})();
+
+/* ---------- #319 quầng sáng ngọc / vàng trôi nhẹ ở nền hero, một quầng theo chuột (trễ một nhịp) ---------- */
+(function haoQuang() {
+  var o = $('#tcHao'), hero = $('.hero'); if (!o) return;
+  if (GIAM) { o.remove(); return; }
+  var q = [].slice.call(o.children), W = 1, H = 1, t0 = performance.now(), mx = .5, my = .42, x = .5, y = .42, trong = true, raf = 0, last = 0;
+  setTimeout(function () { o.classList.add('on'); }, 900);
+  function kt() { W = hero.clientWidth; H = hero.clientHeight; }
+  kt(); addEventListener('resize', kt);
+  if (CO_CHUOT) {
+    hero.addEventListener('pointermove', function (ev) { var r = hero.getBoundingClientRect(); mx = (ev.clientX - r.left) / W; my = (ev.clientY - r.top) / H; }, {passive: true});
+    hero.addEventListener('pointerleave', function () { mx = .5; my = .42; });
+  }
+  function buoc(now) {
+    raf = 0; if (!trong || document.hidden) return;
+    if (!CO_CHUOT && now - last < 50) { raf = requestAnimationFrame(buoc); return; }   // điện thoại: chỉ trôi chậm, 20 hình/giây là đủ
+    last = now;
+    var t = (now - t0) / 1000;
+    x += (mx - x) * .04; y += (my - y) * .04;
+    var p = [
+      [x + .05 * Math.sin(t * .21), y + .04 * Math.cos(t * .17)],
+      [.24 + .12 * Math.sin(t * .11) + (x - .5) * .2, .66 + .1 * Math.cos(t * .09) + (y - .5) * .14],
+      [.78 + .1 * Math.cos(t * .08) + (x - .5) * .14, .28 + .12 * Math.sin(t * .1) + (y - .5) * .12]];
+    for (var i = 0; i < q.length; i++) q[i].style.transform = 'translate3d(' + (p[i][0] * W).toFixed(1) + 'px,' + (p[i][1] * H).toFixed(1) + 'px,0)';
+    raf = requestAnimationFrame(buoc);
+  }
+  function batLai() { if (trong && !document.hidden && !raf) raf = requestAnimationFrame(buoc); }
+  new IntersectionObserver(function (es) { trong = es[0].isIntersecting; batLai(); }).observe(hero);
+  document.addEventListener('visibilitychange', batLai);
+  batLai();
+})();
+
+/* ---------- #252 nhãn thông báo ở đầu trang: miễn ship (ngưỡng thật NGUONG_SHIP trong chung.js), có vệt sáng lướt ---------- */
+(function nhanTin() {
+  var a = $('#tcTin'); if (!a || typeof NGUONG_SHIP === 'undefined' || !NGUONG_SHIP) return;
+  a.innerHTML = '<span class="tc-tin-cham"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 7h11v9H3zM14 10h4l3 3v3h-7"/><circle cx="7" cy="17.5" r="1.6"/><circle cx="17" cy="17.5" r="1.6"/></svg></span>' +
+    '<span>Miễn ship đơn từ <b>' + gia(NGUONG_SHIP) + '</b> · chuyển khoản trước</span>' +
+    '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M5 12h14M13 6l6 6-6 6"/></svg>';
+  a.setAttribute('aria-label', 'Miễn ship đơn từ ' + gia(NGUONG_SHIP) + ' khi chuyển khoản trước — xem chính sách giao hàng');
+  a.hidden = false;
+  a.addEventListener('click', function () { var d = document.getElementById('hd-giao'); if (d) d.open = true; });   // cuộn tới do chung.js lo
+})();
+
+/* ---------- #348 huy hiệu chữ chạy vòng tròn — rê chuột quay nhanh, rời ra chậm dần theo quán tính ---------- */
+(function huyHieu() {
+  var a = $('#tcHuy'); if (!a || GIAM) return;
+  var s = a.querySelector('svg'), goc = 0, v = 14, dich = 14, trong = false, raf = 0, last = 0;
+  a.addEventListener('pointerenter', function () { dich = 80; });
+  a.addEventListener('pointerleave', function () { dich = 14; });
+  function buoc(now) {
+    raf = 0; if (!trong || document.hidden) return;
+    var dt = Math.min(.05, (now - last) / 1000); last = now;
+    v += (dich - v) * Math.min(1, dt * (dich > v ? 4 : 1.4));
+    goc = (goc + v * dt) % 360; s.style.transform = 'rotate(' + goc.toFixed(2) + 'deg)';
+    raf = requestAnimationFrame(buoc);
+  }
+  function batLai() { if (trong && !document.hidden && !raf) { last = performance.now(); raf = requestAnimationFrame(buoc); } }
+  new IntersectionObserver(function (es) { trong = es[0].isIntersecting; batLai(); }).observe(a);
+  document.addEventListener('visibilitychange', batLai);
+})();
+
+/* ---------- #338 một từ tự lăn (hộp 3D) giữa các dòng sản phẩm thật — số món đếm từ kho, bấm là lọc luôn ---------- */
+function dungLap() {
+  var p = $('#tcDong'); if (!p) return;
+  var dem = demLoai(), cac = THU_TU.filter(function (l) { return dem[l]; })
+    .sort(function (a, b) { return dem[b] - dem[a]; })
+    .map(function (l) { return {l: l, chu: dem[l] + ' ' + LOAI[l].ten.toLowerCase()}; });
+  if (cac.length < 2) return;
+  p.innerHTML = 'Đang có <span class="tc-lap" role="button" tabindex="0"><span class="tc-hop"><span class="tc-mat tc-truoc"></span><span class="tc-mat tc-tren" aria-hidden="true"></span></span><span class="tc-vach"></span></span>' +
+    '<span class="tc-di">· bấm để xem</span>';
+  p.hidden = false;
+  var nut = p.querySelector('.tc-lap'), hop = nut.querySelector('.tc-hop'), truoc = hop.querySelector('.tc-truoc'), tren = hop.querySelector('.tc-tren');
+  var n = 0, hen = 0, trong = false, re = false, TG = 3200;
+  nut.style.setProperty('--tg', TG + 'ms');
+  function dat(i) { truoc.textContent = cac[i].chu; nut.style.setProperty('--w', Math.ceil(truoc.offsetWidth + 2) + 'px'); nut.setAttribute('aria-label', 'Xem ' + cac[i].chu); }
+  dat(0);
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(function () { dat(n); });
+  function lan() {
+    var k = (n + 1) % cac.length;
+    tren.textContent = cac[k].chu;
+    nut.style.setProperty('--w', Math.ceil(tren.offsetWidth + 2) + 'px');
+    hop.classList.add('tc-lan');
+    setTimeout(function () { n = k; dat(n); hop.classList.remove('tc-lan'); hen = 0; hen0(); }, 880);
+  }
+  function hen0() {
+    clearTimeout(hen); nut.classList.remove('tc-chay');
+    if (GIAM || !trong || re || document.hidden) return;
+    void nut.offsetWidth; nut.classList.add('tc-chay');
+    hen = setTimeout(lan, TG);
+  }
+  nut.addEventListener('click', function () { chonLoai(cac[n].l); cuonToi($('.loc') || $('#san-pham')); });
+  nut.addEventListener('mouseenter', function () { re = true; clearTimeout(hen); });
+  nut.addEventListener('mouseleave', function () { re = false; hen0(); });
+  new IntersectionObserver(function (es) { trong = es[0].isIntersecting; if (trong) { if (!hen) hen0(); } else { clearTimeout(hen); hen = 0; } }).observe(p);
+  document.addEventListener('visibilitychange', function () { clearTimeout(hen); hen = 0; hen0(); });
+}
+
+/* ---------- #310 video sản phẩm chạy bên trong dòng chữ nhấn của tiêu đề Liên hệ ("Nhắn cho Ngọc Trầm.") ----------
+   Vẽ từng chữ lên canvas đúng vị trí chữ thật rồi đổ khung video vào trong nét chữ. Chữ thật vẫn nằm đó (trong suốt) để đọc / chọn được.
+   Chỉ tải video khi cuộn gần tới; ra khỏi màn hình thì dừng. Video lỗi / không tự chạy được thì giữ nguyên chữ vàng. */
+(function chuVideo() {
+  var h2 = $('.lh .tren h2'), em = h2 && h2.querySelector('em');
+  if (!em || GIAM || !window.IntersectionObserver || !document.createElement('canvas').getContext) return;
+  Promise.all([dsVideo, taiDuLieu]).then(function (r) {
+    var mon = (r[0] || []).map(function (v) { var m = String(v && typeof v === 'object' ? v.ma : v); return ds.filter(function (x) { return String(x.ma) === m; })[0]; }).filter(Boolean);
+    var x = mon.filter(function (x) { return x.tt !== 'Đã bán' && /phi thuy/.test(boDau(x.ten)); })[0] || mon[0];
+    if (!x) return;
+    var io3 = new IntersectionObserver(function (es) {
+      if (!es[0].isIntersecting) return; io3.disconnect();
+      (function cho() { h2.classList.contains('hien') ? setTimeout(function () { batDau(String(x.ma)); }, 1300) : setTimeout(cho, 300); })();
+    }, {rootMargin: '300px 0px'});
+    io3.observe(h2);
+  }).catch(function () {});
+
+  function batDau(ma) {
+    var v = document.createElement('video');
+    v.className = 'tc-nguon'; v.muted = true; v.loop = true; v.playsInline = true; v.preload = 'auto';
+    v.setAttribute('muted', ''); v.setAttribute('playsinline', ''); v.setAttribute('aria-hidden', 'true');
+    v.src = 'video/sp/' + ma + '.mp4';
+    h2.parentNode.appendChild(v);
+    var cv = document.createElement('canvas'); cv.className = 'tc-chu-video'; cv.setAttribute('aria-hidden', 'true'); h2.appendChild(cv);
+    var ctx = cv.getContext('2d'), dpr = 1, W = 0, H = 0, ky = [], font = '', hop = null, trong = true, raf = 0, last = 0, daBat = false;
+    function doChu() {
+      var r0 = h2.getBoundingClientRect(); dpr = Math.min(2, window.devicePixelRatio || 1); W = r0.width; H = r0.height;
+      cv.width = Math.round(W * dpr); cv.height = Math.round(H * dpr); cv.style.width = W + 'px'; cv.style.height = H + 'px';
+      var cs = getComputedStyle(em); font = cs.fontStyle + ' ' + cs.fontWeight + ' ' + cs.fontSize + ' ' + cs.fontFamily;
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0); ctx.font = font;
+      var m = ctx.measureText('Nh'), asc = m.fontBoundingBoxAscent;
+      ky = []; hop = {l: 1e9, t: 1e9, r: -1e9, b: -1e9};
+      var rg = document.createRange(), w = document.createTreeWalker(em, NodeFilter.SHOW_TEXT), nd;
+      while ((nd = w.nextNode())) {
+        var s = nd.textContent, i = 0;
+        while (i < s.length) {
+          var c = s.charAt(i), j = i + 1;
+          if (/[\ud800-\udbff]/.test(c)) j++;
+          while (j < s.length && /[̀-ͯ]/.test(s.charAt(j))) j++;
+          c = s.slice(i, j);
+          if (!/^\s+$/.test(c)) {
+            rg.setStart(nd, i); rg.setEnd(nd, j);
+            var rr = rg.getClientRects()[0];
+            if (rr && rr.width) {
+              var bx = rr.left - r0.left, by = rr.top - r0.top;
+              ky.push([c, bx, by + (asc || rr.height * .78)]);
+              hop.l = Math.min(hop.l, bx); hop.t = Math.min(hop.t, by); hop.r = Math.max(hop.r, rr.right - r0.left); hop.b = Math.max(hop.b, rr.bottom - r0.top);
+            }
+          }
+          i = j;
+        }
+      }
+    }
+    function ve() {
+      if (!ky.length || !v.videoWidth) return;
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      ctx.globalCompositeOperation = 'source-over'; ctx.clearRect(0, 0, W, H);
+      ctx.font = font; ctx.fillStyle = '#fff';
+      for (var i = 0; i < ky.length; i++) ctx.fillText(ky[i][0], ky[i][1], ky[i][2]);
+      ctx.globalCompositeOperation = 'source-in';
+      var bw = hop.r - hop.l, bh = hop.b - hop.t, sc = Math.max(bw / v.videoWidth, bh / v.videoHeight) * 1.05;
+      ctx.drawImage(v, hop.l + (bw - v.videoWidth * sc) / 2, hop.t + (bh - v.videoHeight * sc) / 2, v.videoWidth * sc, v.videoHeight * sc);
+      ctx.globalCompositeOperation = 'source-atop'; ctx.fillStyle = 'rgba(209,173,102,.2)'; ctx.fillRect(0, 0, W, H);   // ánh vàng nhẹ cho hợp tông
+    }
+    function buoc(now) {
+      raf = 0; if (!trong || document.hidden) return;
+      if (now - last > 33) { last = now; ve(); }
+      raf = requestAnimationFrame(buoc);
+    }
+    function chay() {
+      if (!trong || document.hidden) { v.pause(); return; }
+      var p = v.play(); if (p && p.catch) p.catch(function () {});
+      if (!raf) raf = requestAnimationFrame(buoc);
+    }
+    v.addEventListener('playing', function () {
+      if (daBat) return; daBat = true;
+      ve(); cv.classList.add('on'); em.classList.add('tc-trong'); requestAnimationFrame(function () { em.classList.add('on'); });
+    });
+    var henDo;
+    addEventListener('resize', function () { clearTimeout(henDo); henDo = setTimeout(function () { doChu(); ve(); }, 150); });
+    (document.fonts && document.fonts.ready ? document.fonts.ready : Promise.resolve()).then(function () {
+      doChu();
+      new IntersectionObserver(function (es) { trong = es[0].isIntersecting; chay(); }).observe(h2);
+      document.addEventListener('visibilitychange', chay);
+    });
+  }
+})();
+
+/* ---------- #256 màn chờ đếm % — số chạy theo việc nạp thật (chữ, dữ liệu, ảnh đầu trang), tối đa ~1,2 giây ---------- */
+(function manCho() {
+  var nap = $('#tcNap'), g = document.documentElement;
+  if (!nap) return;
+  if (nap.hidden || !g.classList.contains('tc-cho')) { nap.remove(); return; }
+  var so = nap.querySelector('.tc-nap-so b span'), vach = nap.querySelector('.tc-nap-vach i'), xong = {dom: 12}, hien = 0, ket = false;
+  function dich() { if (performance.now() > 820) return 100; var t = 0; for (var k in xong) t += xong[k]; return Math.min(100, t); }
+  var chuXong = function () { xong.chu = 23; };
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(chuXong, chuXong); else chuXong();
+  taiDuLieu.then(function () { xong.dl = 40; }, function () { xong.dl = 40; });
+  Promise.resolve(dsVideo).then(function () { return taiDuLieu; }).then(function () {
+    setTimeout(function () {
+      var m = $('#chieu img, #chieu video'); if (!m) { xong.anh = 25; return; }
+      var src = m.tagName === 'VIDEO' ? m.getAttribute('poster') : (m.currentSrc || m.src);
+      var im = new Image(); im.referrerPolicy = 'no-referrer';
+      im.onload = im.onerror = function () { xong.anh = 25; };
+      im.src = src;
+    }, 0);
+  }).catch(function () { xong.anh = 25; });
+  var truoc = performance.now();
+  (function buoc() {
+    if (ket) return;
+    var bay = performance.now(), dt = Math.min(.1, (bay - truoc) / 1000), d = dich(), nhanh = bay > 820; truoc = bay;
+    if (hien < d) hien = Math.min(d, hien + (d - hien) * (1 - Math.exp(-dt * (nhanh ? 16 : 7))) + dt * (nhanh ? 70 : 18));   // theo thời gian thật, không theo số khung hình
+    so.textContent = Math.floor(hien); vach.style.setProperty('--p', (hien / 100).toFixed(3));
+    if (hien >= 99.5) { so.textContent = '100'; vach.style.setProperty('--p', 1); setTimeout(mo, 120); return; }
+    requestAnimationFrame(buoc);
+  })();
+  function mo() {
+    if (ket) return; ket = true;
+    g.classList.add('tc-mo'); g.classList.remove('tc-cho');
+    setTimeout(function () { nap.remove(); }, 1000);
+  }
 })();

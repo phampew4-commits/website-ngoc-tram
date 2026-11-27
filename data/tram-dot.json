@@ -1,0 +1,48 @@
+{
+ "_ghiChu": "Trầm đốt nhà làm — trang tram-huong.html. Mỗi dòng (loai): id, ve (hình vẽ: co-tam/khong-tam/nu/thien), ten, mo, dacDiem [chữ], sp [{id (không dấu, không trùng, vd co-tam-1), ten, mo (tuỳ chọn), anh (id ảnh Drive hoặc đường dẫn; trống = hình vẽ), noiBat (true = thẻ lớn, chỉ dòng Nụ trầm), quyCach [{id (vd qc1), ten, gia (đồng; null = chưa có giá → khách nhắn Zalo)}]}]. Mã trong giỏ: td-<sp.id>-<quyCach.id>.",
+ "loai": [
+  {
+   "id": "co-tam",
+   "ve": "co-tam",
+   "ten": "Trầm có tăm",
+   "mo": "Thân trầm bọc quanh lõi tăm tre, chừa phần chân tre để cầm và cắm lên lư. Dòng trầm quen thuộc, dễ dùng hằng ngày.",
+   "dacDiem": [
+    "Có lõi tăm tre ở giữa",
+    "Cắm lên lư cát hoặc đế cắm"
+   ],
+   "sp": []
+  },
+  {
+   "id": "khong-tam",
+   "ve": "khong-tam",
+   "ten": "Trầm không tăm",
+   "mo": "Cây trầm nén liền khối, không có lõi tre bên trong. Đặt nằm ngang trong máng, hoặc cắm nghiêng trên một chiếc đế.",
+   "dacDiem": [
+    "Không lõi tre",
+    "Nằm trong máng hoặc cắm nghiêng trên đế"
+   ],
+   "sp": []
+  },
+  {
+   "id": "nu-tram",
+   "ve": "nu",
+   "ten": "Nụ trầm",
+   "mo": "Trầm nặn thành nụ nhỏ dáng búp sen. Đặt nụ trên đĩa chịu nhiệt, châm lửa ở đỉnh nụ rồi để khói toả ra từ từ.",
+   "dacDiem": [
+    "Dáng búp sen",
+    "Đốt trên đĩa chịu nhiệt"
+   ],
+   "sp": []
+  },
+  {
+   "id": "tram-thien",
+   "ve": "thien",
+   "ten": "Trầm thiền",
+   "mo": "Trầm tạo hình dáng người ngồi thiền từ một sợi trầm liền nét, hợp với những lúc ngồi tĩnh, đọc sách hay nghỉ ngơi trong không gian yên tĩnh.",
+   "dacDiem": [
+    "Dáng người ngồi thiền"
+   ],
+   "sp": []
+  }
+ ]
+}

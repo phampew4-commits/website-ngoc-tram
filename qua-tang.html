@@ -14,7 +14,8 @@
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Be+Vietnam+Pro:wght@300;400;500;600&display=swap" rel="stylesheet">
 <link rel="preload" href="data/san-pham.json?v=c4df211b73" as="fetch" crossorigin="anonymous"><link rel="preconnect" href="https://lh3.googleusercontent.com" crossorigin>
-<link rel="stylesheet" href="css/style.css?v=839b0a7698">
+<link rel="stylesheet" href="css/style.css?v=22e015f56e">
+<link rel="stylesheet" href="css/cua-hang-hu.css?v=a5b838ca3b">
 </head>
 
 <body class="trang-trong trang-phu" data-trang="qua-tang">
@@ -51,7 +52,15 @@
   <div class="giua"><span class="nho" data-hien>Món quà trọn vẹn</span>
   <h2 class="tieu-de"><span class="dong-chu"><span>Ngọc Trầm lo phần còn lại</span></span></h2></div>
   <div class="qt-dv-ds" id="qtDv"></div>
-  <div class="qt-hoi" data-hien><div><b>Chưa biết chọn gì?</b><p>Nhắn tầm giá và người nhận, cửa hàng gửi vài món hợp kèm video thật để bạn chọn.</p></div>
+  <div class="qt-hoi" data-hien>
+  <div class="qt-hop" id="qtHop">
+    <span class="qt-tia" aria-hidden="true"></span>
+    <a class="qt-thiep" href="#qtNgan"><small>Ngọc Trầm gợi ý</small><b>Chọn quà theo tầm giá</b><span>Xem các món ↑</span></a>
+    <button type="button" class="qt-hop-nut" aria-expanded="false" aria-label="Mở hộp quà"><span class="than"></span><span class="nap"></span>
+      <span class="no"><svg viewBox="0 0 64 30" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linejoin="round"><path d="M32 22C24 10 10 3 6 9s8 13 26 13zM32 22c8-12 22-19 26-13s-8 13-26 13z"/><path d="M29 22l-5 8M35 22l5 8"/><circle cx="32" cy="22" r="3.4" fill="currentColor"/></svg></span></button>
+    <span class="qt-sao" aria-hidden="true"></span>
+  </div>
+  <div><b>Chưa biết chọn gì?</b><p>Nhắn tầm giá và người nhận, cửa hàng gửi vài món hợp kèm video thật để bạn chọn.</p></div>
   <a class="nut dac" href="#" data-zalo style="background:#0068ff;border-color:#0068ff">Nhờ chọn quà qua Zalo</a></div>
 </div></section>
 </main>
@@ -76,8 +85,8 @@
 <div class="thong-bao" id="thongBao"></div>
 
 <script src="js/cau-hinh.js?v=6b70518097"></script>
-<script src="js/chung.js?v=f1cd774dba"></script>
+<script src="js/chung.js?v=e218c0894e"></script>
 <script src="js/khach.js?v=18271233fc"></script>
-<script src="js/cua-hang.js?v=5fa03cb971"></script>
+<script src="js/cua-hang.js?v=5060cb42fb"></script>
 </body>
 </html>

@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="robots" content="noindex">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script>/* GitHub Pages trả 404.html cho mọi đường dẫn sai (kể cả thư mục con) → đặt gốc web để css/js/ảnh luôn đúng chỗ */
+(function () { var p = location.pathname.split('/'), b = '/'; if (/\.github\.io$/.test(location.hostname) && p.length > 2 && p[1]) b = '/' + p[1] + '/';
+  var el = document.createElement('base'); el.href = b; document.head.appendChild(el); })();</script>
+<title>Không tìm thấy trang · Ngọc Trầm Store</title>
+<meta name="description" content="Trang bạn tìm không có ở Ngọc Trầm Store — về trang chủ hoặc xem cửa hàng.">
+<meta name="theme-color" content="#14262e">
+<link rel="icon" href="img/hoa.png">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Be+Vietnam+Pro:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="preload" href="data/san-pham.json?v=c4df211b73" as="fetch" crossorigin="anonymous"><link rel="preconnect" href="https://lh3.googleusercontent.com" crossorigin>
+<link rel="stylesheet" href="css/style.css?v=22e015f56e">
+<link rel="stylesheet" href="css/trang-phu-hu.css?v=4b7cccc8b9">
+</head>
+
+<body class="trang-trong trang-phu" data-trang="404">
+
+<header class="dau" id="dau">
+  <div class="khung">
+    <a class="hieu" href="index.html"><img src="img/hoa.png" alt=""><b>Ngọc Trầm</b></a>
+    <nav class="menu" id="menu" aria-label="Danh mục chính"></nav>
+    <div class="phai">
+      <button class="mo-menu" id="moMenu" aria-label="Mở menu"><i></i><i></i></button>
+    </div>
+  </div>
+</header>
+
+<main class="tp tp-404" id="noi">
+<div class="khung">
+  <div class="so-404" role="img" aria-label="404">
+    <span class="c4 t" aria-hidden="true">4</span>
+    <span class="la-ban" aria-hidden="true">
+      <svg viewBox="-100 -100 200 200">
+        <circle r="88" fill="none" stroke="currentColor" stroke-width="5"/>
+        <circle r="74" fill="none" stroke="currentColor" stroke-width=".8" opacity=".35"/>
+        <g stroke="currentColor" stroke-linecap="round">
+          <path d="M0 -74v10M0 74v-10M-74 0h10M74 0h-10" stroke-width="2"/>
+          <path d="M37 -64.1l-3 5.2M64.1 -37l-5.2 3M64.1 37l-5.2 -3M37 64.1l-3 -5.2M-37 64.1l3 -5.2M-64.1 37l5.2 -3M-64.1 -37l5.2 3M-37 -64.1l3 5.2" stroke-width="1" opacity=".5"/>
+        </g>
+        <text y="-46" text-anchor="middle" font-family="Lora,Georgia,serif" font-size="15" fill="#a8823a">B</text>
+        <g class="kim">
+          <path d="M0 -58L8 0H-8z" fill="#a8823a"/>
+          <path d="M0 58L8 0H-8z" fill="currentColor" opacity=".85"/>
+          <circle r="6" fill="#f4eee3" stroke="currentColor" stroke-width="2"/>
+        </g>
+      </svg>
+    </span>
+    <span class="c4 p" aria-hidden="true">4</span>
+  </div>
+  <h1>Trang này <em>lạc đường</em> rồi</h1>
+  <p>Đường dẫn có thể đã đổi hoặc bị gõ nhầm. La bàn chỉ lối về — hoặc vào cửa hàng xem các món đang có.</p>
+  <div class="hang">
+    <a class="nut dac" id="ve404" href="index.html">Về trang chủ</a>
+    <a class="nut" href="cua-hang.html">Xem cửa hàng<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+  </div>
+</div>
+</main>
+
+
+<footer class="lh" id="lien-he">
+  <div class="tren">
+    <img class="hoa-nen" src="img/hoa.png" alt="">
+    <span class="nho" data-hien data-nd="lh.nho">Liên hệ</span>
+    <h2 class="tieu-de" data-nd="lh.tieu">
+      <span class="dong-chu"><span>Cần tư vấn?</span></span>
+      <span class="dong-chu"><span><em>Nhắn cho Ngọc Trầm.</em></span></span>
+    </h2>
+    <p data-hien data-nd="lh.moTa">Gửi mã sản phẩm hoặc ảnh mẫu bạn thích, cửa hàng sẽ tìm và phối giúp bạn.</p>
+    <div class="hang" data-hien>
+      <a class="nut dac" href="#" data-zalo style="background:#0068ff;border-color:#0068ff">Nhắn Zalo</a>
+      <a class="nut sang" href="#" data-fb>Messenger</a>
+    </div>
+  </div>
+  <div id="chanTrang"></div>
+</footer>
+<div class="thong-bao" id="thongBao"></div>
+
+<script src="js/cau-hinh.js?v=6b70518097"></script>
+<script src="js/chung.js?v=e218c0894e"></script>
+<script src="js/khach.js?v=18271233fc"></script>
+<script src="js/trang-phu.js?v=31deb02916"></script>
+</body>
+</html>

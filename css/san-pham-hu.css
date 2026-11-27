@@ -1,0 +1,112 @@
+/* =========================================================
+   TRANG CHI TIẾT — hiệu ứng (ý từ thư viện lucianlabs), chi-tiet.js điều khiển
+   #356 kính lúp · #061 ảnh bay ra / thu về · #389 dải ảnh dọc · #288 thu gọn thông tin
+   #339 hàng gợi ý kéo ngang · #328 thẻ món nở ra trước khi sang trang
+   ========================================================= */
+
+/* ---------- #356 kính lúp trên ảnh chính ---------- */
+.khung-anh{-webkit-touch-callout:none;-webkit-user-select:none;user-select:none}
+.khung-anh img{-webkit-user-drag:none}
+.khung-anh.soi{cursor:none}
+.khung-anh.soi .mui-ten{cursor:pointer}
+.kinh-lup{--d:calc(210px*var(--z));position:fixed;left:0;top:0;z-index:60;width:var(--d);height:var(--d);border-radius:50%;pointer-events:none;
+  background:var(--giay2);opacity:0;scale:.55;transition:opacity .25s ease,scale .5s var(--muot);will-change:translate;
+  box-shadow:0 0 0 calc(3px*var(--z)) var(--the),0 0 0 calc(4px*var(--z)) var(--vang2),0 calc(24px*var(--z)) calc(46px*var(--z)) calc(-14px*var(--z)) rgba(14,28,34,.55)}
+.kinh-lup.hien{opacity:1;scale:1}
+.kinh-lup img{position:absolute;left:0;top:0;max-width:none;border-radius:0;will-change:transform}
+.kinh-lup{overflow:hidden}
+/* mặt kính: ánh sáng nhẹ góc trên + viền tối mờ bên trong cho có chiều sâu */
+.kinh-lup::after{content:"";position:absolute;inset:0;border-radius:50%;pointer-events:none;
+  background:radial-gradient(circle at 30% 24%,rgba(255,255,255,.26),transparent 38%);box-shadow:inset 0 0 calc(24px*var(--z)) rgba(14,28,34,.3)}
+.kinh-lup b{position:absolute;left:50%;bottom:calc(10px*var(--z));translate:-50% 0;z-index:1;font:500 calc(10px*var(--z))/1 var(--sans);letter-spacing:.14em;
+  color:var(--muc);background:rgba(251,248,242,.9);padding:calc(4px*var(--z)) calc(8px*var(--z));border-radius:calc(99px*var(--z))}
+.goi-soi{position:absolute;right:calc(14px*var(--z));bottom:calc(14px*var(--z));z-index:2;display:flex;align-items:center;gap:calc(7px*var(--z));pointer-events:none;
+  font-size:calc(10px*var(--z));letter-spacing:.18em;text-transform:uppercase;color:#fff;background:rgba(14,28,34,.42);
+  -webkit-backdrop-filter:blur(calc(6px*var(--z)));backdrop-filter:blur(calc(6px*var(--z)));padding:calc(6px*var(--z)) calc(12px*var(--z));border-radius:calc(99px*var(--z));transition:opacity .35s}
+.goi-soi svg{width:calc(14px*var(--z));height:calc(14px*var(--z))}
+.khung-anh.soi .goi-soi{opacity:0}
+.khung-anh.tuc figure{transition:none}
+@media (hover:none),(pointer:coarse){.kinh-lup{--d:calc(150px*var(--z))}}
+
+/* ---------- #061 ảnh bay ra từ chỗ ảnh nhỏ / thu về khi đóng ---------- */
+.bay-anh{position:fixed;z-index:310;margin:0;max-width:none;transform-origin:0 0;pointer-events:none;will-change:transform,clip-path}
+.anh-an{visibility:hidden}
+.den-anh{background:rgba(10,20,25,calc(.94*var(--nen,1)));touch-action:pinch-zoom}
+.den-anh figure{transition:opacity .45s,translate .6s var(--muot),scale .6s var(--muot)}
+.den-anh.dang-bay figure.on{opacity:0;transition:none}
+
+/* ---------- #389 dải ảnh dọc (máy tính, ≥3 ảnh): rê vào dải nào dải đó mở rộng ---------- */
+.dai-xk{display:flex;gap:calc(12px*var(--z));height:min(calc(700px*var(--z)),80vh)}
+.dai-xk[data-hien]{opacity:1;translate:none}
+.dai-xk .dai{position:relative;flex:1 1 0;min-width:0;overflow:hidden;border-radius:calc(4px*var(--z));background:var(--giay2);cursor:zoom-in;
+  clip-path:inset(100% 0 0 0);transition:flex-grow .9s var(--muot),clip-path 1.3s var(--muot) calc(var(--i,0)*90ms)}
+.dai-xk.hien .dai{clip-path:inset(0)}
+.dai-xk .dai.on{flex-grow:var(--k,3)}
+.dai-xk.tuc .dai{transition:none}
+.dai-xk img{position:absolute;top:0;left:50%;height:100%;width:var(--rong,100%);max-width:none;object-fit:cover;translate:-50% 0;transition:scale 1.4s var(--muot)}
+.dai-xk .dai.on:hover img{scale:1.03}
+/* dải đang gập: phủ mực mỏng; dải mở: chỉ còn chút tối ở đáy cho số ảnh dễ đọc */
+.dai-xk .dai::before{content:"";position:absolute;inset:0;z-index:1;background:rgba(20,38,46,.22);transition:opacity .7s var(--muot);pointer-events:none}
+.dai-xk .dai::after{content:"";position:absolute;inset:auto 0 0;height:35%;z-index:1;background:linear-gradient(transparent,rgba(14,28,34,.4));pointer-events:none}
+.dai-xk .dai.on::before{opacity:0}
+.dai-xk .so{position:absolute;left:calc(18px*var(--z));bottom:calc(14px*var(--z));z-index:2;font:300 italic clamp(calc(22.25px*var(--z)),calc(21px*var(--z)) + 0.347vw,calc(26px*var(--z)))/1 var(--serif);color:#fff;pointer-events:none}
+.dai-xk .goi{position:absolute;right:calc(18px*var(--z));bottom:calc(18px*var(--z));z-index:2;font-size:calc(10px*var(--z));letter-spacing:.22em;text-transform:uppercase;color:#fff;white-space:nowrap;
+  opacity:0;translate:0 calc(8px*var(--z));transition:opacity .3s,translate .5s var(--muot);pointer-events:none}
+.dai-xk .dai.on .goi{opacity:.9;translate:0 0;transition-delay:.35s}
+.dai-xk .dai:focus-visible{outline:1px solid var(--muc);outline-offset:calc(3px*var(--z))}
+
+/* ---------- #288 thông tin dài → thu gọn, "Xem đầy đủ" mở ra mượt ---------- */
+.mo-ta-sp{color:var(--chu)!important}
+.thu-gon{position:relative;overflow:hidden;transition:max-height .75s var(--muot)}
+.thu-gon::after{content:"";position:absolute;left:0;right:0;bottom:0;height:calc(110px*var(--z));pointer-events:none;
+  background:linear-gradient(rgba(244,238,227,0),var(--giay) 90%);opacity:0;transition:opacity .5s}
+.thu-gon.dong::after{opacity:1}
+.xem-them{display:inline-flex;align-items:center;gap:calc(8px*var(--z));margin:calc(2px*var(--z)) 0 calc(24px*var(--z));padding-bottom:calc(4px*var(--z));
+  font-size:calc(10.5px*var(--z));letter-spacing:.22em;text-transform:uppercase;font-weight:500;color:var(--muc);border-bottom:1px solid var(--vang)}
+.xem-them svg{width:calc(13px*var(--z));height:calc(13px*var(--z));transition:rotate .5s var(--muot)}
+.xem-them[aria-expanded="true"] svg{rotate:180deg}
+.xem-them:hover{color:var(--vang)}
+
+/* ---------- #339 hàng gợi ý kéo ngang ---------- */
+.keo-ray{--g:calc(22px*var(--z));--cot:4.35;position:relative;display:grid;grid-template-columns:none;grid-auto-flow:column;
+  grid-auto-columns:calc((100% - (var(--cot) - 1) * var(--g)) / var(--cot));gap:calc(40px*var(--z)) var(--g);
+  overflow-x:auto;overscroll-behavior-x:contain;scroll-snap-type:x mandatory;scrollbar-width:none;cursor:grab}
+.keo-ray::-webkit-scrollbar{display:none}
+.keo-ray>*{scroll-snap-align:start}
+.keo-ray.dang-keo{scroll-snap-type:none}
+.keo-ray.cam{cursor:grabbing;-webkit-user-select:none;user-select:none}
+.keo-ray.cam>*{pointer-events:none}
+.keo-ray img{-webkit-user-drag:none}
+.keo-ray.hep{--g:calc(12px*var(--z));--cot:3.3}
+.keo-dk{display:flex;align-items:center;gap:calc(10px*var(--z));margin-top:calc(30px*var(--z))}
+.keo-dk.khong{display:none}
+.keo-tien{flex:1;height:1px;background:var(--vien);position:relative;margin-right:calc(14px*var(--z))}
+.keo-tien i{position:absolute;left:0;top:-1px;height:3px;border-radius:calc(3px*var(--z));background:var(--muc);will-change:transform}
+.keo-nut{flex:none;width:calc(44px*var(--z));height:calc(44px*var(--z));border-radius:50%;border:1px solid var(--vien);display:grid;place-items:center;color:var(--muc);
+  transition:border-color .3s,background .3s,color .3s,opacity .3s}
+.keo-nut svg{width:calc(16px*var(--z));height:calc(16px*var(--z))}
+.keo-nut:hover:not(:disabled){background:var(--muc);border-color:var(--muc);color:#fff}
+.keo-nut:disabled{opacity:.3;cursor:default}
+.keo-dk.hep{margin-top:calc(14px*var(--z))}
+.keo-dk.hep .keo-nut{width:calc(34px*var(--z));height:calc(34px*var(--z))}
+.keo-dk.hep .keo-nut svg{width:calc(13px*var(--z));height:calc(13px*var(--z))}
+@media (max-width:1000px){.keo-ray{--cot:3.3}}
+@media (max-width:660px){
+  .keo-ray{--cot:2.25;--g:calc(12px*var(--z));margin:0 calc(-24px*var(--z));padding:0 calc(24px*var(--z));scroll-padding-inline:calc(24px*var(--z))}
+  .keo-ray.hep{--cot:2.6;margin:0;padding:0;scroll-padding-inline:0}
+}
+@media (hover:none){.keo-nut{display:none}.keo-tien{margin-right:0}.keo-ray{cursor:auto}}
+
+/* ---------- #328 thẻ món nở ra rồi sang trang ---------- */
+.man-no{position:fixed;inset:0;z-index:905;background:var(--giay);pointer-events:none;opacity:0}
+.bay-noi{position:fixed;z-index:950;overflow:hidden;pointer-events:none}
+.bay-noi img{width:100%;height:100%;max-width:none;object-fit:cover}
+html.tu-the body::before{animation:none!important;opacity:1!important;visibility:visible!important;transition:opacity .5s var(--muot)}
+html.tu-the body::after{display:none!important}
+html.tu-the.tu-the-mo body::before{opacity:0!important}
+html.tu-the #khungAnh,html.tu-the #khungAnh img{transition:none!important}
+
+@media (prefers-reduced-motion:reduce){
+  .kinh-lup,.den-anh figure,.dai-xk .dai,.dai-xk img,.thu-gon,.thu-gon::after,.xem-them svg{transition:none!important}
+  .dai-xk .dai{clip-path:none}
+}

@@ -40,7 +40,7 @@ function veDangNhap(che) {
       '<label>Email<input name="email" type="email" autocomplete="email" required></label>' +
       (qm ? '' : '<label>Mật khẩu<input name="mk" type="password" autocomplete="' + (dk ? 'new-password' : 'current-password') + '" minlength="6" required></label>') +
       '<p class="loi-tk" id="loiTk" hidden></p>' +
-      '<button class="nut dac" type="submit">' + (dk ? 'Tạo tài khoản' : qm ? 'Gửi link đặt lại' : 'Đăng nhập') + '</button>' +
+      '<button class="nut dac tk-nut" type="submit"><span class="tk-chu">' + (dk ? 'Tạo tài khoản' : qm ? 'Gửi link đặt lại' : 'Đăng nhập') + '</span><i class="gh-xoay" aria-hidden="true"></i></button>' +
     '</form>' +
     '<div class="tk-doi">' +
       (dk ? 'Đã có tài khoản? <a href="#" data-che="vao">Đăng nhập</a>'
@@ -49,25 +49,29 @@ function veDangNhap(che) {
     '</div></div>';
   o.querySelectorAll('[data-che]').forEach(function (a) { a.onclick = function (ev) { ev.preventDefault(); veDangNhap(a.dataset.che); }; });
   var loi = function (s) { var p = $('#loiTk'); p.hidden = !s; p.textContent = s || ''; };
+  var the = o.querySelector('.tk-hop');
+  var rung = function () { if (GIAM || !the) return; the.classList.remove('rung'); void the.offsetWidth; the.classList.add('rung'); };   // sai thì thẻ lắc đầu nhẹ
+  if (the) the.addEventListener('animationend', function (ev) { if (ev.animationName === 'tkRung') the.classList.remove('rung'); });
   if ($('#nutGg')) $('#nutGg').onclick = function () {
     var p = new firebase.auth.GoogleAuthProvider();
     KHACH.auth.signInWithPopup(p).catch(function (er) {
       if (er.code === 'auth/popup-blocked' || er.code === 'auth/operation-not-supported-in-this-environment') return KHACH.auth.signInWithRedirect(p);
-      loi(loiVn(er));
+      loi(loiVn(er)); rung();
     });
   };
   $('#fTk').onsubmit = function (ev) {
     ev.preventDefault(); loi('');
     var f = ev.target, b = f.querySelector('button'), email = f.email.value.trim();
-    b.disabled = true;
-    var xong = function () { b.disabled = false; };
+    b.disabled = true; b.classList.add('dang'); b.setAttribute('aria-label', 'Đang xử lý');   // nút co thành vòng xoay
+    var xong = function () { b.disabled = false; b.classList.remove('dang'); b.removeAttribute('aria-label'); };
+    var sai = function (er) { xong(); loi(loiVn(er)); rung(); };
     if (qm) return KHACH.auth.sendPasswordResetEmail(email).then(function () { xong(); baoTin('Đã gửi link — bạn mở hộp thư (cả mục Spam) nhé'); veDangNhap('vao'); })
-      .catch(function (er) { xong(); loi(loiVn(er)); });
+      .catch(sai);
     if (dk) return KHACH.auth.createUserWithEmailAndPassword(email, f.mk.value)
       .then(function (r) { return r.user.updateProfile({displayName: f.ten.value.trim()}).then(function () { return KHACH.doc().set({ten: f.ten.value.trim(), email: email}, {merge: true}); }); })
       .then(function () { return KHACH.taiHo(); }).then(function () { xong(); ve(KHACH.user); })
-      .catch(function (er) { xong(); loi(loiVn(er)); });
-    KHACH.auth.signInWithEmailAndPassword(email, f.mk.value).catch(function (er) { xong(); loi(loiVn(er)); });
+      .catch(sai);
+    KHACH.auth.signInWithEmailAndPassword(email, f.mk.value).catch(sai);
   };
 }
 
@@ -112,6 +116,23 @@ function veHoSo() {
 /* ---------- đơn đã đặt (Firestore donHang của chính mình) ---------- */
 var TEN_TT = {moi: 'Cửa hàng đã nhận', dangGoi: 'Đang chuẩn bị gửi', daGui: 'Đã gửi đi', xong: 'Đã giao xong', huy: 'Đã huỷ'};
 var TEN_TRA = {cod: 'Trả khi nhận', ck: 'Chuyển khoản trước', coc: 'Cọc trước'};
+
+/* các bước giao hàng theo đúng trạng thái đơn cửa hàng cập nhật trong app; xe nhỏ chạy tới bước hiện tại. Đơn huỷ thì không vẽ. */
+var BUOC_GIAO = ['Đã nhận', 'Chuẩn bị', 'Đã gửi đi', 'Đã giao'], VI_TRI = {moi: 0, dangGoi: 1, daGui: 2, xong: 3};
+var XE = '<svg viewBox="0 0 44 30" aria-hidden="true"><path class="xe-thung" d="M2 5.5Q2 3 4.5 3H25v19H2z"/><path class="xe-dau" d="M25 9h8.2l6.8 7.4V22H25z"/>' +
+  '<path class="xe-kinh" d="M28 11.5h4.2l4 4.4H28z"/><circle class="xe-banh" cx="10" cy="23.5" r="3.6"/><circle class="xe-banh" cx="33" cy="23.5" r="3.6"/></svg>';
+function xeGiao(tt) {
+  if (!(tt in VI_TRI)) return '';
+  var i = VI_TRI[tt];
+  return '<div class="tk-giao' + (i === 3 ? ' toi-noi' : '') + '" style="--i:' + i + ';--n:' + i * 4 + '" role="img" aria-label="Tiến độ giao hàng: ' + e(TEN_TT[tt]) + '">' +
+    '<div class="tk-duong"><span class="tk-vet"><i></i></span>' +
+      BUOC_GIAO.map(function (t, k) { return '<b class="tk-moc' + (k <= i ? ' qua' : '') + '" style="--k:' + k + '"><svg viewBox="0 0 24 24"><path d="M6 12.5l4 4 8-9"/></svg></b>'; }).join('') +
+      '<span class="tk-xe">' + XE + '</span></div>' +
+    '<div class="tk-nhan-giao">' + BUOC_GIAO.map(function (t, k) { return '<span class="' + (k === i ? 'nay' : k < i ? 'qua' : '') + '" style="--k:' + k + '">' + t + '</span>'; }).join('') + '</div></div>';
+}
+var ioXe = 'IntersectionObserver' in window ? new IntersectionObserver(function (es) {
+  es.forEach(function (x) { if (x.isIntersecting) { x.target.classList.add('xe-di'); ioXe.unobserve(x.target); } });
+}, {threshold: .4}) : null;
 function veDonCuaToi() {
   var khung = $('#tkDon'); if (!khung) return;
   KHACH.db.collection('donHang').where('uid', '==', KHACH.user.uid).limit(30).get().then(function (kq) {
@@ -119,9 +140,11 @@ function veDonCuaToi() {
     khung.innerHTML = '<h2>Đơn đã đặt <small>' + ds.length + '</small></h2>' + (ds.length ? '<ul class="ds-don">' + ds.map(function (d) {
       var ng = d.luc && d.luc.seconds ? new Date(d.luc.seconds * 1000).toLocaleDateString('vi-VN') : '';
       return '<li><div class="don-dau"><b>' + e(d.ma || '') + '</b><span class="chip-don tt-' + e(d.trangThai || 'moi') + '">' + e(TEN_TT[d.trangThai] || 'Cửa hàng đã nhận') + '</span></div>' +
+        xeGiao(d.trangThai || 'moi') +
         '<div class="don-mon">' + (d.mon || []).map(function (m) { return e(m.ten) + ' <small>#' + e(m.ma) + '</small>'; }).join(' · ') + '</div>' +
         '<div class="don-chan"><span>' + ng + (d.traTien ? ' · ' + e(TEN_TRA[d.traTien] || TEN_TRA.cod) : '') + '</span><b>' + gia(d.tong || 0) + '</b></div></li>';
     }).join('') + '</ul>' : '<p class="dan">Chưa có đơn nào. Chọn món rồi bấm “Thêm vào giỏ” để đặt mua.</p>');
+    [].forEach.call(khung.querySelectorAll('.tk-giao'), function (g) { if (ioXe && !GIAM) ioXe.observe(g); else g.classList.add('xe-di'); });
   }).catch(function () {
     khung.innerHTML = '<h2>Đơn đã đặt</h2><p class="dan">Chưa xem được danh sách đơn. Bạn nhắn Zalo cửa hàng để hỏi về đơn của mình nhé.</p>';
   });

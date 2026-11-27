@@ -31,8 +31,8 @@
     return SP; }).catch(function () { return SP = []; }); };
   var ngay = function (s) { var m = /(\d+)\/(\d+)\/(\d+)/.exec(s || ''); return m ? new Date(+m[3], m[2] - 1, +m[1]).getTime() : 0; };
 
-  // ---------- "… vừa mua" — chỉ đơn thật (data/mua-gan-day.json: [{"ten":"Chị L.","tinh":"Hà Nội","ma":"25362","luc":"2026-11-24T18:55"}]) ----------
-  fetch('data/mua-gan-day.json', { cache: 'no-cache' }).then(function (r) { return r.ok ? r.json() : []; }).catch(function () { return []; }).then(function (ds) {
+  // ---------- "… vừa mua" — ĐÃ TẮT 27/11/2026: kiểu thông báo "ai đó vừa mua" user không muốn (dễ thành số liệu giả); file data/mua-gan-day.json cũng không có → 404 mỗi trang ----------
+  if (false) fetch('data/mua-gan-day.json', { cache: 'no-cache' }).then(function (r) { return r.ok ? r.json() : []; }).catch(function () { return []; }).then(function (ds) {
     ds = (ds || []).filter(function (x) { return x && x.ma && x.luc && Date.now() - new Date(x.luc).getTime() < 7 * 864e5; }); if (!ds.length) return;
     var tat = false; try { tat = sessionStorage.getItem('lw-mua-tat'); } catch (er) {} if (tat) return;
     taiSp().then(function (sp) {
@@ -64,7 +64,7 @@
 
   // ---------- Thanh "Mua ngay" dính đáy (trang chi tiết chưa có thanh riêng) ----------
   var thuBB = function (lan) {
-    if (D.querySelector('.bb, .lw-bb')) return;
+    if (D.querySelector('.bb, .lw-bb, #thanhMua, .thanh-mua')) return;   // trang đã có thanh mua riêng (san-pham.html: #thanhMua) → không chồng thêm
     var nut = D.querySelector('main [data-gio], #them'); if (!nut) { if (lan < 20) setTimeout(function () { thuBB(lan + 1); }, 400); return; }
     var ten = (D.querySelector('main h1') || {}).textContent || '', gia = (D.querySelector('main .gia, main [class*="gia"]') || {}).textContent || '', im = D.querySelector('main img');
     var b = D.createElement('div'); b.className = 'lw-bb'; b.setAttribute('aria-hidden', 'true');
@@ -73,5 +73,5 @@
     D.body.appendChild(b);
     new IntersectionObserver(function (en) { var h = !en[0].isIntersecting && en[0].boundingClientRect.top < 0; b.classList.toggle('hien', h); b.setAttribute('aria-hidden', String(!h)); }).observe(nut);
   };
-  if (/san-pham\.html|chi-tiet\.html/.test(location.pathname) && /[?&]ma=/.test(location.search)) thuBB(0);
+  if (/chi-tiet\.html/.test(location.pathname) && /[?&]ma=/.test(location.search) && !D.getElementById('thanhMua')) thuBB(0);   // san-pham.html có #thanhMua riêng
 })();

@@ -1,0 +1,173 @@
+/* =========================================================
+   HIỆU ỨNG TRANG GIỎ HÀNG / ĐẶT HÀNG + TÀI KHOẢN (ý từ thư viện lucianlabs)
+   gio-hang.html, tai-khoan.html — nạp sau style.css
+   ========================================================= */
+
+/* ---------- #444 các bước đặt hàng: đường nối đầy dần, dấu tích bật lên, bước hiện tại thở nhẹ ---------- */
+.gh-buoc{--r:calc(15px*var(--z));list-style:none;margin:0 auto calc(36px*var(--z));padding:0;display:grid;grid-template-columns:repeat(4,1fr);max-width:calc(620px*var(--z))}
+.gh-b{position:relative;display:grid;justify-items:center;align-content:start;gap:calc(9px*var(--z));text-align:center;min-width:0}
+.gh-noi{position:absolute;top:calc(var(--r) - 1px);right:calc(50% + var(--r) + 6px*var(--z));width:calc(100% - 2*var(--r) - 12px*var(--z));height:2px;border-radius:2px;background:var(--vien);overflow:hidden}
+.gh-noi b{display:block;height:100%;border-radius:inherit;background:var(--vang);transform-origin:0 50%;transform:scaleX(var(--p,0));transition:transform .55s var(--muot) var(--dl,0s)}
+.gh-cham{position:relative;z-index:1;width:calc(2*var(--r));height:calc(2*var(--r));border-radius:50%;display:grid;place-items:center;background:var(--the);box-shadow:inset 0 0 0 1px var(--vien);
+  color:var(--mo);font:500 calc(12px*var(--z))/1 var(--sans);transition:background .35s var(--dc,0s),box-shadow .35s var(--dc,0s),color .35s var(--dc,0s)}
+.gh-cham em,.gh-cham svg{grid-area:1/1;font-style:normal;transition:opacity .25s var(--dc,0s),transform .5s cubic-bezier(.34,1.6,.5,1) var(--dc,0s)}
+.gh-cham svg{width:calc(14px*var(--z));height:calc(14px*var(--z));fill:none;stroke:currentColor;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round;opacity:0;transform:scale(.3) rotate(-25deg)}
+.gh-b.xong .gh-cham{background:var(--muc);box-shadow:inset 0 0 0 1px var(--muc);color:#fff}
+.gh-b.xong .gh-cham em{opacity:0;transform:scale(.4)}
+.gh-b.xong .gh-cham svg{opacity:1;transform:none}
+.gh-b.nay .gh-cham{box-shadow:inset 0 0 0 1.5px var(--vang);color:var(--vang)}
+.gh-b.nay .gh-cham::after{content:"";position:absolute;inset:calc(-5px*var(--z));border-radius:50%;box-shadow:0 0 0 1px rgba(168,130,58,.4);animation:ghTho 2.4s ease-in-out infinite}
+@keyframes ghTho{50%{transform:scale(1.14);opacity:.3}}
+.gh-ten{font-size:clamp(calc(10.25px*var(--z)),calc(10px*var(--z)) + 0.069vw,calc(11px*var(--z)));letter-spacing:.12em;text-transform:uppercase;line-height:1.4;color:var(--mo);transition:color .35s var(--dc,0s)}
+.gh-b.xong .gh-ten{color:var(--chu)}
+.gh-b.nay .gh-ten{color:var(--muc);font-weight:500}
+.gio-xong + .gh-buoc,.gh-buoc + .gio-xong{padding-top:0}
+@media (max-width:520px){
+  .gh-buoc{--r:calc(13px*var(--z));margin-bottom:calc(28px*var(--z))}
+  .gh-ten{letter-spacing:.04em;font-size:calc(10px*var(--z))}
+}
+
+/* ---------- #025 / #434 ô nhập đặt hàng: nhãn nổi, viền sáng nhẹ, tích khi đúng, rung khi sai ---------- */
+.gio-form .gh-o{position:relative;display:block}
+.gio-form .gh-o input,.gio-form .gh-o textarea{display:block;width:100%;padding:calc(22px*var(--z)) calc(40px*var(--z)) calc(7px*var(--z)) calc(14px*var(--z));line-height:1.45}
+.gh-nhan{position:absolute;left:calc(15px*var(--z));top:calc(15px*var(--z));max-width:calc(100% - 50px*var(--z));white-space:nowrap;overflow:hidden;text-overflow:ellipsis;line-height:1.4;
+  pointer-events:none;transform-origin:0 0;transition:transform .4s var(--muot),color .25s}
+.gh-o.co .gh-nhan,.gh-o:focus-within .gh-nhan{transform:translateY(calc(-9px*var(--z))) scale(.82)}
+.gh-o:focus-within .gh-nhan{color:var(--vang)}
+.gh-o textarea::placeholder{color:transparent;transition:color .3s}
+.gh-o:focus-within textarea::placeholder{color:rgba(110,106,98,.65)}
+.gio-form .gh-o input:focus,.gio-form .gh-o textarea:focus{border-color:var(--vang);box-shadow:0 0 0 calc(4px*var(--z)) rgba(168,130,58,.12),0 calc(8px*var(--z)) calc(22px*var(--z)) calc(-14px*var(--z)) rgba(168,130,58,.5)}
+.gh-dung{position:absolute;right:calc(14px*var(--z));top:calc(16px*var(--z));width:calc(16px*var(--z));height:calc(16px*var(--z));color:var(--ngoc);opacity:0;transform:scale(.4);
+  transition:opacity .25s,transform .45s cubic-bezier(.34,1.7,.5,1);pointer-events:none}
+.gh-dung svg{display:block;width:100%;height:100%;fill:none;stroke:currentColor;stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round}
+.gh-dung path{stroke-dasharray:1;stroke-dashoffset:1;transition:stroke-dashoffset .4s var(--muot) .08s}
+.gh-o.dung .gh-dung{opacity:1;transform:none}
+.gh-o.dung .gh-dung path{stroke-dashoffset:0}
+.gio-form .gh-o.sai input,.gio-form .gh-o.sai textarea,.gio-form .gh-o.sai input:focus,.gio-form .gh-o.sai textarea:focus{border-color:var(--do);box-shadow:0 0 0 calc(4px*var(--z)) rgba(168,69,47,.1)}
+.gh-o.sai .gh-nhan{color:var(--do)}
+.gh-o.sai{animation:ghRung .42s cubic-bezier(.36,.07,.19,.97)}
+@keyframes ghRung{20%{transform:translateX(calc(-6px*var(--z)))}40%{transform:translateX(calc(5px*var(--z)))}60%{transform:translateX(calc(-3px*var(--z)))}80%{transform:translateX(calc(2px*var(--z)))}}
+.gio-form .loi-tk:not([hidden]),.tk-hop .loi-tk:not([hidden]){animation:ghTruot .4s var(--muot)}
+@keyframes ghTruot{from{opacity:0;transform:translateY(calc(-6px*var(--z)))}}
+
+/* ---------- #438 nút Đặt mua / #062 nút đăng nhập: co thành vòng xoay khi đang gửi, tích khi xong ---------- */
+.gh-nut,.tk-nut{position:relative;justify-self:center;width:100%;height:calc(50px*var(--z));overflow:hidden;
+  transition:width .55s var(--muot),background .35s,color .35s,border-color .35s,transform .2s}
+.gio-form .gh-nut,.tk-hop .tk-nut{padding-top:0;padding-bottom:0}
+.gh-nut:active:not([disabled]),.tk-nut:active:not([disabled]){transform:scale(.97)}
+.gh-chu,.tk-chu{transition:opacity .2s}
+.gh-xoay{position:absolute;left:50%;top:50%;width:calc(20px*var(--z));height:calc(20px*var(--z));margin:calc(-10px*var(--z)) 0 0 calc(-10px*var(--z));border-radius:50%;
+  border:2px solid rgba(255,255,255,.25);border-top-color:#fff;opacity:0;transition:opacity .25s}
+.gio-form .gh-nut.dang,.tk-hop .tk-nut.dang{width:calc(50px*var(--z));padding-left:0;padding-right:0;opacity:1;cursor:progress}
+.dang .gh-chu,.dang .tk-chu{opacity:0}
+.dang .gh-xoay{opacity:1;animation:ghXoay .8s linear infinite}
+@keyframes ghXoay{to{transform:rotate(1turn)}}
+.gh-tick{position:absolute;left:50%;top:50%;width:calc(22px*var(--z));height:calc(22px*var(--z));margin:calc(-11px*var(--z)) 0 0 calc(-11px*var(--z));fill:none;stroke:#fff;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
+.gh-tick path{stroke-dasharray:1;stroke-dashoffset:1;transition:stroke-dashoffset .45s var(--muot) .12s}
+.gio-form .gh-nut.xong{background:var(--ngoc);border-color:var(--ngoc)}
+.gh-nut.xong .gh-xoay{opacity:0;animation:none}
+.gh-nut.xong .gh-tick path{stroke-dashoffset:0}
+
+/* ---------- #062 đăng nhập sai: thẻ lắc đầu nhẹ ---------- */
+.tk-hop.rung{animation:tkRung .45s cubic-bezier(.36,.07,.19,.97)}
+@keyframes tkRung{20%{transform:translateX(calc(-8px*var(--z)))}40%{transform:translateX(calc(7px*var(--z)))}60%{transform:translateX(calc(-4px*var(--z)))}80%{transform:translateX(calc(2px*var(--z)))}}
+
+/* ---------- #081 đặt xong: vòng tròn tự vẽ rồi dấu tích ---------- */
+.gio-xong .dau-tick.gh-ve{position:relative;width:calc(76px*var(--z));height:calc(76px*var(--z));background:none;color:var(--muc)}
+.gio-xong .dau-tick.gh-ve svg{width:100%;height:100%;overflow:visible}
+.gh-ve-vong{stroke:var(--vang);stroke-width:1.6;fill:rgba(168,130,58,0);stroke-dasharray:1;stroke-dashoffset:1;animation:ghVe 1s var(--muot) .25s forwards,ghNen .8s ease 1s forwards}
+.gh-ve-tick{stroke:var(--muc);stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:1;stroke-dashoffset:1;animation:ghVe .5s var(--muot) 1.05s forwards}
+.gh-ve::after{content:"";position:absolute;inset:0;border-radius:50%;box-shadow:0 0 0 1px var(--vang2);opacity:0;animation:ghLan 1.2s var(--muot) 1.15s}
+@keyframes ghVe{to{stroke-dashoffset:0}}
+@keyframes ghNen{to{fill:rgba(168,130,58,.08)}}
+@keyframes ghLan{0%{opacity:.8;transform:scale(1)}100%{opacity:0;transform:scale(1.5)}}
+
+/* ---------- #200 tóm tắt đơn gập còn tổng tiền, bấm mở chi tiết ---------- */
+.gh-gap{width:100%;text-align:left;cursor:pointer;-webkit-tap-highlight-color:transparent}
+.hang-tom.gh-gap>span{display:grid;gap:calc(5px*var(--z))}
+.gh-mo{display:inline-flex;align-items:center;gap:calc(5px*var(--z));font-size:clamp(calc(11.75px*var(--z)),calc(11.667px*var(--z)) + 0.023vw,calc(12px*var(--z)));letter-spacing:.04em;text-transform:none;color:var(--vang)}
+.gh-mo em{font-style:normal;border-bottom:1px solid transparent;transition:border-color .3s}
+.gh-mo svg{width:calc(13px*var(--z));height:calc(13px*var(--z));transition:transform .5s var(--muot)}
+.gh-gap[aria-expanded="true"] .gh-mo svg{transform:rotate(180deg)}
+@media (hover:hover){.gh-gap:hover .gh-mo em{border-color:currentColor}}
+.gh-gap:focus-visible{outline:2px solid var(--vang);outline-offset:calc(4px*var(--z));border-radius:calc(4px*var(--z))}
+.gh-chi{display:grid;grid-template-rows:0fr;transition:grid-template-rows .55s var(--muot),margin .55s var(--muot)}
+.gh-chi.mo{grid-template-rows:1fr;margin:calc(-4px*var(--z)) 0 calc(14px*var(--z))}
+.gh-chi>div{min-height:0;overflow:hidden;visibility:hidden;transition:visibility 0s .55s}
+.gh-chi.mo>div{visibility:visible;transition-delay:0s}
+.gh-chi ul{list-style:none;margin:0;padding:0 0 calc(12px*var(--z));border-bottom:1px dashed var(--vien)}
+.gh-chi li{display:flex;justify-content:space-between;align-items:baseline;gap:calc(12px*var(--z));padding:calc(6px*var(--z)) 0;font-size:clamp(calc(12.875px*var(--z)),calc(12.667px*var(--z)) + 0.058vw,calc(13.5px*var(--z)));color:var(--chu);
+  opacity:0;transform:translateY(calc(-6px*var(--z)));transition:opacity .35s,transform .5s var(--muot)}
+.gh-chi.mo li{opacity:1;transform:none;transition-delay:.12s}
+.gh-chi li span{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.gh-chi li small{color:var(--mo)}
+.gh-chi li b{font:400 clamp(calc(14px*var(--z)),calc(13.667px*var(--z)) + 0.093vw,calc(15px*var(--z))) var(--serif);color:var(--muc);white-space:nowrap}
+.gh-chi li.gh-cong{margin-top:calc(4px*var(--z));padding-top:calc(10px*var(--z));border-top:1px solid var(--vien);color:var(--mo)}
+
+/* ---------- #088 / #440 giỏ trống: hộp trang sức tự vẽ, vòng ngọc lơ lửng ---------- */
+.gh-trong .gh-hinh{display:block;width:calc(170px*var(--z));height:auto;margin:0 auto calc(8px*var(--z));overflow:visible}
+.gh-hinh path,.gh-hinh ellipse{fill:none;stroke:var(--muc);stroke-width:1.3;stroke-linecap:round;stroke-linejoin:round}
+.gh-hinh .gh-nap{fill:var(--giay2)}
+.gh-hinh .gh-than{fill:var(--the)}
+.gh-hinh .gh-dem,.gh-hinh .gh-khe{stroke:rgba(29,58,70,.35)}
+.gh-hinh .gh-bong{fill:rgba(29,58,70,.08);stroke:none;transform-box:fill-box;transform-origin:center;animation:ghBong 3.6s ease-in-out infinite}
+.gh-hinh .gh-vong path{fill:rgba(61,122,98,.16);stroke:var(--ngoc)}
+.gh-hinh .gh-vong .gh-sang{fill:none;stroke:#fff;stroke-width:2.2;opacity:.85}
+.gh-hinh .gh-sao{fill:var(--vang2);stroke:none;transform-box:fill-box;transform-origin:center;animation:ghSao 3.6s ease-in-out infinite}
+.gh-hinh .s2{animation-delay:1.2s}
+.gh-hinh .s3{animation-delay:2.4s}
+.gh-hinh [pathLength]{stroke-dasharray:1;stroke-dashoffset:1;animation:ghVe 1.4s var(--muot) .2s forwards,ghDay .8s ease .9s both}
+.gh-vong{transition:translate .8s var(--muot)}
+.gh-vong-i{animation:ghNoi 3.6s ease-in-out infinite}
+@keyframes ghNoi{50%{transform:translateY(-5px)}}
+@keyframes ghBong{50%{transform:scaleX(.84);opacity:.6}}
+@keyframes ghSao{0%,100%{opacity:.15;transform:scale(.55)}50%{opacity:1;transform:scale(1)}}
+@keyframes ghDay{from{fill-opacity:0}}
+.gh-trong:has(.gh-di:focus-visible) .gh-vong{translate:0 20px}
+@media (hover:hover){.gh-trong:has(.gh-di:hover) .gh-vong{translate:0 20px}}
+/* hình chung HOP_TRONG (của ngăn giỏ): rê / chọn nút "Xem cửa hàng" thì nắp hé, vòng ngọc bay lên — như trong ngăn giỏ */
+.gh-trong .minh-hoa{margin-bottom:calc(14px*var(--z))}
+.gh-trong:has(.gh-di:focus-visible) .minh-hoa .nap{rotate:-14deg;translate:calc(-2px*var(--z)) calc(-4px*var(--z))}
+.gh-trong:has(.gh-di:focus-visible) .minh-hoa .nhan-bay{translate:0 calc(-12px*var(--z))}
+@media (hover:hover){
+  .gh-trong:has(.gh-di:hover) .minh-hoa .nap{rotate:-14deg;translate:calc(-2px*var(--z)) calc(-4px*var(--z))}
+  .gh-trong:has(.gh-di:hover) .minh-hoa .nhan-bay{translate:0 calc(-12px*var(--z))}
+}
+
+/* ---------- #087 đơn đã đặt: các bước giao hàng, xe nhỏ chạy tới bước hiện tại ---------- */
+.tk-giao{--seg:.55s;margin:calc(14px*var(--z)) 0 calc(8px*var(--z));padding:0 calc(16px*var(--z))}
+.tk-duong{position:relative;height:calc(34px*var(--z))}
+.tk-vet{position:absolute;left:0;right:0;bottom:calc(5px*var(--z));height:2px;border-radius:2px;background:var(--vien);overflow:hidden}
+.tk-vet i{display:block;height:100%;background:var(--vang);transform-origin:0 50%;transform:scaleX(0);transition:transform calc(var(--i)*var(--seg)) cubic-bezier(.45,0,.3,1) .15s}
+.tk-giao.xe-di .tk-vet i{transform:scaleX(calc(var(--i)/3))}
+.tk-moc{position:absolute;bottom:calc(6px*var(--z));left:calc(var(--k)/3*100%);width:calc(12px*var(--z));height:calc(12px*var(--z));margin-left:calc(-6px*var(--z));translate:0 50%;border-radius:50%;
+  display:grid;place-items:center;background:var(--the);box-shadow:inset 0 0 0 1.5px var(--vien);transition:background .3s,box-shadow .3s,scale .45s cubic-bezier(.34,1.7,.5,1);transition-delay:calc(var(--k)*var(--seg) + .15s)}
+.tk-moc svg{width:calc(9px*var(--z));height:calc(9px*var(--z));fill:none;stroke:#fff;stroke-width:3;stroke-linecap:round;stroke-linejoin:round;opacity:0;transition:opacity .3s;transition-delay:inherit}
+.tk-giao.xe-di .tk-moc.qua{background:var(--vang);box-shadow:inset 0 0 0 1.5px var(--vang)}
+.tk-giao.toi-noi.xe-di .tk-moc:last-of-type{scale:1.55;background:var(--ngoc);box-shadow:inset 0 0 0 1.5px var(--ngoc);transition-delay:calc(3*var(--seg) + .45s)}
+.tk-giao.toi-noi.xe-di .tk-moc:last-of-type svg{opacity:1}
+.tk-xe{position:absolute;left:0;bottom:calc(10px*var(--z));width:calc(30px*var(--z));margin-left:calc(-15px*var(--z));
+  transition:left calc(var(--i)*var(--seg)) cubic-bezier(.45,0,.3,1) .15s,opacity .35s ease calc(var(--i)*var(--seg) + .3s),transform .35s ease calc(var(--i)*var(--seg) + .3s)}
+.tk-xe svg{display:block;width:100%;height:auto}
+.tk-giao.xe-di .tk-xe{left:calc(var(--i)/3*100%)}
+.tk-giao.xe-di .tk-xe svg{animation:tkNay .28s ease-in-out .15s var(--n,0) alternate}
+@keyframes tkNay{to{transform:translateY(calc(-1.5px*var(--z)))}}
+.tk-giao.toi-noi.xe-di .tk-xe{opacity:0;transform:translateY(calc(-6px*var(--z))) scale(.6)}
+.xe-thung{fill:var(--muc)}
+.xe-dau{fill:var(--vang)}
+.xe-kinh{fill:var(--the)}
+.xe-banh{fill:var(--dem);stroke:var(--the);stroke-width:1.6}
+.tk-nhan-giao{position:relative;height:calc(18px*var(--z));margin-top:calc(7px*var(--z));font-size:calc(11px*var(--z));letter-spacing:.04em;color:var(--mo)}
+.tk-nhan-giao span{position:absolute;top:0;left:calc(var(--k)/3*100%);translate:-50% 0;white-space:nowrap;line-height:1.4}
+.tk-nhan-giao span:first-child{translate:calc(-16px*var(--z)) 0}
+.tk-nhan-giao span:last-child{translate:calc(-100% + 16px*var(--z)) 0}
+.tk-nhan-giao .qua{color:var(--chu)}
+.tk-nhan-giao .nay{color:var(--muc);font-weight:500}
+
+/* ---------- giảm chuyển động ---------- */
+@media (prefers-reduced-motion:reduce){
+  .gh-buoc *,.gh-buoc *::after,.gh-o,.gh-o *,.gh-nut,.gh-nut .gh-chu,.gh-nut .gh-tick path,.tk-nut,.tk-chu,.gh-chi,.gh-chi *,.gh-hinh *,.gh-ve,.gh-ve *,.gh-ve::after,.tk-giao *,.tk-hop.rung,.loi-tk{animation:none!important;transition:none!important}
+  .gh-ve-vong,.gh-ve-tick,.gh-hinh [pathLength]{stroke-dashoffset:0}
+  .gh-ve-vong{fill:rgba(168,130,58,.08)}
+  .dang .gh-xoay{animation:ghXoay 1.6s linear infinite}
+}
