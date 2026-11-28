@@ -1286,7 +1286,7 @@ document.addEventListener('pointerdown', function (ev) {   // #006 (cả điện
 (function () {
   if (!CHUOT || GIAM) return;
   var c = document.createElement('div'); c.className = 'con-tro'; c.setAttribute('aria-hidden', 'true'); document.body.appendChild(c);
-  var OM = '.nut,.nut-dau,.len-dau,.mo-menu,.sp .viec .tron,.ngan-mon .tron,.mxh a,.tab button,.sl-chon button,.chip-tim button,.ngan-gio .dong';
+  var OM = '.nut,.nut-dau,.len-dau,.mo-menu,.sp .viec .tron,.ngan-mon .tron,.mxh a,.tab button,.sl-chon button,.chip-tim button,.ngan-gio .dong,.cong-cu button,.tab-vong button,.chip-nhom button';
   var BAM = 'a,button,[role="button"],summary,label,select,.sp';
   var NHAP = 'input,textarea,select,iframe,[contenteditable=""],[contenteditable="true"]';
   var p = {x: 0, y: 0}, o = {x: 0, y: 0, w: 26, h: 26, r: 13}, om = null, omR = 0, chay = false, dau_ = true;

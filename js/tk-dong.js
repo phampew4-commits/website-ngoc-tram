@@ -148,4 +148,45 @@
   }
   noiLen($1('#dsCharm'), '.the-charm');
   noiLen($1('#dsDay'), '.the-day', true);
+
+  /* ---------- nút trên trang thiết kế (28/11: user thấy một số nút chưa có hiệu ứng) ----------
+     · vệt loang từ đúng chỗ bấm (như nút .nut của web) cho nút công cụ, tab vòng, ô số vòng, chip lọc, thẻ dây, nút trong bong bóng, nút +/− charm
+     · nền chọn trượt sang lựa chọn mới (tab vòng, chip lọc) / khung chọn trượt (ô số vòng) — tự dựng lại khi danh sách vẽ lại */
+  var NUT = '.cong-cu button,.tab-vong button,.so-vong button,.chip-nhom button,.the-day,.bong-charm button,.dau-cong,.bot-charm';
+  document.addEventListener('pointerdown', function (ev) {
+    if (GIAM || ev.button) return;
+    var n = ev.target.closest && ev.target.closest(NUT); if (!n || n.disabled || !n.animate) return;
+    var r = n.getBoundingClientRect(), x = ev.clientX - r.left, y = ev.clientY - r.top, k = Math.hypot(Math.max(x, r.width - x), Math.max(y, r.height - y));
+    var hop = n.querySelector(':scope > .tkd-gon-hop');
+    if (!hop) { hop = document.createElement('span'); hop.className = 'tkd-gon-hop'; hop.setAttribute('aria-hidden', 'true'); n.appendChild(hop); }
+    var g = document.createElement('i'); g.className = 'tkd-gon';
+    g.style.cssText = 'left:' + (x - k) + 'px;top:' + (y - k) + 'px;width:' + 2 * k + 'px;height:' + 2 * k + 'px';
+    hop.appendChild(g);
+    var a = g.animate([{transform: 'scale(0)', opacity: .22}, {transform: 'scale(1)', opacity: 0}], {duration: 650, easing: 'cubic-bezier(.2,.7,.3,1)'});
+    a.onfinish = a.oncancel = function () { g.remove(); };
+  }, {passive: true});
+
+  function truot(goc, kieu) {
+    if (!goc) return;
+    goc.classList.add('tkd-truot-co', 'tkd-' + kieu);
+    var nen = null, cu = null;
+    function dat(dau) {
+      var on = goc.querySelector('button.on');
+      if (!nen || !nen.isConnected) { nen = document.createElement('i'); nen.className = 'tkd-truot'; nen.setAttribute('aria-hidden', 'true'); goc.insertBefore(nen, goc.firstChild); dau = true; }
+      if (!on) { nen.style.opacity = 0; return; }
+      var r = {l: on.offsetLeft, t: on.offsetTop, w: on.offsetWidth, h: on.offsetHeight};
+      nen.style.opacity = 1;
+      if (cu && !dau && !GIAM && nen.animate) nen.animate([{left: cu.l + 'px', top: cu.t + 'px', width: cu.w + 'px', height: cu.h + 'px'}, {left: r.l + 'px', top: r.t + 'px', width: r.w + 'px', height: r.h + 'px'}], {duration: 480, easing: 'cubic-bezier(.3,1.3,.5,1)'});
+      nen.style.left = r.l + 'px'; nen.style.top = r.t + 'px'; nen.style.width = r.w + 'px'; nen.style.height = r.h + 'px';
+      cu = r;
+    }
+    var hen = 0;
+    function soat() { if (!hen) hen = requestAnimationFrame(function () { hen = 0; dat(false); }); }
+    new MutationObserver(soat).observe(goc, {childList: true, subtree: true, attributes: true, attributeFilter: ['class']});
+    addEventListener('resize', function () { cu = null; dat(true); });
+    dat(true);
+  }
+  truot($1('#tabVong'), 'tab');
+  truot($1('#chipNhom'), 'chip');
+  truot($1('#soVong'), 'vong');
 })();

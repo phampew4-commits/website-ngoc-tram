@@ -39,3 +39,42 @@
   .tkd-len,.tkd-xuong{animation:none}
   .tkd-bong{transition:none}
 }
+
+/* ---------- nút trang thiết kế: vệt loang · nền chọn trượt · biểu tượng động khi rê (28/11) ---------- */
+.cong-cu button,.tab-vong button,.so-vong button,.chip-nhom button,.the-day,.bong-charm button{position:relative}
+.tkd-gon-hop{position:absolute;inset:0;border-radius:inherit;overflow:hidden;pointer-events:none;z-index:0}
+.tkd-gon{position:absolute;border-radius:50%;background:currentColor;opacity:0;pointer-events:none}
+.cong-cu button,.tab-vong button,.so-vong button,.chip-nhom button,.the-day,.dau-cong,.bot-charm{transition-property:border-color,background,color,box-shadow,translate,scale;transition-duration:.35s;transition-timing-function:var(--muot)}
+.cong-cu button:active,.tab-vong button:active,.so-vong button:active,.chip-nhom button:active,.the-day:active{scale:.96}
+@media (hover:hover){
+  .cong-cu button:hover,.chip-nhom button:hover,.tab-vong button:hover{translate:0 calc(-2px*var(--z))}
+  .so-vong button:hover{translate:0 calc(-3px*var(--z));box-shadow:0 calc(10px*var(--z)) calc(20px*var(--z)) calc(-14px*var(--z)) rgba(20,38,46,.35)}
+  .the-day:hover{translate:calc(3px*var(--z)) 0}
+  /* biểu tượng công cụ: xếp đều → vòng xoay · gom phía trước → hạt dồn xuống · bỏ hết → nắp thùng bật · chép link → mắt xích xoay */
+  .cong-cu svg{transition:rotate .6s cubic-bezier(.3,1.4,.5,1),translate .5s var(--muot)}
+  .cong-cu [data-lam="deu"]:hover svg{rotate:72deg}
+  .cong-cu [data-lam="gom"]:hover svg{translate:0 calc(2px*var(--z))}
+  .cong-cu [data-lam="xoa"] svg path:first-child{transform-box:fill-box;transform-origin:0% 100%;transition:rotate .4s cubic-bezier(.3,1.5,.5,1)}
+  .cong-cu [data-lam="xoa"]:hover svg path:first-child{rotate:-18deg}
+  .cong-cu [data-lam="xoa"]:hover{color:#b3473b;border-color:#b3473b}
+  .cong-cu [data-lam="link"]:hover svg{rotate:-25deg}
+  .so-vong button svg{transition:rotate .7s cubic-bezier(.3,1.4,.5,1),scale .4s var(--muot)}
+  .so-vong button:hover svg{rotate:-12deg;scale:1.08}
+  .dau-cong:hover{scale:1.12}
+  .the-charm:not(.da) .dau-cong:hover .cong{rotate:90deg}
+  .dau-cong .cong{transition:rotate .45s cubic-bezier(.3,1.5,.5,1)}
+  .bot-charm:hover{scale:1.1}
+}
+/* nền chọn trượt */
+.tkd-truot-co{position:relative;isolation:isolate}
+.tkd-truot{position:absolute;z-index:-1;pointer-events:none;border-radius:calc(99px*var(--z));background:var(--muc);transition:opacity .3s}
+.tkd-tab button.on,.tkd-chip button.on{background:transparent!important}
+.tkd-tab button:not(.on),.tkd-chip button:not(.on){background:color-mix(in srgb,var(--the) 70%,transparent)}
+.tkd-vong .tkd-truot{z-index:2;background:transparent;border-radius:calc(6px*var(--z));box-shadow:inset 0 0 0 1.5px var(--muc),0 calc(10px*var(--z)) calc(22px*var(--z)) calc(-14px*var(--z)) rgba(20,38,46,.45)}
+.tkd-vong button.on{box-shadow:none!important;border-color:var(--vien)!important;background:color-mix(in srgb,var(--vang) 8%,var(--the))}
+.tkd-vong button.on svg{animation:tkd-xoay .8s cubic-bezier(.3,1.4,.5,1)}
+@keyframes tkd-xoay{from{rotate:-90deg;scale:.7}to{rotate:0deg;scale:1}}
+/* nút + bật khi charm vừa gắn, nút − rung nhẹ khi hiện */
+.the-charm.da .dau-cong{animation:tkd-bat .5s cubic-bezier(.3,1.6,.5,1)}
+@keyframes tkd-bat{0%{scale:.6}60%{scale:1.18}100%{scale:1}}
+@media (prefers-reduced-motion:reduce){.tkd-truot{transition:none}.tkd-vong button.on svg,.the-charm.da .dau-cong{animation:none}}
