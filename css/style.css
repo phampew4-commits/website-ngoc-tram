@@ -2199,3 +2199,7 @@ img.mo-dan.nap{animation:ro-net .75s var(--muot)}
 /* ô "Sang vòng…" trong bong bóng charm (trang tự thiết kế): mũi tên vẽ riêng thay mũi tên mặc định */
 .bong-charm select{-webkit-appearance:none;appearance:none;cursor:pointer;padding-right:calc(24px*var(--z));
   background:transparent url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23ffffff' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M7 10l5 5 5-5'/%3E%3C/svg%3E") no-repeat right calc(8px*var(--z)) center/calc(12px*var(--z))}
+/* mục "Khách sỉ" trên menu: ổ khoá nhỏ báo cần tài khoản (28/11) */
+.menu-si{display:inline-flex;align-items:center;gap:calc(6px*var(--z))}
+.menu-khoa{width:calc(14px*var(--z));height:calc(14px*var(--z));flex:none;color:var(--vang);transition:rotate .4s cubic-bezier(.3,1.6,.5,1)}
+@media (hover:hover){.menu-si:hover .menu-khoa{rotate:-12deg}}
