@@ -192,10 +192,8 @@
     });
   }
 
-  /* ---------- #461: nghiêng theo chuột + vệt sáng lướt (chỉ máy có chuột) ---------- */
+  /* ---------- #461: nghiêng nhẹ theo chuột (chỉ máy có chuột). 28/11: user chê vệt sáng lướt → đã bỏ, chỉ còn nghiêng ---------- */
   function ganNghieng(t) {
-    var sang = document.createElement('span'); sang.className = 'td-sang'; sang.setAttribute('aria-hidden', 'true');
-    t.appendChild(sang);
     var cho = 0, ev = null, r = null;
     function ve() {
       cho = 0; if (!ev || !r) return;
@@ -256,7 +254,7 @@
           var bo = function () { var c = f.querySelector('.td-vo'); if (c) c.remove(); dang = toi; ban = false; tai((toi + 1) % n).catch(function () {}); };
           (img.decode ? img.decode() : Promise.resolve()).then(bo, bo);
         };
-        if (GIAM) xong(); else vo(f, img, im, ox, oy, xong);
+        if (GIAM) xong(); else mo(f, img, im, xong);
       }, function () { ban = false; });
     }
     if (CHUOT) {
@@ -297,7 +295,15 @@
       }
     }
   }
-  /* vẽ chuyển ảnh: lưới ô vuông ~30px, mỗi ô bật ra (to dần + hơi vượt) theo khoảng cách tới điểm bắt đầu, viền vàng mảnh lúc đang bật */
+  /* chuyển ảnh: ảnh mới mờ dần hiện lên đè ảnh cũ (28/11: user chê kiểu vỡ ô vuông #349 → thay bằng mờ dần) */
+  function mo(f, img, im, xong) {
+    var o = document.createElement('img');
+    o.className = 'td-vo'; o.alt = ''; o.setAttribute('aria-hidden', 'true'); o.referrerPolicy = 'no-referrer'; o.src = im.src;
+    img.parentNode.insertBefore(o, img.nextSibling);
+    if (!o.animate) { xong(); return; }
+    o.animate([{opacity: 0}, {opacity: 1}], {duration: 700, easing: 'ease-in-out'}).onfinish = xong;
+  }
+  /* (cũ, không dùng) vẽ chuyển ảnh: lưới ô vuông ~30px, mỗi ô bật ra (to dần + hơi vượt) theo khoảng cách tới điểm bắt đầu, viền vàng mảnh lúc đang bật */
   function vo(f, img, im, ox, oy, xong) {
     var W = f.clientWidth, H = f.clientHeight;
     if (!W || !H || !im.naturalWidth) { xong(); return; }
@@ -337,4 +343,229 @@
     }
     requestAnimationFrame(buoc);
   }
+})();
+
+/* ================= DẢI 4 Ô GIÁ TRỊ (.th-gtri) SỐNG ĐỘNG HƠN (28/11: user thấy "đơn điệu") =================
+   Biểu tượng vẽ nét xong thì mỗi cái có chuyển động riêng đúng ý nghĩa — chỉ chạy khi dải đang trên màn hình:
+   nhà làm: khói ống khói bay lên · 6 dòng trầm: đầu nhang đỏ lửa + khói cuộn · giao toàn quốc: xe chạy nhún, bánh quay, vệt gió ·
+   hỏi người làm: ba chấm đang gõ trong bong bóng. Quanh mỗi vòng có một cung vàng chạy chậm (#348 kiểu vòng quay), lúc hiện thì gợn một vòng toả ra. */
+(function () {
+  var g = document.querySelector('.th-gtri'); if (!g) return;
+  var GIAM = /[?&]chup=1/.test(location.search) || matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var NS = 'http://www.w3.org/2000/svg';
+  function them(svg, ten, tt) { var e = document.createElementNS(NS, ten); for (var k in tt) e.setAttribute(k, tt[k]); svg.appendChild(e); return e; }
+  [].forEach.call(g.querySelectorAll('.th-gtri-o'), function (o, i) {
+    var v = o.querySelector('.th-gtri-vong'), svg = v && v.querySelector('svg'); if (!svg) return;
+    o.classList.add('tdg-' + i);
+    var p = svg.querySelectorAll('path,circle');
+    if (i === 0 && p[4]) p[4].classList.add('tdg-khoi');
+    if (i === 1) {
+      if (p[2]) p[2].classList.add('tdg-khoi'); if (p[3]) p[3].classList.add('tdg-khoi', 'tdg-k2');
+      [[12, 15], [18, 11], [24, 13], [30, 17]].forEach(function (d, j) { them(svg, 'circle', {cx: d[0], cy: d[1], r: 1.1, class: 'tdg-lua', style: '--j:' + j}); });
+    }
+    if (i === 2) {
+      var xe = document.createElementNS(NS, 'g'); xe.setAttribute('class', 'tdg-xe');
+      [].slice.call(p).forEach(function (e) { xe.appendChild(e); });
+      if (p[2]) p[2].classList.add('tdg-banh'); if (p[3]) p[3].classList.add('tdg-banh');
+      svg.appendChild(xe);
+      [[0, 17, -4], [-2, 22, -7], [0, 27, -3]].forEach(function (d, j) { them(svg, 'path', {d: 'M' + d[0] + ' ' + d[1] + 'h' + d[2], class: 'tdg-gio', style: '--j:' + j}); });
+    }
+    if (i === 3) [14, 20, 26].forEach(function (x, j) { them(svg, 'circle', {cx: x, cy: 19, r: 1.6, class: 'tdg-cham', style: '--j:' + j}); });
+    var q = document.createElement('i'); q.className = 'tdg-quy'; q.setAttribute('aria-hidden', 'true'); q.style.setProperty('--i', i); v.appendChild(q);
+    var s = document.createElement('i'); s.className = 'tdg-gon'; s.setAttribute('aria-hidden', 'true'); v.appendChild(s);
+  });
+  if (GIAM) { g.classList.add('tdg-tinh'); return; }
+  if ('IntersectionObserver' in window) new IntersectionObserver(function (es) { g.classList.toggle('tdg-chay', es[0].isIntersecting); }, {threshold: .15}).observe(g);
+  else g.classList.add('tdg-chay');
+})();
+
+/* ================= BỤI VÀNG LẤP LÁNH Ở CÁC PHẦN NỀN SÁNG (28/11: user chọn kiểu này sau khi chê khói mềm và vân gỗ) =================
+   Mỗi phần nền sáng một canvas dưới chữ: hạt vàng nhỏ trôi lên chậm, đung đưa, lấp lánh; hạt lớn thỉnh thoảng loé tia chữ thập;
+   vài đốm mờ to ở lớp sau cho có chiều sâu. Rê chuột: hạt dạt nhẹ ra xa con trỏ. Phần nền tối đã có tàn lửa (tram-huong.js) nên bỏ qua.
+   Chỉ chạy khi phần đó trên màn hình + tab hiện, ~30 khung/giây; giảm chuyển động / ?chup=1: một khung đứng yên. */
+(function () {
+  var GIAM = /[?&]chup=1/.test(location.search) || matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var CHUOT = matchMedia('(hover:hover)').matches;
+  [].slice.call(document.querySelectorAll('.th-ke,.th-dong:not(.toi),.th-nha,.th-can,.td-so')).forEach(bui);
+  function bui(s) {
+    var cv = document.createElement('canvas'), ctx = cv.getContext && cv.getContext('2d'); if (!ctx) return;
+    cv.className = 'tdb-bui'; cv.setAttribute('aria-hidden', 'true');
+    s.classList.add('tdb-co'); s.insertBefore(cv, s.firstChild);
+    var W = 0, H = 0, hs = [], t = 0, thay = false, chay = false, truoc = 0, mx = -1e4, my = -1e4, hen = 0;
+    function R() { return Math.random(); }
+    function moi(h, dau) {
+      var sau = R() < .14;   // lớp sau: đốm mờ to
+      h.x = R() * W; h.y = dau ? R() * H : H + 10; h.sau = sau;
+      h.r = sau ? 6 + R() * 10 : .7 + Math.pow(R(), 2.2) * 2.2; h.v = sau ? 3 + R() * 4 : 6 + R() * 12;
+      h.p = R() * 6.28; h.w = .6 + R() * 1.4; h.dx = 0; h.dy = 0; h.loe = 0; return h;
+    }
+    function co() {
+      var r = s.getBoundingClientRect(); W = Math.round(r.width); H = Math.round(r.height); if (!W || !H) return;
+      var dpr = Math.min(1.5, devicePixelRatio || 1); cv.width = W * dpr; cv.height = H * dpr; ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      var n = Math.round(Math.min(80, Math.max(18, W * H / (W < 760 ? 16000 : 14000))));
+      hs = []; for (var i = 0; i < n; i++) hs.push(moi({}, true));
+    }
+    function ve() {
+      ctx.clearRect(0, 0, W, H);
+      for (var i = 0; i < hs.length; i++) {
+        var h = hs[i], x = h.x + Math.sin(t * .5 * h.w + h.p) * 8 + h.dx, y = h.y + h.dy;
+        var nh = .5 + .5 * Math.sin(t * 1.6 * h.w + h.p * 3);   // lấp lánh
+        if (h.sau) {
+          var g = ctx.createRadialGradient(x, y, 0, x, y, h.r);
+          g.addColorStop(0, 'rgba(214,176,98,' + (.07 + .05 * nh).toFixed(3) + ')'); g.addColorStop(1, 'rgba(214,176,98,0)');
+          ctx.fillStyle = g; ctx.beginPath(); ctx.arc(x, y, h.r, 0, 6.283); ctx.fill(); continue;
+        }
+        ctx.fillStyle = 'rgba(176,136,58,' + (.28 + .5 * nh).toFixed(3) + ')';
+        ctx.beginPath(); ctx.arc(x, y, h.r, 0, 6.283); ctx.fill();
+        if (h.r > 1.6 && h.loe > 0) {   // tia chữ thập loé lên rồi tắt
+          var L = h.r * 5 * h.loe, a = (.55 * h.loe).toFixed(3);
+          ctx.strokeStyle = 'rgba(200,160,80,' + a + ')'; ctx.lineWidth = .8; ctx.beginPath();
+          ctx.moveTo(x - L, y); ctx.lineTo(x + L, y); ctx.moveTo(x, y - L); ctx.lineTo(x, y + L); ctx.stroke();
+        }
+      }
+    }
+    function lap(now) {
+      if (!thay || document.hidden) { chay = false; return; }
+      if (now - truoc < 31) { requestAnimationFrame(lap); return; }
+      var dt = Math.min(.06, (now - (truoc || now)) / 1000 || .033); truoc = now; t += dt;
+      for (var i = 0; i < hs.length; i++) {
+        var h = hs[i]; h.y -= h.v * dt;
+        if (h.y < -14) { moi(h, false); continue; }
+        if (h.r > 1.6) { if (h.loe > 0) h.loe = Math.max(0, h.loe - dt * 1.4); else if (R() < dt * .12) h.loe = 1; }
+        var ddx = h.x + h.dx - mx, ddy = h.y + h.dy - my, d2 = ddx * ddx + ddy * ddy, tx = 0, ty = 0;
+        if (d2 < 14400 && d2 > 1) { var d = Math.sqrt(d2), k = (1 - d / 120) * 34; tx = ddx / d * k; ty = ddy / d * k; }
+        h.dx += (tx - h.dx) * Math.min(1, dt * 3); h.dy += (ty - h.dy) * Math.min(1, dt * 3);
+      }
+      ve(); requestAnimationFrame(lap);
+    }
+    function batLai() { if (GIAM || chay || !thay || document.hidden || !W) return; chay = true; truoc = 0; requestAnimationFrame(lap); }
+    co(); t = 2; ve();
+    if ('ResizeObserver' in window) new ResizeObserver(function () { clearTimeout(hen); hen = setTimeout(function () { co(); ve(); }, 180); }).observe(s);
+    if ('IntersectionObserver' in window) new IntersectionObserver(function (es) { thay = es[0].isIntersecting; batLai(); }).observe(s);
+    document.addEventListener('visibilitychange', batLai);
+    if (CHUOT && !GIAM) {
+      s.addEventListener('mousemove', function (ev) { var r = cv.getBoundingClientRect(); mx = ev.clientX - r.left; my = ev.clientY - r.top; });
+      s.addEventListener('mouseleave', function () { mx = my = -1e4; });
+    }
+  }
+})();
+
+/* ================= HÌNH NÉT ĐẦU TRANG BIẾN HÌNH QUA 6 LOẠI TRẦM (28/11: user muốn nét vẽ 2D chuyển động thành các loại nhang nhà mình) =================
+   Mỗi hình là ~13 nét (3 làn khói + thân), vẽ theo ảnh thật: có tăm (3 que trên đế đồng) · nụ (búp nhọn trên đĩa) · nhang vòng (cuộn tháp chuông treo móc)
+   · trầm thiền (lư nhìn từ trên, sợi hình người ngồi) · không tăm (khay gỗ + nắp + ống) · răm trầm (lò xông hoa văn, đĩa răm).
+   Mỗi nét lấy mẫu thành 90 điểm; đổi hình = từng điểm trượt sang chỗ mới (nét chảy, uốn thành hình kia), nét thừa thu về một điểm rồi tắt.
+   Khói lượn liên tục. Tên dòng hiện dưới hình, bấm → tới dòng đó. Chỉ chạy khi đầu trang trên màn hình + tab hiện.
+   Giảm chuyển động / ?chup=1: đứng yên ở hình đầu. Không lấy được điểm (trình duyệt cũ) → giữ hình nét cũ. */
+(function () {
+  var hop = document.querySelector('.th-hero-ve'), cu = hop && hop.querySelector('svg'); if (!hop || !cu) return;
+  var GIAM = /[?&]chup=1/.test(location.search) || matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var NS = 'http://www.w3.org/2000/svg', M = 90, SO_K = 3, SO_THAN = 10;
+  var KHOI = 'c-10-9 8-16 0-26s-14-18 2-28s14-22-4-34s-18-26 2-38s16-28 0-40', KHOI2 = 'c9-7 1-14 9-20s15-12 7-22s4-14 11-18', KHOI3 = 'c-11-5-4-14-14-19s-7-13 0-21';
+  function k(x, y, t) { return 'M' + x + ' ' + y + t; }
+  function elip(cx, cy, rx, ry) { return 'M' + (cx - rx) + ' ' + cy + 'a' + rx + ' ' + ry + ' 0 1 0 ' + 2 * rx + ' 0a' + rx + ' ' + ry + ' 0 1 0 ' + (-2 * rx) + ' 0'; }
+  /* nhang vòng: xoắn ốc tháp chuông */
+  var xoan = [], vt = 0;
+  (function () { var vong = 10; for (var i = 0; i <= 420; i++) { var u = i / 420, a = u * vong * 6.2832 - 1.5708, rx = 5 + 76 * Math.pow(u, .85), y = 176 + 250 * u; xoan.push([150 + rx * Math.cos(a), y + rx * .16 * Math.sin(a)]); } vt = xoan[xoan.length - 1]; })();
+  var TT = 'M78.00 130.50C76.00 130.52 70.00 130.78 66.00 130.60C62.00 130.42 57.25 130.25 54.00 129.40C50.75 128.55 48.08 127.23 46.50 125.50C44.92 123.77 44.17 121.00 44.50 119.00C44.83 117.00 46.50 114.70 48.50 113.50C50.50 112.30 53.50 111.68 56.50 111.80C59.50 111.92 63.00 113.03 66.50 114.20C70.00 115.37 73.83 117.20 77.50 118.80C81.17 120.40 85.00 122.50 88.50 123.80C92.00 125.10 95.33 126.17 98.50 126.60C101.67 127.03 104.83 127.07 107.50 126.40C110.17 125.73 112.82 124.27 114.50 122.60C116.18 120.93 117.42 118.43 117.60 116.40C117.78 114.37 116.93 112.10 115.60 110.40C114.27 108.70 111.37 107.67 109.60 106.20C107.83 104.73 105.53 103.37 105.00 101.60C104.47 99.83 105.47 97.60 106.40 95.60C107.33 93.60 109.77 91.77 110.60 89.60C111.43 87.43 111.90 84.73 111.40 82.60C110.90 80.47 109.40 78.50 107.60 76.80C105.80 75.10 102.97 73.67 100.60 72.40C98.23 71.13 95.23 70.50 93.40 69.20C91.57 67.90 90.07 66.40 89.60 64.60C89.13 62.80 90.97 60.37 90.60 58.40C90.23 56.43 88.90 54.10 87.40 52.80C85.90 51.50 83.43 50.53 81.60 50.60C79.77 50.67 77.57 51.80 76.40 53.20C75.23 54.60 74.63 57.03 74.60 59.00C74.57 60.97 76.37 63.10 76.20 65.00C76.03 66.90 75.20 68.87 73.60 70.40C72.00 71.93 68.77 72.50 66.60 74.20C64.43 75.90 61.80 78.30 60.60 80.60C59.40 82.90 59.07 85.73 59.40 88.00C59.73 90.27 61.00 92.60 62.60 94.20C64.20 95.80 66.67 97.00 69.00 97.60C71.33 98.20 74.23 98.17 76.60 97.80C78.97 97.43 81.40 96.47 83.20 95.40C85.00 94.33 86.57 92.73 87.40 91.40C88.23 90.07 88.07 88.07 88.20 87.40';
+  var HINH = [
+    {id: 'co-tam', so: '01', ten: 'Trầm có tăm', lua: [150, 232], k: [k(150, 230, KHOI), k(121, 268, 'c-8-8 6-14 0-22s-10-16 2-24s10-18-2-26'), k(183, 274, 'c8-8-5-13 1-21s9-15-2-23s-8-16 3-24')], than: [
+      ['M148.4 462V233a1.6 1.6 0 0 1 3.2 0V462', ''], ['M144.6 462L119.6 272a1.6 1.6 0 0 1 3.2-.4L147.8 462', ''], ['M152.2 462L181.4 276a1.6 1.6 0 0 1 3.2.5L155.4 462', ''],
+      ['M148.4 462V420h3.2V462', 'tre'], ['M144.6 462L139.1 420.2l3.2-.4L147.8 462', 'tre'], ['M152.2 462L158.7 420.5l3.2.5L155.4 462', 'tre'],
+      [elip(150, 462, 40, 8), ''], ['M110 462v9c0 5 18 8 40 8s40-3 40-8v-9', ''], [elip(150, 461, 6, 2), 'tre']]},
+    {id: 'nu-tram', so: '03', ten: 'Nụ trầm', lua: [150, 300], k: [k(150, 298, KHOI), k(154, 280, KHOI2), k(146, 262, KHOI3)], than: [
+      ['M150 300C138 330 120 380 120 428c0 14 5 24 10 30h40c5-6 10-16 10-30c0-48-18-98-30-128Z', ''],
+      ['M137 456c-3-38 3-96 11-150', 'tre'], ['M163 456c3-38-3-96-11-150', 'tre'],
+      [elip(150, 462, 58, 10), ''], ['M92 462v4c0 6 26 11 58 11s58-5 58-11v-4', ''],
+      ['M226 418c-6 12-12 30-12 46c0 6 1 10 3 13h18c2-3 3-7 3-13c0-16-6-34-12-46Z', ''], ['M44 468L86 456c5-1 8 4 6 8c-1 4-5 6-9 6L44 472Z', '']]},
+    {id: 'nhang-vong', so: '05', ten: 'Nhang vòng', lua: vt, k: [k(vt[0], vt[1] - 2, KHOI), k(vt[0] + 3, vt[1] - 22, KHOI2), k(vt[0] - 4, vt[1] - 40, KHOI3)], than: [
+      [xoan, ''], ['M150 476V160', 'tre'], ['M150 160c0-12 14-12 14-2', 'tre'], [elip(150, 470, 64, 9), ''], [elip(150, 470, 30, 4), 'tre']]},
+    {id: 'tram-thien', so: '04', ten: 'Trầm thiền', lua: [145.4, 412.8], k: ['M146 412c16-3 32-1 42-12s8-26 20-36s20-24 10-40s8-28 0-42s-8-22 4-32', 'M212 300c8-8 2-15 9-22s10-14 3-22', 'M196 330c10-5 6-12 13-17'], than: [
+      [{d: TT, tx: function (p) { return [(p.x - 81) * 1.55 + 150, (p.y - 90) * 1.55 + 350]; }}, 'tre'],
+      [elip(150, 350, 96, 96), ''], [elip(150, 350, 80, 80), ''], ['M54 340a10 10 0 1 0 0 20', ''], ['M246 340a10 10 0 1 1 0 20', '']]},
+    {id: 'khong-tam', so: '02', ten: 'Trầm không tăm', lua: [214, 405], k: [k(214, 402, KHOI), k(218, 380, KHOI2), k(210, 366, KHOI3)], than: [
+      ['M72 414L226 386L234 394L80 422Z', ''], [elip(153, 404, 9, 3), 'tre'],
+      ['M62 436L232 405L246 416L76 447Z', ''], ['M76 447L246 416V426L76 457Z', ''], ['M84 440L230 413', ''], ['M96 437L214 405', 'tre'],
+      ['M92 470L196 452a6 6 0 0 1 2 11.8L94 481.8a6 6 0 0 1-2-11.8Z', ''], ['M178 455l2 11.8', 'tre']]},
+    {id: 'ram-tram', so: '06', ten: 'Răm trầm', lua: [150, 384], k: [k(150, 378, KHOI), k(160, 372, KHOI2 + 's4-14 12-18'), k(140, 366, KHOI3)], than: [
+      [elip(150, 392, 72, 14), ''], ['M78 392v62c0 9 32 16 72 16s72-7 72-16v-62', ''],
+      ['M86 424l8 10l8-10l8 10l8-10l8 10l8-10l8 10l8-10l8 10l8-10l8 10l8-10l8 10l8-10l8 10l8-10', 'tre'],
+      [elip(150, 386, 28, 6), 'tre'], ['M132 384l8-5l9 2l-4 5z', ''], ['M152 381l10-4l7 4l-8 4z', ''], ['M146 388l6-4l7 1l-3 4z', ''],
+      ['M70 472h160', ''], ['M86 480h128', '']]}
+  ];
+  /* lấy mẫu điểm */
+  var tam = document.createElementNS(NS, 'svg'); tam.setAttribute('style', 'position:absolute;width:0;height:0;overflow:hidden'); tam.setAttribute('aria-hidden', 'true');
+  document.body.appendChild(tam);
+  function mau(nguon) {
+    if (Array.isArray(nguon)) {   // mảng điểm sẵn (xoắn ốc) → lấy lại đều M điểm
+      var r = []; for (var i = 0; i < M; i++) { var f = i / (M - 1) * (nguon.length - 1), a = Math.floor(f), b = Math.min(nguon.length - 1, a + 1), q = f - a; r.push([nguon[a][0] + (nguon[b][0] - nguon[a][0]) * q, nguon[a][1] + (nguon[b][1] - nguon[a][1]) * q]); } return r;
+    }
+    var d = typeof nguon === 'string' ? nguon : nguon.d, tx = nguon.tx;
+    var p = document.createElementNS(NS, 'path'); p.setAttribute('d', d); tam.appendChild(p);
+    var L = p.getTotalLength(), ra = [];
+    for (var j = 0; j < M; j++) { var pt = p.getPointAtLength(L * j / (M - 1)); ra.push(tx ? tx(pt) : [pt.x, pt.y]); }
+    p.remove(); return ra;
+  }
+  try {
+    HINH.forEach(function (h) {
+      h.slot = [];
+      for (var i = 0; i < SO_K; i++) h.slot.push({p: mau(h.k[i]), loai: 'k', o: 1});
+      for (var j = 0; j < SO_THAN; j++) {
+        var t = h.than[j];
+        if (t) h.slot.push({p: mau(t[0]), loai: t[1], o: 1});
+        else { var o = []; for (var m = 0; m < M; m++) o.push([h.lua[0], h.lua[1]]); h.slot.push({p: o, loai: '', o: 0}); }   // nét thừa: thu về một điểm, tắt
+      }
+    });
+  } catch (er) { tam.remove(); return; }
+  tam.remove();
+
+  var MAU = {'': [233, 227, 214], tre: [209, 173, 102], k: [226, 206, 166]}, DAY = {'': .9, tre: 1.3, k: .7};
+  var svg = document.createElementNS(NS, 'svg'); svg.setAttribute('class', 'tdh-ve'); svg.setAttribute('viewBox', '0 0 300 520'); svg.setAttribute('aria-hidden', 'true');
+  svg.innerHTML = '<circle class="tdh-nen" cx="150" cy="250" r="128"/><path class="tdh-nen" d="M40 486H260"/>';
+  var duong = HINH[0].slot.map(function () { var p = document.createElementNS(NS, 'path'); svg.appendChild(p); return p; });
+  var lua = document.createElementNS(NS, 'circle'); lua.setAttribute('class', 'tdh-lua'); lua.setAttribute('r', '2.2'); svg.appendChild(lua);
+  var ten = document.createElement('a'); ten.className = 'tdh-ten'; ten.innerHTML = '<span></span><b></b>';
+  hop.classList.add('tdh-co'); hop.appendChild(svg); hop.appendChild(ten);
+
+  var dang = 0, toi = 1, k0 = 0, t = 0, pha = 'giu', bd = 0, GIU = 3400, DOI = 1900, chay = false, thay = true, truoc = 0;
+  function datTen(h) { ten.href = '#' + h.id; ten.querySelector('span').textContent = h.so; ten.querySelector('b').textContent = h.ten; ten.setAttribute('aria-label', 'Xem dòng ' + h.ten); }
+  function em(x) { return x < .5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2; }
+  function ve(q) {   // q: tiến độ đổi hình 0..1 (0 = đang ở hình dang)
+    var A = HINH[dang], B = HINH[toi];
+    for (var i = 0; i < duong.length; i++) {
+      var a = A.slot[i], b = B.slot[i], tre = i * .035, e = em(Math.max(0, Math.min(1, (q - tre) / (1 - .035 * duong.length + .035 * 3))));
+      if (q <= 0) e = 0; if (q >= 1) e = 1;
+      var s = '', khoi = i < SO_K;
+      for (var m = 0; m < M; m++) {
+        var x = a.p[m][0] + (b.p[m][0] - a.p[m][0]) * e, y = a.p[m][1] + (b.p[m][1] - a.p[m][1]) * e;
+        if (q > 0 && q < 1) { var song = Math.sin(e * Math.PI) * 6; x += Math.sin(m * .21 + i) * song; }   // lúc chảy: nét gợn nhẹ
+        if (khoi && !GIAM) { var u = m / (M - 1); x += Math.sin(u * 7 - t * 1.6 + i * 2) * 4 * u; }   // khói lượn
+        s += (m ? 'L' : 'M') + x.toFixed(1) + ' ' + y.toFixed(1);
+      }
+      var p = duong[i], ca = MAU[a.loai], cb = MAU[b.loai];
+      p.setAttribute('d', s);
+      p.style.stroke = 'rgb(' + [0, 1, 2].map(function (c) { return Math.round(ca[c] + (cb[c] - ca[c]) * e); }).join(',') + ')';
+      p.style.strokeWidth = (DAY[a.loai] + (DAY[b.loai] - DAY[a.loai]) * e).toFixed(2);
+      p.style.opacity = (a.o + (b.o - a.o) * e) * (khoi ? .55 : 1);
+    }
+    var ee = em(Math.max(0, Math.min(1, q)));
+    lua.setAttribute('cx', (A.lua[0] + (B.lua[0] - A.lua[0]) * ee).toFixed(1)); lua.setAttribute('cy', (A.lua[1] + (B.lua[1] - A.lua[1]) * ee).toFixed(1));
+  }
+  function lap(now) {
+    if (!thay || document.hidden) { chay = false; return; }
+    var dt = Math.min(.05, (now - (truoc || now)) / 1000 || .016); truoc = now; t += dt;
+    if (!bd) bd = now;
+    var q = 0;
+    if (pha === 'giu') { if (now - bd > GIU) { pha = 'doi'; bd = now; } }
+    else { q = Math.min(1, (now - bd) / DOI); if (q > .5 && ten.dataset.i !== String(toi)) { ten.dataset.i = toi; ten.classList.remove('moi'); void ten.offsetWidth; ten.classList.add('moi'); datTen(HINH[toi]); }
+      if (q >= 1) { dang = toi; toi = (toi + 1) % HINH.length; pha = 'giu'; bd = now; q = 0; } }
+    ve(q); requestAnimationFrame(lap);
+  }
+  function batLai() { if (GIAM || chay || !thay || document.hidden) return; chay = true; truoc = 0; bd = 0; requestAnimationFrame(lap); }
+  datTen(HINH[0]); ten.dataset.i = 0; ve(0);
+  /* vẽ ra lần đầu: từng nét chạy dần */
+  if (!GIAM && svg.animate) svg.animate([{opacity: 0, transform: 'translateY(12px)'}, {opacity: 1, transform: 'none'}], {duration: 1400, delay: 250, easing: 'cubic-bezier(.2,.7,.2,1)', fill: 'backwards'});
+  setTimeout(batLai, GIAM ? 0 : 1200);
+  if ('IntersectionObserver' in window) new IntersectionObserver(function (es) { thay = es[0].isIntersecting; batLai(); }).observe(hop);
+  document.addEventListener('visibilitychange', batLai);
+  if (/[?&]chup=1/.test(location.search)) ve(0);
 })();

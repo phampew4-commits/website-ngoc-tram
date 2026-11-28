@@ -50,7 +50,7 @@
 }
 
 /* ---------- #349 ảnh thật kế tiếp vỡ ô vuông + chấm báo ảnh số mấy ---------- */
-.td-vo{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;transition:scale .9s var(--muot)}
+.td-vo{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;pointer-events:none;transition:scale .9s var(--muot)}
 .th-sp:hover .td-vo{scale:1.04}
 .td-cham{position:absolute;left:50%;bottom:calc(10px*var(--z));z-index:2;display:flex;gap:calc(4px*var(--z));padding:calc(5px*var(--z)) calc(7px*var(--z));translate:-50% 0;border-radius:calc(99px*var(--z));
   background:rgba(20,38,46,.32);-webkit-backdrop-filter:blur(calc(6px*var(--z)));backdrop-filter:blur(calc(6px*var(--z)));pointer-events:none;opacity:.8;transition:opacity .4s var(--muot)}
@@ -123,3 +123,88 @@ html.chup .td-dai{transform:translate3d(0,calc((var(--d) + 10) * -1.1em),0)!impo
 html.chup .td-so-nhan{opacity:1!important;translate:none!important}
 /* thẻ trên nền tối: vệt sáng dịu hơn */
 @media (hover:hover) and (pointer:fine){.dong .toi .th-sp.td-ng .td-sang{opacity:.55}}
+
+/* 28/11: bỏ vệt sáng trên thẻ (user không thích) */
+.td-sang{display:none!important}
+
+/* ---------- dải 4 ô giá trị: mỗi biểu tượng có chuyển động riêng (js/tram-dong.js, phần cuối) ---------- */
+.th-gtri-vong{position:relative}
+.tdg-quy{position:absolute;inset:calc(-5px*var(--z));border-radius:50%;pointer-events:none;
+  background:conic-gradient(from 0deg,transparent 0 72%,color-mix(in srgb,var(--vang) 15%,transparent) 80%,var(--vang) 92%,transparent 93%);
+  -webkit-mask:radial-gradient(farthest-side,transparent calc(100% - 1.5px),#000 calc(100% - 1px));mask:radial-gradient(farthest-side,transparent calc(100% - 1.5px),#000 calc(100% - 1px));
+  opacity:0;transition:opacity 1s var(--muot) calc(var(--i,0) * 150ms + 1.2s)}
+.tdg-gon{position:absolute;inset:0;border-radius:50%;border:1px solid var(--vang);opacity:0;pointer-events:none}
+.tdg-chay .tdg-quy{opacity:1;animation:tdg-quay calc(9s + var(--i,0) * 1.3s) linear infinite}
+.tdg-chay .th-gtri-o.hien .tdg-gon{animation:tdg-gon 1.6s var(--muot) calc(var(--i,0) * 110ms + .9s) 1 both}
+@keyframes tdg-quay{to{rotate:1turn}}
+@keyframes tdg-gon{0%{opacity:.7;scale:1}100%{opacity:0;scale:1.7}}
+.th-gtri-o svg .tdg-khoi,.th-gtri-o svg .tdg-gio{stroke-dasharray:.35 .65}
+.tdg-chay .th-gtri-o.hien svg .tdg-khoi{animation:tdg-khoi 2.8s linear infinite;animation-delay:calc(var(--i,0) * 110ms + 1.6s)}
+.tdg-chay .th-gtri-o.hien svg .tdg-k2{animation-duration:3.4s;animation-delay:2.2s}
+@keyframes tdg-khoi{0%{stroke-dashoffset:1;opacity:0}20%{opacity:1}100%{stroke-dashoffset:0;opacity:0}}
+.th-gtri-o svg .tdg-lua{fill:#e0743c;stroke:none;opacity:0}
+.tdg-chay .th-gtri-o.hien svg .tdg-lua{animation:tdg-lua 2.2s ease-in-out infinite;animation-delay:calc(1.4s + var(--j,0) * .35s)}
+@keyframes tdg-lua{0%,100%{opacity:.35}50%{opacity:1;filter:drop-shadow(0 0 1.5px #f09a5a)}}
+.tdg-xe{transform-box:fill-box;transform-origin:50% 100%}
+.tdg-chay .th-gtri-o.hien .tdg-xe{animation:tdg-nhun .9s ease-in-out infinite;animation-delay:1.8s}
+@keyframes tdg-nhun{0%,100%{translate:0 0}50%{translate:0 -.6px}}
+.th-gtri-o svg .tdg-banh{stroke-dasharray:.22 .06;transform-box:fill-box;transform-origin:center}
+.tdg-chay .th-gtri-o.hien svg .tdg-banh{stroke-dashoffset:0;animation:tdg-quay 1.1s linear infinite;animation-delay:1.8s}
+.th-gtri-o svg .tdg-gio{opacity:0}
+.tdg-chay .th-gtri-o.hien svg .tdg-gio{animation:tdg-gio 1.4s ease-out infinite;animation-delay:calc(1.8s + var(--j,0) * .25s)}
+@keyframes tdg-gio{0%{opacity:0;translate:2px 0}30%{opacity:.9}100%{opacity:0;translate:-5px 0}}
+.th-gtri-o svg .tdg-cham{fill:var(--vang);stroke:none;opacity:0}
+.tdg-chay .th-gtri-o.hien svg .tdg-cham{animation:tdg-go 1.5s ease-in-out infinite;animation-delay:calc(1.6s + var(--j,0) * .18s)}
+@keyframes tdg-go{0%,60%,100%{opacity:.35;translate:0 0}30%{opacity:1;translate:0 -2px}}
+@media (hover:hover){
+  .th-gtri-o:hover .th-gtri-vong{background:radial-gradient(circle at 50% 40%,#fffdf8,color-mix(in srgb,var(--vang) 18%,var(--giay2)))}
+  .th-gtri-o:hover .tdg-quy{animation-duration:3s}
+  .th-gtri-o:hover b{color:var(--vang)}
+}
+.th-gtri-o b{transition:color .4s var(--muot)}
+.tdg-tinh .th-gtri-o svg .tdg-lua,.tdg-tinh .th-gtri-o svg .tdg-cham{opacity:.8}
+@media (prefers-reduced-motion:reduce){.tdg-quy,.tdg-gon,.tdg-xe,.tdg-banh,.tdg-khoi,.tdg-lua,.tdg-gio,.tdg-cham{animation:none!important}}
+
+/* ---------- bụi vàng lấp lánh ở các phần nền sáng (canvas dưới chữ, js/tram-dong.js phần cuối) ---------- */
+.tdb-co{position:relative;isolation:isolate}
+.th-ke.tdb-co,.th-nha.tdb-co,.th-can.tdb-co,.td-so.tdb-co{overflow:hidden}
+.tdb-bui{position:absolute;inset:0;width:100%;height:100%;z-index:-1;pointer-events:none;display:block}
+
+/* ---------- hình nét đầu trang biến hình qua 6 loại trầm (js/tram-dong.js) ---------- */
+.th-hero-ve.tdh-co{position:relative}
+.tdh-co > svg.th-ve-tg{display:none}
+.tdh-ve{width:100%;height:100%;overflow:visible}
+.tdh-ve path,.tdh-ve circle{fill:none;stroke-linecap:round;stroke-linejoin:round}
+.tdh-ve .tdh-nen{stroke:rgba(232,223,204,.22);stroke-width:.8}
+.tdh-ve .tdh-lua{fill:#ffd9a0;stroke:none;filter:drop-shadow(0 0 3px rgba(255,190,110,.95)) drop-shadow(0 0 8px rgba(230,150,70,.7));animation:tdh-lua 1.8s ease-in-out infinite}
+@keyframes tdh-lua{0%,100%{opacity:.75}50%{opacity:1}}
+.tdh-ten{position:absolute;left:50%;bottom:calc(-6px*var(--z));translate:-50% 0;display:inline-flex;align-items:baseline;gap:calc(10px*var(--z));white-space:nowrap;
+  font:400 clamp(calc(15px*var(--z)),calc(14px*var(--z)) + .25vw,calc(19px*var(--z))) var(--serif);color:#e9e3d6;text-decoration:none;letter-spacing:.01em}
+.tdh-ten span{font:500 calc(11px*var(--z)) var(--sans);letter-spacing:.24em;color:var(--vang2)}
+.tdh-ten.moi{animation:tdh-ten .9s var(--muot)}
+@keyframes tdh-ten{0%{opacity:0;translate:-50% calc(8px*var(--z));filter:blur(3px)}100%{opacity:1;translate:-50% 0;filter:none}}
+@media (hover:hover){.tdh-ten:hover b{color:var(--vang2)}}
+@media (max-width:900px){.tdh-ten{display:none}}
+
+/* ---------- ngọn đèn ở đầu nét vàng chạy dọc trang: sáng + nổi hơn (28/11) ---------- */
+.th-soi path{stroke-width:1.4}
+.th-soi .dau-but{r:3.4px;fill:#fff4da;filter:drop-shadow(0 0 3px rgba(240,196,110,1)) drop-shadow(0 0 9px rgba(209,160,72,.85)) drop-shadow(0 0 18px rgba(209,160,72,.5))}
+.th-soi .quang{fill:var(--vang2);opacity:.35;transform-box:fill-box;transform-origin:center;animation:tds-dap 1.9s ease-in-out infinite}
+@keyframes tds-dap{0%,100%{scale:1;opacity:.38}50%{scale:2.4;opacity:.06}}
+@media (prefers-reduced-motion:reduce){.th-soi .quang,.tdh-ve .tdh-lua{animation:none}}
+
+/* ---------- khung vòm quanh hình nét đầu trang: nền đặc che vệt bay phía sau (28/11: user muốn vệt không ăn vào hình) ---------- */
+.th-hero-ve.tdh-co{border-radius:calc(999px*var(--z)) calc(999px*var(--z)) calc(22px*var(--z)) calc(22px*var(--z));
+  background:radial-gradient(120% 70% at 50% 42%,#1d3540 0%,#162a33 55%,#13242c 100%);
+  border:1px solid rgba(209,173,102,.38);
+  box-shadow:0 0 0 calc(7px*var(--z)) rgba(20,38,46,.9),0 0 0 calc(8px*var(--z)) rgba(209,173,102,.14),0 calc(30px*var(--z)) calc(70px*var(--z)) calc(-20px*var(--z)) rgba(0,0,0,.55),inset 0 0 calc(60px*var(--z)) rgba(0,0,0,.25);
+  padding:calc(34px*var(--z)) calc(22px*var(--z)) calc(54px*var(--z));box-sizing:border-box}
+.th-hero-ve.tdh-co .tdh-ten{bottom:calc(18px*var(--z))}
+@media (max-width:900px){.th-hero-ve.tdh-co{padding:calc(16px*var(--z)) calc(10px*var(--z)) calc(20px*var(--z))}}
+
+/* ---------- tên bức tranh Van Gogh đang được vệt bay vẽ lại (đầu trang) ---------- */
+.th-vg-ten{position:absolute;left:calc(28px*var(--z));bottom:calc(22px*var(--z));z-index:1;font:italic 400 calc(12.5px*var(--z))/1.4 var(--serif);letter-spacing:.02em;color:rgba(233,227,214,.45);pointer-events:none;opacity:0}
+.th-vg-ten i{color:rgba(209,173,102,.75)}
+.th-vg-ten.hien{animation:th-vg-ten 1.4s var(--muot) forwards}
+@keyframes th-vg-ten{from{opacity:0;translate:0 calc(6px*var(--z))}to{opacity:1;translate:0 0}}
+@media (max-width:760px){.th-vg-ten{left:calc(16px*var(--z));bottom:calc(12px*var(--z));font-size:calc(11px*var(--z))}}

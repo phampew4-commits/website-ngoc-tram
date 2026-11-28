@@ -5,12 +5,12 @@
 .th-gt-anh > .tram-3d-cv{opacity:0;transition:opacity 1.1s var(--muot);pointer-events:auto;touch-action:pan-y;cursor:grab;-webkit-tap-highlight-color:transparent;user-select:none;-webkit-user-select:none;z-index:1}
 .th-gt-anh > .tram-3d-cv.hien{opacity:1}
 .th-gt-anh > .tram-3d-cv.dang-keo{cursor:grabbing}
-.th-gt-anh > .tram-3d-anh{object-fit:fill}
+
 .th-gt-anh:has(> .tram-3d-cv.hien) > .tram-3d-anh{visibility:hidden}
 .th-gt-anh.tram-3d-co > svg.th-ve{opacity:0;transition:opacity 1s var(--muot)}
 
 /* gợi ý "Kéo để xoay": hiện vài giây khi mô hình vừa lên, chạm/kéo là tắt */
-.tram-3d-goi{position:absolute;left:50%;bottom:calc(16px*var(--z));translate:-50% 0;z-index:2;display:inline-flex;align-items:center;gap:calc(6px*var(--z));
+.tram-3d-goi{position:absolute;left:50%;bottom:calc(12px*var(--z));translate:-50% 0;z-index:2;display:inline-flex;align-items:center;gap:calc(6px*var(--z));
   padding:calc(5px*var(--z)) calc(12px*var(--z)) calc(5px*var(--z)) calc(10px*var(--z));border-radius:calc(99px*var(--z));
   font:500 calc(11.5px*var(--z))/1.2 var(--sans);letter-spacing:.04em;color:var(--muc);background:color-mix(in srgb,var(--the) 86%,transparent);
   border:1px solid color-mix(in srgb,var(--vang) 40%,transparent);pointer-events:none;opacity:0;visibility:hidden;white-space:nowrap}

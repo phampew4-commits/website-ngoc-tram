@@ -416,55 +416,189 @@
   addEventListener('load', doLai);
   doLai();
 
-  /* ================= DÒNG HẠT BAY NHƯ KHÓI Ở ĐẦU TRANG (lucian #352) =================
-     Canvas nhẹ: mỗi hạt trôi lên theo một "dòng chảy" vô hình đổi dần theo thời gian, kéo theo vệt mảnh (lưu vài vị trí gần nhất, xoá
-     canvas mỗi khung — không để lại vệt mờ đọng). Rê chuột: khói xoáy nhẹ quanh con trỏ. Dừng khi đầu trang ra khỏi màn hình / tab ẩn.
-     Điện thoại: ít hạt hơn. Nằm dưới tàn lửa, trên nền ánh vàng (thị sai nhiều lớp #309). */
+  /* ================= VỆT BAY ĐẦU TRANG VẼ THÀNH TRANH KIỂU VAN GOGH, BIẾN TẤU (28/11, thay dòng khói ngẫu nhiên #352) =================
+     Mỗi hạt chạy theo một "trường hướng" dựng từ xoáy lớn, ngôi sao có quầng, vầng trăng, cây bách lửa, đồi lúa gợn gió, bông hướng dương
+     → các vệt nối lại thành nét cọ xoáy như tranh Van Gogh. 4 bức luân phiên (~14 giây/bức, chuyển mềm 4 giây):
+     Đêm đầy sao · Cây bách dưới trời sao · Cánh đồng lúa trong gió · Hướng dương. Màu giữ ngà + vàng đồng của web, thêm chút xanh xám nhạt.
+     Canvas xoá mỗi khung (không đọng vệt). Rê chuột: vệt xoáy quanh con trỏ. Dừng khi đầu trang khuất / tab ẩn. Điện thoại ít hạt hơn. */
   if (hero) (function () {
     var cv = document.createElement('canvas'), ctx = cv.getContext && cv.getContext('2d');
     if (!ctx) return;
     cv.className = 'th-hero-khoi'; cv.setAttribute('aria-hidden', 'true');
     var nen = document.createElement('div'); nen.className = 'th-hero-nen'; nen.setAttribute('aria-hidden', 'true');
     hero.insertBefore(cv, hero.firstChild); hero.insertBefore(nen, hero.firstChild);
-    var W = 0, H = 0, ps = [], K = 22, t = 0, thay = true, chay = false, truoc = 0, chuot = null, nhip = 0;
-    var MAU = ['rgba(233,222,198,', 'rgba(209,173,102,'];
-    function hat(p, dau) {   // hạt mới: dày hơn ở nửa phải (quanh nén trầm) và phía dưới, như khói bốc lên
-      var x = R(); if (W >= 760 && R() < .55) x = .45 + R() * .55;
-      p.x = x * W; p.y = dau ? R() * H : H * (.55 + R() * .5); p.v = .35 + R() * .55; p.a = .5 + R() * .5; p.s = 0; p.m = 300 + R() * 520;
-      p.c = R() < .28 ? 1 : 0; p.h = [p.x, p.y]; p.o = R() * 6.28; return p;
+    var W = 0, H = 0, S = 1, ps = [], K = 26, t = 0, thay = true, chay = false, truoc = 0, chuot = null, nhip = 0, tt = 0;
+    var MAU = ['rgba(233,222,198,', 'rgba(209,173,102,', 'rgba(156,182,196,'];
+    /* toạ độ theo tỉ lệ khung (0..1). xoay: [x, y, bán kính theo cạnh ngắn, chiều] · sao: [x, y] · trang: [x, y] · bach: [x, đỉnh, bề ngang] · hoa: [x, y, bán kính] */
+    var TRANH = [
+      {gio: [1, -.1], doi: .8, xoay: [[.47, .34, .2, 1], [.66, .22, .1, -1], [.3, .55, .12, 1]], sao: [[.12, .15], [.26, .09], [.57, .08], [.77, .11], [.93, .34], [.72, .5], [.38, .18]], trang: [.88, .15]},
+      {gio: [.9, -.15], doi: .86, xoay: [[.34, .24, .14, 1], [.58, .16, .1, -1]], sao: [[.14, .12], [.46, .08], [.66, .3], [.9, .14]], trang: [.12, .32], bach: [.8, .2, .1]},
+      {gio: [1, .02], doi: .46, song: true, xoay: [[.5, .2, .16, -1], [.22, .16, .09, 1]], sao: [[.82, .12], [.68, .26]]},
+      {gio: [.35, -1], hoa: [[.3, .36, .12], [.62, .27, .14], [.83, .6, .11], [.46, .7, .1]], sao: [[.12, .14], [.92, .12]]}
+    ];
+    var dang = 0;
+    /* BẢN ĐỒ TRANH THẬT (data/van-gogh.json, đo từ ảnh tranh công cộng: mỗi ô 2 byte = độ sáng, góc nét cọ | cờ vùng vàng/cam).
+       Có bản đồ → hạt sinh theo độ sáng, chạy theo hướng nét cọ → vẽ lại đúng bức tranh; chưa tải xong / lỗi → dùng trường xoáy ở trên. */
+    var ANH = null, anhDang = 0, anhT = 0, ANH_GIU = 22, nhan = null;
+    function napAnh() {
+      fetch('data/van-gogh.json').then(function (r) { return r.json(); }).then(function (j) {
+        ANH = j.tranh.map(function (t) {
+          var b = atob(t.d), a = new Uint8Array(b.length), ds = [];
+          for (var i = 0; i < b.length; i++) { a[i] = b.charCodeAt(i); if (!(i & 1)) ds.push(a[i]); }
+          ds.sort(function (x, y) { return x - y; });   // giãn tương phản theo từng bức: 12% tối nhất → 0, 3% sáng nhất → 1
+          var lo = ds[Math.floor(ds.length * .12)], hi = ds[Math.floor(ds.length * .97)] || 255, n = new Float32Array(b.length / 2);
+          for (var q = 0; q < n.length; q++) n[q] = Math.max(0, Math.min(1, (a[q * 2] - lo) / Math.max(1, hi - lo)));
+          return {ten: t.ten, w: t.w, h: t.h, d: a, n: n};
+        });
+        nhan = document.createElement('span'); nhan.className = 'th-vg-ten'; nhan.setAttribute('aria-hidden', 'true'); hero.appendChild(nhan); doiNhan();
+        ps.forEach(function (p) { p.s = p.m; });   // đổi dần sang hạt vẽ tranh
+      }).catch(function () {});
+    }
+    function doiNhan() { if (!nhan) return; nhan.classList.remove('hien'); void nhan.offsetWidth; nhan.innerHTML = 'Biến tấu từ <i>' + ANH[anhDang].ten + '</i> — Van Gogh'; nhan.classList.add('hien'); }
+    function oAnh(x, y) {   // ô của tranh tại điểm (x, y) trên khung — tranh phủ kín khung (cover), canh giữa
+      var T = ANH[anhDang], k = T.w < T.h && W > H ? Math.min(W / T.w, H / T.h) * 1.08 : Math.max(W / T.w, H / T.h), ox = (W - T.w * k) / 2, oy = (H - T.h * k) / 2;   // tranh dọc trên khung ngang: hiện gần trọn chiều cao
+      var i = Math.floor((x - ox) / k), j = Math.floor((y - oy) / k);
+      if (i < 0 || j < 0 || i >= T.w || j >= T.h) return -1;
+      return (j * T.w + i) * 2;
+    }
+    function truong(T, x, y, o) {
+      var u = x / W, v = y / H, vx = T.gio[0] * .55, vy = T.gio[1] * .55, i, dx, dy, d, r, g;
+      if (T.doi != null && v > T.doi) {   // đồi / lúa: dòng chảy ngang uốn sóng
+        var k = (v - T.doi) / (1 - T.doi);
+        vx += 1.1; vy += Math.sin(u * (T.song ? 11 : 7) + v * (T.song ? 22 : 12) - t * .3) * (T.song ? 1.5 : .9) * (.4 + k);
+      }
+      for (i = 0; T.xoay && i < T.xoay.length; i++) {   // xoáy lớn: quay quanh tâm + hút nhẹ vào → xoắn ốc
+        var X = T.xoay[i]; dx = x - X[0] * W; dy = y - X[1] * H; d = Math.sqrt(dx * dx + dy * dy) + 1e-3; r = X[2] * S; g = (d / r) * Math.exp(1 - d / r);
+        vx += (-dy / d * X[3] * 2.4 - dx / d * .35) * g; vy += (dx / d * X[3] * 2.4 - dy / d * .35) * g;
+      }
+      for (i = 0; T.sao && i < T.sao.length; i++) {   // ngôi sao: xoáy nhỏ có quầng
+        dx = x - T.sao[i][0] * W; dy = y - T.sao[i][1] * H; d = Math.sqrt(dx * dx + dy * dy) + 1e-3; r = .038 * S; g = (d / r) * Math.exp(1 - d / r);
+        vx += -dy / d * 2 * g; vy += dx / d * 2 * g;
+      }
+      if (T.trang) { dx = x - T.trang[0] * W; dy = y - T.trang[1] * H; d = Math.sqrt(dx * dx + dy * dy) + 1e-3; r = .07 * S; g = (d / r) * Math.exp(1 - d / r); vx += -dy / d * 2.8 * g; vy += dx / d * 2.8 * g; }
+      if (T.bach) {   // cây bách: cột lửa xoắn đi lên
+        dx = x - T.bach[0] * W; var w = T.bach[2] * W * (.35 + .65 * Math.max(0, (y / H - T.bach[1]) / (1 - T.bach[1])));
+        if (y > T.bach[1] * H && Math.abs(dx) < w) { g = 1 - Math.abs(dx) / w; vy -= 2.2 * g; vx += Math.sin(y * .035 - t * 1.2) * 1.4 * g - dx / w * .6 * g; }
+      }
+      for (i = 0; T.hoa && i < T.hoa.length; i++) {   // hướng dương: lõi xoay, cánh toả ra
+        var F = T.hoa[i]; dx = x - F[0] * W; dy = y - F[1] * H; d = Math.sqrt(dx * dx + dy * dy) + 1e-3; r = F[2] * S;
+        if (d < r) { g = d / r; vx += -dy / d * 2 * g; vy += dx / d * 2 * g; }
+        else if (d < r * 2.1) { g = Math.sin(Math.PI * (d - r) / (r * 1.1)); var canh = Math.sin(Math.atan2(dy, dx) * 13 + t * .2); vx += (dx / d * 1.6 - dy / d * canh * .5) * g; vy += (dy / d * 1.6 + dx / d * canh * .5) * g; }
+      }
+      o[0] = vx; o[1] = vy;
+    }
+    function gan(T, x, y) {   // hạt sinh gần sao / trăng / lõi hoa / cây bách → màu vàng
+      var i, d;
+      for (i = 0; T.sao && i < T.sao.length; i++) { d = Math.hypot(x - T.sao[i][0] * W, y - T.sao[i][1] * H); if (d < .08 * S) return true; }
+      if (T.trang && Math.hypot(x - T.trang[0] * W, y - T.trang[1] * H) < .14 * S) return true;
+      for (i = 0; T.hoa && i < T.hoa.length; i++) if (Math.hypot(x - T.hoa[i][0] * W, y - T.hoa[i][1] * H) < T.hoa[i][2] * S * 2) return true;
+      if (T.bach && Math.abs(x - T.bach[0] * W) < T.bach[2] * W && y > T.bach[1] * H) return true;
+      return false;
+    }
+    function hat(p) {
+      if (ANH) {   // chọn chỗ sinh theo độ sáng của tranh (sáng nhiều hạt, tối không có)
+        var T = ANH[anhDang], o = -1, L = 0;
+        for (var thu = 0; thu < 14; thu++) {
+          p.x = R() * W; p.y = R() * H; o = oAnh(p.x, p.y); if (o < 0 || trongChu(p.x, p.y)) { o = -1; continue; }
+          L = T.n[o >> 1]; if (L > .08 && R() < Math.pow(L, 2.2)) break; o = -1;
+        }
+        p.v = .32 + R() * .3; p.a = o < 0 ? 0 : .35 + .65 * L; p.s = 0; p.m = 160 + R() * 220; p.vx = 0; p.vy = 0;
+        p.c = o >= 0 && (T.d[o + 1] & 128) ? 1 : 0; p.h = [p.x, p.y]; return p;
+      }
+      p.x = R() * W; p.y = R() * H; p.v = .45 + R() * .6; p.a = .5 + R() * .5; p.s = 0; p.m = 160 + R() * 320;
+      var T = TRANH[dang], rr = R();
+      p.c = gan(T, p.x, p.y) ? (rr < .75 ? 1 : 0) : (rr < .58 ? 0 : rr < .84 ? 2 : 1);
+      p.h = [p.x, p.y]; return p;
     }
     function co() {
       var r = hero.getBoundingClientRect(), dpr = Math.min(1.5, devicePixelRatio || 1);
-      W = Math.round(r.width); H = Math.round(r.height); if (!W || !H) return;
+      W = Math.round(r.width); H = Math.round(r.height); if (!W || !H) return; S = Math.min(W, H) * 1.25;
       cv.width = W * dpr; cv.height = H * dpr; ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-      var n = W < 760 ? 70 : W < 1200 ? 150 : 210; K = W < 760 ? 16 : 22;
-      ps = []; for (var i = 0; i < n; i++) ps.push(hat({}, true));
+      var n = ANH ? (W < 760 ? 170 : W < 1200 ? 300 : 420) : (W < 760 ? 130 : W < 1200 ? 250 : 340);
+      K = ANH ? (W < 760 ? 34 : 44) : (W < 760 ? 30 : 42); doVungChu && doVungChu();   // tranh: nét cọ ngắn, nhiều hạt · xoáy: vệt dài
+      ps = []; for (var i = 0; i < n; i++) ps.push(hat({}));
     }
+    var va = [0, 0], vb = [0, 0], GIU = 14, DOI = 4;
     function buoc(dt) {
-      t += dt; nhip++;
-      var f = dt * 60, luu = nhip % 3 === 0, nhom = [[[], [], []], [[], [], []]];
+      t += dt; tt += dt; nhip++;
+      var chu = GIU + DOI, k = tt % chu, tron = Math.floor(tt / chu);
+      dang = tron % TRANH.length;
+      var B = TRANH[(dang + 1) % TRANH.length], w = k > GIU ? (k - GIU) / DOI : 0; w = w * w * (3 - 2 * w);
+      var A = TRANH[dang], f = dt * 60, luu = ANH ? true : nhip % 2 === 0, nhom = [[[], [], []], [[], [], []], [[], [], []]];
+      if (ANH) {
+        anhT += dt;
+        if (anhT > ANH_GIU) { anhT = 0; anhDang = (anhDang + 1) % ANH.length; doiNhan(); ps.forEach(function (p) { p.m = Math.min(p.m, p.s + 20 + R() * 50); }); }   // nét cũ tàn dần trong ~1 giây rồi vẽ bức mới
+        if (ps.length < (W < 760 ? 170 : W < 1200 ? 300 : 420) * .9 || ps.length > (W < 760 ? 170 : W < 1200 ? 300 : 420) * 1.1) co();   // vừa nạp tranh: đổi số hạt
+      }
+      if (ANH) { if ((nhip & 1) === 0) veAnh(f * 2); return; }
       for (var i = 0; i < ps.length; i++) {
-        var p = ps[i];
-        /* lệch khỏi hướng thẳng lên: dòng chảy vô hình đổi dần theo thời gian → làn khói uốn lượn */
-        var lech = Math.sin(p.x * .0058 + t * .3 + p.o * .15) * Math.cos(p.y * .0041 - t * .22) * 1.25 + Math.sin((p.x - p.y) * .0027 + t * .27) * .55;
-        var vx = Math.sin(lech) * p.v, vy = -Math.cos(lech) * p.v * .9;
+        var p = ps[i], vx, vy;
+        if (ANH) {   // chạy theo hướng nét cọ của ô đang đứng; giữ chiều cũ cho khỏi giật
+          var o = oAnh(p.x, p.y);
+          if (o < 0) { p.s = p.m + 1; vx = vy = 0; }
+          else {
+            var g = (ANH[anhDang].d[o + 1] & 127) / 127 * Math.PI, ux = Math.cos(g), uy = Math.sin(g);
+            if (p.vx || p.vy) { if (ux * p.vx + uy * p.vy < 0) { ux = -ux; uy = -uy; } } else if (R() < .5) { ux = -ux; uy = -uy; }
+            vx = ux * p.v; vy = uy * p.v; p.vx = vx; p.vy = vy;
+          }
+        } else {
+          truong(A, p.x, p.y, va); if (w > 0) { truong(B, p.x, p.y, vb); va[0] += (vb[0] - va[0]) * w; va[1] += (vb[1] - va[1]) * w; }
+          var m = Math.sqrt(va[0] * va[0] + va[1] * va[1]) || 1; vx = va[0] / m * p.v; vy = va[1] / m * p.v;
+        }
         if (chuot) {
           var dx = p.x - chuot.x, dy = p.y - chuot.y, d = Math.sqrt(dx * dx + dy * dy);
-          if (d < 170 && d > 1) { var k = (1 - d / 170) * 1.6; vx += -dy / d * k - dx / d * k * .2; vy += dx / d * k - dy / d * k * .2; }
+          if (d < 170 && d > 1) { var kk = (1 - d / 170) * 1.6; vx += -dy / d * kk - dx / d * kk * .2; vy += dx / d * kk - dy / d * kk * .2; }
         }
         p.x += vx * f; p.y += vy * f; p.s += f;
         if (luu) { p.h.push(p.x, p.y); if (p.h.length > K * 2) p.h.splice(0, 2); }
-        if (p.y < -30 || p.x < -40 || p.x > W + 40 || p.s > p.m) { hat(p, false); continue; }
+        if (p.y < -30 || p.y > H + 30 || p.x < -40 || p.x > W + 40 || p.s > p.m) { hat(p); continue; }
         /* mờ dần ở đầu + cuối đời hạt, nhạt hơn khi đi qua vùng chữ bên trái */
-        var song = Math.sin(Math.PI * Math.min(1, p.s / p.m)) * p.a * (W >= 760 ? .45 + .55 * Math.min(1, p.x / (W * .6)) : .7);
+        var song = Math.sin(Math.PI * Math.min(1, p.s / p.m)) * p.a * (W >= 760 ? .38 + .62 * Math.min(1, p.x / (W * .6)) : .75);
         nhom[p.c][song > .5 ? 2 : song > .25 ? 1 : 0].push(p);
       }
-      ctx.clearRect(0, 0, W, H); ctx.lineWidth = 1; ctx.lineCap = ctx.lineJoin = 'round';
-      for (var c = 0; c < 2; c++) for (var b = 0; b < 3; b++) {
+      ctx.clearRect(0, 0, W, H); ctx.lineCap = ctx.lineJoin = 'round';
+      for (var c = 0; c < 3; c++) for (var b = 0; b < 3; b++) {
         var ds = nhom[c][b]; if (!ds.length) continue;
-        ctx.strokeStyle = MAU[c] + [.045, .09, .16][b] + ')'; ctx.beginPath();
+        ctx.lineWidth = [1, 1.35, 1.75][b];
+        ctx.strokeStyle = MAU[c] + [.1, .22, .4][b] + ')'; ctx.beginPath();
         for (var j = 0; j < ds.length; j++) {
           var q = ds[j], h = q.h; if (h.length < 4) continue;
+          ctx.moveTo(h[0], h[1]); for (var mm = 2; mm < h.length; mm += 2) ctx.lineTo(h[mm], h[mm + 1]); ctx.lineTo(q.x, q.y);
+        }
+        ctx.stroke();
+      }
+    }
+    /* NÉT CỌ CHẬM (28/11): mỗi hạt là một đầu cọ đi chậm theo hướng nét cọ của tranh, kéo theo một đuôi mềm (vài chục điểm gần nhất).
+       Mỗi khung xoá sạch rồi vẽ lại các đuôi → không đọng vết tranh cũ khi đổi bức (bản trước dùng mờ dần bằng destination-out để lại bóng — user chê).
+       Vùng khối chữ bên trái gần như không có nét cho dễ đọc. Chạy ~30 khung/giây cho nhẹ máy. */
+    var vungChu = null, nhipAnh = 0;
+    function doVungChu() {
+      var c = hero.querySelector('.th-hero-chu'); if (!c || W < 760) { vungChu = null; return; }
+      var a = c.getBoundingClientRect(), h = hero.getBoundingClientRect();
+      vungChu = {l: a.left - h.left - 40, t: a.top - h.top - 30, r: a.right - h.left + 40, b: a.bottom - h.top + 30};
+    }
+    function trongChu(x, y) { return vungChu && x > vungChu.l && x < vungChu.r && y > vungChu.t && y < vungChu.b; }
+    function veAnh(f) {
+      nhipAnh++;
+      var T = ANH[anhDang], nhom = [[[], [], []], [[], [], []], [[], [], []]];
+      for (var i = 0; i < ps.length; i++) {
+        var p = ps[i], o = oAnh(p.x, p.y);
+        if (o < 0 || p.s > p.m) { hat(p); continue; }
+        var g = (T.d[o + 1] & 127) / 127 * Math.PI, ux = Math.cos(g), uy = Math.sin(g);
+        if (p.vx || p.vy) { if (ux * p.vx + uy * p.vy < 0) { ux = -ux; uy = -uy; } } else if (R() < .5) { ux = -ux; uy = -uy; }
+        p.vx = p.vx ? p.vx * .9 + ux * p.v * .1 : ux * p.v; p.vy = p.vy ? p.vy * .9 + uy * p.v * .1 : uy * p.v;   // đổi hướng thật êm → nét mượt, bớt rối
+        if (chuot) { var dx = p.x - chuot.x, dy = p.y - chuot.y, d = Math.sqrt(dx * dx + dy * dy); if (d < 140 && d > 1) { var kk = (1 - d / 140) * .4; p.vx += -dy / d * kk; p.vy += dx / d * kk; } }
+        p.x += p.vx * f; p.y += p.vy * f; p.s += f;
+        if (nhipAnh % 2 === 0) { p.h.push(p.x, p.y); if (p.h.length > K * 2) p.h.splice(0, 2); }
+        var song = Math.sin(Math.PI * Math.min(1, p.s / p.m)) * p.a * (trongChu(p.x, p.y) ? .1 : 1);
+        if (song > .04) nhom[p.c][song > .55 ? 2 : song > .3 ? 1 : 0].push(p);
+      }
+      ctx.clearRect(0, 0, W, H); ctx.lineCap = ctx.lineJoin = 'round';
+      for (var c = 0; c < 3; c++) for (var b = 0; b < 3; b++) {
+        var ds = nhom[c][b]; if (!ds.length) continue;
+        ctx.lineWidth = [.9, 1.15, 1.4][b]; ctx.strokeStyle = MAU[c] + [.12, .24, .38][b] + ')'; ctx.beginPath();
+        for (var j = 0; j < ds.length; j++) {
+          var q = ds[j], h = q.h; if (h.length < 6) continue;
           ctx.moveTo(h[0], h[1]); for (var m = 2; m < h.length; m += 2) ctx.lineTo(h[m], h[m + 1]); ctx.lineTo(q.x, q.y);
         }
         ctx.stroke();
@@ -477,7 +611,8 @@
     }
     function batLai() { if (chay || !thay || document.hidden || !W) return; chay = true; truoc = 0; requestAnimationFrame(lap); }
     co();
-    for (var i = 0; i < 90; i++) buoc(1 / 60);   // chạy trước vài khung cho có vệt ngay khi mở trang
+    for (var i = 0; i < 120; i++) buoc(1 / 60);   // chạy trước vài khung cho có tranh ngay khi mở trang
+    if (document.readyState === 'complete') setTimeout(napAnh, 300); else addEventListener('load', function () { setTimeout(napAnh, 300); });
     if ('ResizeObserver' in window) new ResizeObserver(function () { clearTimeout(cv._h); cv._h = setTimeout(function () { co(); batLai(); }, 150); }).observe(hero);
     if ('IntersectionObserver' in window) new IntersectionObserver(function (es) { thay = es[0].isIntersecting; batLai(); }).observe(hero);
     document.addEventListener('visibilitychange', batLai);

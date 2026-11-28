@@ -10,7 +10,7 @@ var LOAI = {
   nhan:   {ten: 'Nhẫn',            ngan: 'Nhẫn'},
   khuyen: {ten: 'Khuyên tai',      ngan: 'Khuyên'},
   matday: {ten: 'Mặt dây',         ngan: 'Mặt dây'},
-  tramdot: {ten: 'Trầm hương',     ngan: 'Trầm hương'}   // trầm đốt nhà làm (data/tram-dot.json) — KHÔNG nằm trong THU_TU, chỉ dùng cho giỏ
+  tramdot: {ten: 'Trầm đốt',       ngan: 'Trầm đốt'}   // trầm đốt nhà làm (data/tram-dot.json) — KHÔNG nằm trong THU_TU, chỉ dùng cho giỏ
 };
 var THU_TU = ['tron', 'chuoi', 'charm', 'nhan', 'khuyen', 'matday'];
 var ds = [], loc = 'tat', tu = '', sx = 'moi', soHien = 0, MOI_LAN = 16;
@@ -133,7 +133,7 @@ function dungChanTrang() {
         (LIEN_HE.nhomZalo ? '<a class="nut sang nho-tin" href="' + e(LIEN_HE.nhomZalo) + '" target="_blank" rel="noopener">Nhận tin món mới qua Zalo</a>' : '') +
       '</div>' +
       cot('Mua sắm', [['Tất cả sản phẩm', 'cua-hang.html']].concat(THU_TU.map(function (l) { return [LOAI[l].ten, 'cua-hang.html?loai=' + l]; }))
-        .concat([['Trầm hương nhà làm', 'tram-huong.html'], ['Quà tặng theo ngân sách', 'qua-tang.html'], ['Tự thiết kế chuỗi', 'thiet-ke.html']])) +
+        .concat([['Trầm đốt nhà làm', 'tram-huong.html'], ['Quà tặng theo ngân sách', 'qua-tang.html'], ['Tự thiết kế chuỗi', 'thiet-ke.html']])) +
       cot('Hỗ trợ', [['Chính sách giao hàng', 'chinh-sach.html#giao-hang'], ['Thanh toán', 'chinh-sach.html#thanh-toan'], ['Đổi trả', 'chinh-sach.html#doi-tra'], ['Bảo hành', 'chinh-sach.html#bao-hanh'],
         ['Chọn size vòng & nhẫn', 'chon-size.html'], ['Cẩm nang ngọc', 'cam-nang.html'], ['Hỏi đáp', veTrang + '#hoi-dap']]) +
       cot('Ngọc Trầm', [['Về Ngọc Trầm', 've-ngoc-tram.html'], ['Liên hệ & cửa hàng', 'lien-he.html'], ['Bảo mật thông tin', 'chinh-sach.html#bao-mat']].concat(LIEN_HE.fanpage.map(function (f) { return [f.ten, f.link, 1]; }))) +
@@ -256,7 +256,7 @@ function dungMenu() {
     '<ul class="menu-ds">' +
     '<li class="co-mega"><button type="button" class="menu-nut" aria-expanded="false" aria-controls="megaSp">' + ten('Sản phẩm') + mui + '</button>' + megaSp + '</li>' +
     '<li><a class="menu-nut" href="qua-tang.html">' + ten('Quà tặng') + '</a></li>' +
-    '<li><a class="menu-nut" href="tram-huong.html">' + ten('Trầm hương') + '</a></li>' +
+    '<li><a class="menu-nut" href="tram-huong.html">' + ten('Trầm đốt') + '</a></li>' +
     '<li class="co-mega"><button type="button" class="menu-nut" aria-expanded="false" aria-controls="megaTk">' + ten('Tự thiết kế') + mui + '</button>' + megaTk + '</li>' +
     '<li class="co-mega"><button type="button" class="menu-nut" aria-expanded="false" aria-controls="megaHt">' + ten('Hỗ trợ') + mui + '</button>' + megaHt + '</li>' +
     '<li class="co-mega"><button type="button" class="menu-nut" aria-expanded="false" aria-controls="megaVe">' + ten('Ngọc Trầm') + mui + '</button>' + megaVe + '</li>' +
@@ -1026,7 +1026,7 @@ document.addEventListener('click', function (ev) {
    Trang mới mở ra với body::before cùng màu giấy + hoa sen tan dần → hai lớp nối nhau, không chớp.
    Bỏ qua: link mở tab mới, link # trong trang, link đã bị chặn (nút giỏ mở ngăn…), phím Ctrl/⌘. ---------- */
 addEventListener('load', function () { setTimeout(function () { document.documentElement.classList.add('da-nap'); }, 320); });
-var TEN_TRANG = {'index': 'Trang chủ', 'cua-hang': 'Cửa hàng', 'san-pham': 'Chi tiết món', 'gio-hang': 'Giỏ hàng', 'lien-he': 'Liên hệ & cửa hàng', 'tram-huong': 'Trầm hương nhà làm',
+var TEN_TRANG = {'index': 'Trang chủ', 'cua-hang': 'Cửa hàng', 'san-pham': 'Chi tiết món', 'gio-hang': 'Giỏ hàng', 'lien-he': 'Liên hệ & cửa hàng', 'tram-huong': 'Trầm đốt nhà làm',
   'qua-tang': 'Quà tặng', 'thiet-ke': 'Tự thiết kế chuỗi', 'chon-size': 'Chọn size', 'chinh-sach': 'Chính sách', 'cam-nang': 'Cẩm nang ngọc', 've-ngoc-tram': 'Về Ngọc Trầm', 'tai-khoan': 'Tài khoản', 'si': 'Bảng giá sỉ'};
 var manChe = null;
 function sangTrang(href, ten) {
