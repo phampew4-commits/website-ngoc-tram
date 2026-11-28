@@ -601,3 +601,7 @@ html.chup .th-tho-khoi path{animation:none!important;stroke-dashoffset:0;opacity
 @media (max-width:760px){.th-buoc{grid-template-columns:minmax(0,1fr)}}
 /* nút thêm giỏ của trang dùng chung lớp .nut nhưng không theo trạng thái [data-gio] */
 .th-sp .th-them.xong{background:var(--vang);border-color:var(--vang)}
+
+/* vòng thở: dòng số giây trống (lúc chưa bấm) không chiếm chỗ → chữ nằm đúng tâm vòng; chữ ngắt dòng cân ("Bấm để / bắt đầu") */
+.th-tho-tt i:empty{display:none}
+.th-tho-tt b{text-wrap:balance}
