@@ -8,27 +8,34 @@ var GIU_NGOC = khoiGiu('Giữ ngọc luôn đẹp', (CH.chamSoc || {}).ngoc);
 var GIU_TRAM = khoiGiu('Giữ trầm luôn thơm', (CH.chamSoc || {}).tram);
 
 var maSp = new URLSearchParams(location.search).get('ma') || '';
+/* ?si=1: khách sỉ xem chi tiết — giá là giá sỉ (giải từ data/si.json bằng js/si.js), không giỏ hàng / yêu thích / gợi ý giá lẻ.
+   Máy chưa đăng nhập tài khoản sỉ → về si.html đăng nhập rồi quay lại đúng món này. */
+var CHE_SI = new URLSearchParams(location.search).get('si') === '1' && typeof SI !== 'undefined';
+if (CHE_SI) document.documentElement.classList.add('che-si');
 
-taiDuLieu.then(function () {
+Promise.all([taiDuLieu, CHE_SI ? SI.san() : null]).then(function (r) {
+  if (CHE_SI && !r[1]) { location.replace('si.html?ve=' + encodeURIComponent(maSp)); return; }
   var x = ds.filter(function (y) { return khoa(y) === maSp; })[0] || ds.filter(function (y) { return y.ma === maSp; })[0];
   if (!x) return khongThay();
   dungTrang(x);
   dungXemKi(x);
   dungQuy();
-  dungPhoiCharm(x);
-  dungTronBo(x);
+  if (!CHE_SI) { dungPhoiCharm(x); dungTronBo(x); }
   dungLienQuan(x);
   dungHd(x);
-  dungDaXem(x);
+  if (!CHE_SI) dungDaXem(x);
   thuGonTT();
+  if (CHE_SI) SI.ve();
 }).catch(khongThay);
+function giaSiCua(x) { return SI.du && SI.du.g[khoa(x)] || 0; }
+function linkCt(k) { return CHE_SI ? SI.ct(k) : 'san-pham.html?ma=' + encodeURIComponent(k); }
 
 function khongThay() {
   moManNoi();
   document.title = 'Không tìm thấy sản phẩm · Ngọc Trầm Store';
   $('#spChinh').innerHTML = '<div class="khong-thay"><span class="nho">Mã ' + e(maSp || '—') + '</span><h1>Không tìm thấy <em>sản phẩm này</em></h1>' +
     '<p>Món này có thể đã được bán hoặc mã chưa đúng. Bạn xem các món khác hoặc nhắn cửa hàng nhé.</p>' +
-    '<div class="hang"><a class="nut dac" href="index.html#san-pham">Xem sản phẩm khác</a><a class="nut" href="' + linkZalo() + '" target="_blank">Nhắn Zalo</a></div></div>';
+    '<div class="hang"><a class="nut dac" href="' + (CHE_SI ? 'si.html' : 'index.html#san-pham') + '">Xem sản phẩm khác</a><a class="nut" href="' + linkZalo() + '" target="_blank">Nhắn Zalo</a></div></div>';
 }
 
 /* thông số rút ra từ tên + dữ liệu */
@@ -48,7 +55,12 @@ function thongSo(x) {
 function dungTrang(x) {
   var tt = x.tt || 'Còn hàng', loai = LOAI[x.loai];
   document.title = x.ten + ' · Ngọc Trầm Store';
-  var md = document.querySelector('meta[name="description"]'); if (md) md.content = x.ten + ' – ' + gia(x.gia) + '. Ảnh thật, mã ' + x.ma + ', hỏi mua qua Zalo.';
+  var md = document.querySelector('meta[name="description"]'); if (md && !CHE_SI) md.content = x.ten + ' – ' + gia(x.gia) + '. Ảnh thật, mã ' + x.ma + ', hỏi mua qua Zalo.';
+  var gs = CHE_SI ? giaSiCua(x) : 0, ban = /bán/i.test(tt);
+  if (CHE_SI) {
+    document.title = x.ten + ' · Giá sỉ · Ngọc Trầm Store';
+    $('#duong').innerHTML = '<a href="index.html">Trang chủ</a><span>/</span><a href="si.html">Khách sỉ</a><span>/</span><a href="si.html#loai=' + x.loai + '">' + loai.ten + '</a><span>/</span><b>' + e(x.ma) + '</b>';
+  } else
   $('#duong').insertAdjacentHTML('beforeend', '<span>/</span><a href="index.html#san-pham" data-loai="' + x.loai + '">' + loai.ten + '</a><span>/</span><b>' + e(x.ma) + '</b>');
 
   var tp = x.tp && x.tp.length ? '<ul class="ds-tp">' + x.tp.map(function (c) { return '<li>' + e(c) + '</li>'; }).join('') + '</ul>' : '';
@@ -70,6 +82,13 @@ function dungTrang(x) {
         '<span class="nho" data-hien>' + loai.ten + ' · ' + e(nhanSp(x)) + '</span>' +
         '<h1 class="tieu-de"><span class="dong-chu"><span>' + e(x.ten) + '</span></span></h1>' +
         '<div class="ma-ct" data-hien><span>Mã ' + e(x.ma) + '</span><span class="chip' + (/bán/i.test(tt) ? ' ban' : '') + '">' + e(tt) + '</span></div>' +
+        (CHE_SI ? '<div class="gia-sp si-gia" data-hien><b>' + (gs ? gia(gs) : 'Hỏi giá sỉ') + '</b><small>' + (gs ? 'Giá sỉ · dành cho khách sỉ' : 'Nhắn Zalo để được báo giá sỉ') + '</small></div>' +
+          '<div class="hang-mua" data-hien>' +
+            '<a class="nut dac zalo" href="' + linkZalo() + '" target="_blank" rel="noopener" data-chep-si="' + e(khoa(x)) + '">Hỏi sỉ qua Zalo</a>' +
+            (ban ? '' : '<button class="nut" data-si-ds="' + e(khoa(x)) + '" data-chu></button>') +
+          '</div>' +
+          '<p class="ghi-ct" data-hien>Bấm "Hỏi sỉ qua Zalo", mã và giá sỉ được chép sẵn — bạn chỉ cần dán vào tin nhắn. Lấy nhiều món thì gom vào <a class="si-xem-ds" href="si.html#ds">danh sách hỏi sỉ<i data-so-si hidden></i></a> rồi gửi một lần.</p>' +
+          '<div class="si-an">' : '') +
         '<div class="gia-sp" data-hien><b>' + gia(x.gia) + '</b><small>' + (x.gia ? 'Giá bán lẻ · mỗi món chỉ có một' : 'Nhắn shop để được báo giá') + '</small></div>' +
         '<div class="hang-mua" data-hien>' +
           (/bán/i.test(tt) ? '' : '<button class="nut dac" data-gio="' + e(khoa(x)) + '">Thêm vào giỏ</button>') +
@@ -81,6 +100,7 @@ function dungTrang(x) {
         (x.gia && !/bán/i.test(tt) ? '<p class="ship-sp" data-hien><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M3 7h11v9H3zM14 10h4l3 3v3h-7"/><circle cx="7" cy="17.5" r="1.8"/><circle cx="17" cy="17.5" r="1.8"/></svg>' +
           (x.gia >= NGUONG_SHIP ? '<span>Món này được <b>miễn ship</b> khi chuyển khoản trước.</span>'
                                 : '<span>Mua thêm <b>' + gia(NGUONG_SHIP - x.gia) + '</b> để được <b>miễn ship</b> (chuyển khoản trước).</span>') + '</p>' : '') +
+        (CHE_SI ? '</div>' : '') +
         '<div id="phoiCharm"></div>' +
         '<ul class="cam-ket-sp" data-hien>' +
           '<li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><rect x="3" y="6" width="18" height="13" rx="2"/><circle cx="12" cy="12.5" r="3.5"/><path d="M8 6l1.5-2h5L16 6"/></svg><span>Ảnh thật<small>Chụp đúng món</small></span></li>' +
@@ -104,7 +124,10 @@ function dungTrang(x) {
     '</div>';
 
   /* thanh mua dính dưới đáy (điện thoại) */
-  $('#thanhMua').innerHTML = '<div><small>Mã ' + e(x.ma) + '</small><b>' + gia(x.gia) + '</b></div>' +
+  $('#thanhMua').innerHTML = CHE_SI
+    ? '<div><small>Mã ' + e(x.ma) + ' · giá sỉ</small><b>' + (gs ? gia(gs) : 'Hỏi giá') + '</b></div>' +
+      '<a class="nut dac zalo" href="' + linkZalo() + '" target="_blank" rel="noopener" data-chep-si="' + e(khoa(x)) + '">Hỏi sỉ qua Zalo</a>'
+    : '<div><small>Mã ' + e(x.ma) + '</small><b>' + gia(x.gia) + '</b></div>' +
     (/bán/i.test(tt) ? '<a class="nut dac zalo" href="' + linkZalo() + '" target="_blank" data-chep="' + e(x.ma) + '">Hỏi mua qua Zalo</a>'
                      : '<button class="nut dac" data-gio="' + e(khoa(x)) + '">Thêm vào giỏ</button>');
   veNutThem();
@@ -512,6 +535,10 @@ function dungLienQuan(x) {
   if (them.length < 4) them = them.concat(ds.filter(function (y) { return y !== x && them.indexOf(y) < 0 && y.loai !== 'charm'; }).slice(0, 4 - them.length));
   if (!them.length) return;
   $('#lienQuan').hidden = false;
+  if (CHE_SI) {
+    $('#luoiLq').innerHTML = them.map(function (y, i) { return SI.the(y, i, SI.du); }).join('');
+    var tc = $('#lienQuan .them a'); if (tc) { tc.href = 'si.html#loai=' + x.loai; tc.textContent = 'Xem tất cả ' + LOAI[x.loai].ten.toLowerCase() + ' giá sỉ'; }
+  } else
   $('#luoiLq').innerHTML = them.map(the).join('');
   if (them.length > 4) keoNgang($('#luoiLq'));
   theoDoi($('#lienQuan'));
@@ -682,7 +709,7 @@ function noRa(img, href) {
   }, true);
   window.moSp = function (k) {
     var c = vua && vua.dataset.k === String(k) ? vua : null;
-    noRa(c && c.querySelector('.h img'), 'san-pham.html?ma=' + encodeURIComponent(k));
+    noRa(c && c.querySelector('.h img'), linkCt(k));
   };
 })();
 /* trang này được mở từ thẻ ở trang trước: dựng sẵn ảnh đúng chỗ (lớp giấy do san-pham.html bật từ <head>) */

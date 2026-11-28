@@ -34,8 +34,8 @@ em{font-style:italic}
    HIỆU ỨNG HIỆN RA
    ========================================================= */
 /* chữ tiêu đề trồi lên từng dòng (mặt nạ) */
-.dong-chu{display:block;overflow:hidden;padding:.12em 0 .1em;margin:-.12em 0 -.1em}
-.dong-chu>span{display:inline-block;translate:0 105%;transition:translate 1.1s var(--muot)}
+.dong-chu{display:block;overflow:hidden;padding:.24em .06em .34em;margin:-.24em -.06em -.34em}   /* chừa chỗ cho dấu chồng (Ấ, Ở) và đuôi chữ g/p/y/dấu nặng — khung che không cắt mất */
+.dong-chu>span{display:inline-block;translate:0 140%;transition:translate 1.1s var(--muot)}
 .hien .dong-chu>span,.hien.dong-chu>span{translate:0 0}
 .dong-chu:nth-child(2)>span{transition-delay:.08s}.dong-chu:nth-child(3)>span{transition-delay:.16s}
 /* khối trồi nhẹ */

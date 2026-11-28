@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="robots" content="noindex">
+<meta name="robots" content="noindex, nofollow">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Bảng giá sỉ · Ngọc Trầm Store</title>
+<meta name="description" content="Trang dành cho khách sỉ, cộng tác viên của Ngọc Trầm Store.">
+<meta name="theme-color" content="#14262e">
+<link rel="icon" href="img/hoa.png">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Be+Vietnam+Pro:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="preload" href="data/san-pham.json?v=1b742ea166" as="fetch" crossorigin="anonymous"><link rel="preconnect" href="https://lh3.googleusercontent.com" crossorigin>
+<link rel="stylesheet" href="css/style.css?v=b29afa4035">
+<link rel="stylesheet" href="css/si.css?v=fe43ce1e12">
+</head>
+<!-- Trang khách sỉ: giá sỉ nằm trong data/si.json đã mã hoá (noi-bo/xuat_si.py), chỉ giải được bằng tài khoản Ngọc Trầm cấp -->
+
+<body class="trang-trong trang-phu" data-trang="si">
+
+<header class="dau" id="dau">
+  <div class="khung">
+    <a class="hieu" href="index.html"><img src="img/hoa.png" alt=""><b>Ngọc Trầm</b></a>
+    <nav class="menu" id="menu" aria-label="Danh mục chính"></nav>
+    <div class="phai">
+      <button class="mo-menu" id="moMenu" aria-label="Mở menu"><i></i><i></i></button>
+    </div>
+  </div>
+</header>
+
+<main class="tp si" id="noi">
+<section class="tp-dau si-dau"><div class="khung">
+  <nav class="duong" id="siDuong" aria-label="Đường dẫn"><a href="index.html">Trang chủ</a><span>/</span><a href="si.html">Khách sỉ</a></nav>
+  <span class="nho" data-hien>Dành cho khách sỉ &amp; cộng tác viên</span>
+  <h1 class="tieu-de" id="siTieu"><span class="dong-chu"><span>Bảng giá <em>sỉ</em></span></span></h1>
+  <p class="dan" id="siDan" data-hien>Xem hàng theo danh mục với giá sỉ. Chọn được món nào, bấm hỏi sỉ qua Zalo hoặc gom nhiều mã vào danh sách rồi gửi một lần.</p>
+</div></section>
+
+<!-- chưa đăng nhập -->
+<section class="si-khoa" id="siKhoa" hidden><div class="khung">
+  <div class="tk-hop si-hop">
+    <span class="si-o-khoa" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"><rect x="5" y="10.5" width="14" height="10" rx="2.2"/><path d="M8.3 10.5V7.8a3.7 3.7 0 017.4 0v2.7"/><path d="M12 14.6v2.2"/></svg></span>
+    <h2>Đăng nhập <em>khách sỉ</em></h2>
+    <p class="dan">Dùng tài khoản Ngọc Trầm đã cấp cho bạn. Đăng nhập một lần, máy này sẽ nhớ.</p>
+    <form id="fSi" autocomplete="on">
+      <label>Tên đăng nhập<input name="ten" autocomplete="username" autocapitalize="none" spellcheck="false" required></label>
+      <label>Mật khẩu<span class="si-mk"><input name="mk" type="password" autocomplete="current-password" autocapitalize="none" spellcheck="false" required><button type="button" class="si-hien-mk" aria-label="Hiện mật khẩu">Hiện</button></span></label>
+      <p class="loi-tk" id="siLoi" role="alert" hidden></p>
+      <button class="nut dac" type="submit" id="siVao">Xem giá sỉ</button>
+    </form>
+    <p class="tk-doi">Chưa có tài khoản? <a href="#" data-zalo target="_blank" rel="noopener">Nhắn Zalo để Ngọc Trầm cấp</a></p>
+  </div>
+</div></section>
+
+<!-- đã đăng nhập -->
+<div id="siNoi" hidden>
+  <div class="si-thanh"><div class="khung">
+    <p class="si-chao" id="siChao"></p>
+    <div class="si-thanh-nut">
+      <a class="si-nut-ds" href="#ds"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><rect x="4.5" y="4" width="15" height="16.5" rx="2"/><path d="M8.5 9h7M8.5 12.5h7M8.5 16h4"/></svg>Danh sách hỏi sỉ<i data-so-si hidden></i></a>
+      <button type="button" class="si-thoat" id="siThoat">Đăng xuất</button>
+    </div>
+  </div></div>
+
+  <section class="si-dm" id="siDm"><div class="khung"><div class="si-dm-luoi" id="siDmLuoi"></div></div></section>
+
+  <section class="si-ds-mon" id="siMon" hidden><div class="khung">
+    <div class="si-cong-cu">
+      <a class="si-ve" href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M19 12H5M11 6l-6 6 6 6"/></svg>Tất cả danh mục</a>
+      <label class="si-tim"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="10.8" cy="10.8" r="6.3"/><path d="M15.4 15.4L21 21"/></svg><input id="siTim" type="search" placeholder="Tìm theo tên hoặc mã" autocomplete="off"></label>
+      <select id="siXep" aria-label="Sắp xếp">
+        <option value="moi">Mới về trước</option>
+        <option value="thap">Giá sỉ thấp → cao</option>
+        <option value="cao">Giá sỉ cao → thấp</option>
+      </select>
+    </div>
+    <p class="si-so" id="siSo"></p>
+    <div class="luoi si-luoi" id="siLuoi"></div>
+    <div class="them" id="siThem" hidden><button type="button" class="nut" id="siNutThem">Xem thêm</button></div>
+  </div></section>
+
+  <section class="si-gom" id="siGom" hidden><div class="khung">
+    <a class="si-ve" href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M19 12H5M11 6l-6 6 6 6"/></svg>Tiếp tục xem hàng</a>
+    <div id="siGomNoi"></div>
+  </div></section>
+</div>
+</main>
+
+<footer class="lh" id="lien-he">
+  <div class="tren">
+    <img class="hoa-nen" src="img/hoa.png" alt="">
+    <span class="nho" data-hien>Khách sỉ</span>
+    <h2 class="tieu-de">
+      <span class="dong-chu"><span>Lấy sỉ số lượng?</span></span>
+      <span class="dong-chu"><span><em>Nhắn cho Ngọc Trầm.</em></span></span>
+    </h2>
+    <p data-hien>Gửi mã hoặc danh sách món bạn chọn, Ngọc Trầm báo lại hàng còn và cách gửi.</p>
+    <div class="hang" data-hien>
+      <a class="nut dac" href="#" data-zalo style="background:#0068ff;border-color:#0068ff">Nhắn Zalo</a>
+      <a class="nut sang" href="#" data-fb>Messenger</a>
+    </div>
+  </div>
+  <div id="chanTrang"></div>
+</footer>
+<div class="thong-bao" id="thongBao"></div>
+
+<script src="js/cau-hinh.js?v=6b70518097"></script>
+<script src="js/chung.js?v=7ee3e9e588"></script>
+<script src="js/si.js?v=66fd9eb345"></script>
+<script src="js/si-trang.js?v=a47df07c68"></script>
+</body>
+</html>

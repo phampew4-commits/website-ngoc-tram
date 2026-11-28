@@ -1027,7 +1027,7 @@ document.addEventListener('click', function (ev) {
    Bỏ qua: link mở tab mới, link # trong trang, link đã bị chặn (nút giỏ mở ngăn…), phím Ctrl/⌘. ---------- */
 addEventListener('load', function () { setTimeout(function () { document.documentElement.classList.add('da-nap'); }, 320); });
 var TEN_TRANG = {'index': 'Trang chủ', 'cua-hang': 'Cửa hàng', 'san-pham': 'Chi tiết món', 'gio-hang': 'Giỏ hàng', 'lien-he': 'Liên hệ & cửa hàng', 'tram-huong': 'Trầm hương nhà làm',
-  'qua-tang': 'Quà tặng', 'thiet-ke': 'Tự thiết kế chuỗi', 'chon-size': 'Chọn size', 'chinh-sach': 'Chính sách', 'cam-nang': 'Cẩm nang ngọc', 've-ngoc-tram': 'Về Ngọc Trầm', 'tai-khoan': 'Tài khoản'};
+  'qua-tang': 'Quà tặng', 'thiet-ke': 'Tự thiết kế chuỗi', 'chon-size': 'Chọn size', 'chinh-sach': 'Chính sách', 'cam-nang': 'Cẩm nang ngọc', 've-ngoc-tram': 'Về Ngọc Trầm', 'tai-khoan': 'Tài khoản', 'si': 'Bảng giá sỉ'};
 var manChe = null;
 function sangTrang(href, ten) {
   var u; try { u = new URL(href, location.href); } catch (er) { location.href = href; return; }
