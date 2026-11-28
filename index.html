@@ -16,6 +16,7 @@
 <link rel="preload" href="data/san-pham.json?v=74b7bf8db6" as="fetch" crossorigin="anonymous"><link rel="preload" href="data/thiet-ke.json?v=13f8357f7f" as="fetch" crossorigin="anonymous"><link rel="preconnect" href="https://lh3.googleusercontent.com" crossorigin>
 <link rel="stylesheet" href="css/style.css?v=2ca036750f">
 <link rel="stylesheet" href="css/trang-chu-hu.css?v=77724c4a9f">
+<link rel="stylesheet" href="css/bui-vang.css?v=498b03ab82">
 </head>
 <body>
 
@@ -89,7 +90,7 @@
 </div></div>
 
 <!-- ========== NỔI BẬT ========== -->
-<section class="muc" id="noi-bat">
+<section class="muc" id="noi-bat" data-bui>
   <div class="khung">
     <div class="giua">
       <span class="nho" data-hien data-nd="noiBat.nho">Tuyển chọn</span>
@@ -101,7 +102,7 @@
 </section>
 
 <!-- ========== QUY TRÌNH ========== -->
-<section class="muc quy" id="quyTrinh">
+<section class="muc quy" id="quyTrinh" data-bui="toi">
   <div class="khung">
     <h2 class="tieu-de" data-nd="quy.tieu">
       <span class="dong-chu"><span>Cách Ngọc Trầm</span></span>
@@ -128,7 +129,7 @@
 </section>
 
 <!-- ========== TỰ THIẾT KẾ ========== -->
-<section class="muc moi-tk" id="tuThietKe">
+<section class="muc moi-tk" id="tuThietKe" data-bui="toi">
   <div class="khung">
     <div class="trai">
       <span class="nho" data-hien data-nd="tk.nho">Mới · Xưởng phối chuỗi</span>
@@ -147,7 +148,7 @@
 
 <div class="xep"><!-- bộ sưu tập dính lại, câu chuyện trượt đè lên -->
 <!-- ========== BỘ SƯU TẬP ========== -->
-<section class="bst" id="bo-suu-tap">
+<section class="bst" id="bo-suu-tap" data-bui>
   <div class="khung giua">
     <span class="nho" data-hien data-nd="bst.nho">Khám phá bộ sưu tập</span>
     <ul class="ds-bst" id="dsBst"></ul>
@@ -158,7 +159,7 @@
 
 <!-- ========== CÂU CHUYỆN ========== -->
 <section class="chuyen" id="cau-chuyen">
-  <div class="phong" id="phong">
+  <div class="phong" id="phong" data-bui="toi">
     <h2 class="tieu-de" data-nd="cc.tieu">
       <span class="dong-chu"><span>Mỗi viên ngọc mang</span></span>
       <span class="dong-chu"><span>một <em>câu chuyện riêng</em>.</span></span>
@@ -193,7 +194,7 @@
 </div>
 
 <!-- ========== TẤT CẢ SẢN PHẨM ========== -->
-<section class="muc" id="san-pham" style="padding-top:40px">
+<section class="muc" id="san-pham" style="padding-top:40px" data-bui>
   <div class="khung">
     <div class="giua">
       <span class="nho" data-hien data-nd="sp.nho">Đang có tại cửa hàng</span>
@@ -239,7 +240,7 @@
 </section>
 
 <!-- ========== HỎI ĐÁP ========== -->
-<section class="muc hd" id="hoi-dap" style="padding-top:40px">
+<section class="muc hd" id="hoi-dap" style="padding-top:40px" data-bui>
   <div class="khung">
     <div class="trai">
       <span class="nho" data-hien data-nd="hd.nho">Cần biết</span>
@@ -293,8 +294,9 @@
 <script src="js/cau-hinh.js?v=6b70518097"></script>
 <script src="js/chung.js?v=496feb1f39"></script>
 <script src="js/khach.js?v=18271233fc"></script>
-<script src="js/trang-chu.js?v=d50380937c"></script>
+<script src="js/trang-chu.js?v=f2694ef9d0"></script>
 <script src="js/tk-3d.js?v=f42438428d"></script>
 <script src="js/lucian-web.js?v=709e62a352"></script>
+<script src="js/bui-vang.js?v=3cfde211e4"></script>
 </body>
 </html>

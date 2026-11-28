@@ -165,10 +165,7 @@ html.chup .td-so-nhan{opacity:1!important;translate:none!important}
 .tdg-tinh .th-gtri-o svg .tdg-lua,.tdg-tinh .th-gtri-o svg .tdg-cham{opacity:.8}
 @media (prefers-reduced-motion:reduce){.tdg-quy,.tdg-gon,.tdg-xe,.tdg-banh,.tdg-khoi,.tdg-lua,.tdg-gio,.tdg-cham{animation:none!important}}
 
-/* ---------- bụi vàng lấp lánh ở các phần nền sáng (canvas dưới chữ, js/tram-dong.js phần cuối) ---------- */
-.tdb-co{position:relative;isolation:isolate}
-.th-ke.tdb-co,.th-nha.tdb-co,.th-can.tdb-co,.td-so.tdb-co{overflow:hidden}
-.tdb-bui{position:absolute;inset:0;width:100%;height:100%;z-index:-1;pointer-events:none;display:block}
+/* bụi vàng lấp lánh: xem css/bui-vang.css */
 
 /* ---------- hình nét đầu trang biến hình qua 6 loại trầm (js/tram-dong.js) ---------- */
 .th-hero-ve.tdh-co{position:relative}

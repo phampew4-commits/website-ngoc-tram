@@ -150,8 +150,7 @@ function dungBst() {
 
 /* ---------- câu chuyện: ảnh trôi + chữ sáng dần theo cuộn ---------- */
 function dungPhong() {
-  var c = conHang('chuoi'), a = c[4] || c[0];
-  $('#phong').insertAdjacentHTML('afterbegin', hinh(a.anh[1] || a.anh[0], '', 1600));
+  /* 28/11: bỏ ảnh nền (ảnh sản phẩm phóng to bị nhoè, có vệt) — nền giờ là quầng sáng + bụi vàng (css/bui-vang.css, js/bui-vang.js) */
   var q = $('#chuQuet');
   q.innerHTML = q.textContent.split(/(\s+)/).map(function (w) { return /^\s+$/.test(w) ? w : '<span>' + e(w) + '</span>'; }).join('');
 }
