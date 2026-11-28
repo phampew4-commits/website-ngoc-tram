@@ -235,7 +235,7 @@
   var song = document.querySelector('.th-song');
   if (song) (function () {
     var svg = song.querySelector('svg'), duong = svg.querySelector('#thSongDuong'), tp = svg.querySelector('textPath'), tx = svg.querySelector('text');
-    var CHU = 'Trầm có tăm · Trầm không tăm · Nụ trầm · Trầm thiền · ', W = 0, H = 0, bien = 0, don = 0, pha = 0, lech = 0, truoc = 0, thay = false, chay = false;
+    var CHU = 'Trầm có tăm · Trầm không tăm · Nụ trầm · Trầm thiền · Nhang vòng · Răm trầm · ', W = 0, H = 0, bien = 0, don = 0, pha = 0, lech = 0, truoc = 0, thay = false, chay = false;
     function doSize() {
       W = svg.clientWidth || song.clientWidth; H = svg.clientHeight || 170; if (!W) return;
       svg.setAttribute('viewBox', '0 0 ' + W + ' ' + H);

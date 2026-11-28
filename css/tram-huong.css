@@ -605,3 +605,6 @@ html.chup .th-tho-khoi path{animation:none!important;stroke-dashoffset:0;opacity
 /* vòng thở: dòng số giây trống (lúc chưa bấm) không chiếm chỗ → chữ nằm đúng tâm vòng; chữ ngắt dòng cân ("Bấm để / bắt đầu") */
 .th-tho-tt i:empty{display:none}
 .th-tho-tt b{text-wrap:balance}
+
+/* 28/11: dòng 06 Răm trầm (nền tối) nằm giữa dòng 05 Nhang vòng (nền giấy) và phần Nhà làm (nền giấy) */
+.dong #ram-tram{--tu:var(--giay);--sau:var(--giay)}

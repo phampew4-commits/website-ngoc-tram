@@ -1,0 +1,28 @@
+/* Trang Trầm hương — mô hình 3D sản phẩm (js/tram-3d.js)
+   Một canvas dùng chung dời vào khung .th-gt-anh đang xem; nét vẽ SVG mờ dần (vẫn giữ làm dự phòng). */
+.th-gt-anh > .tram-3d-cv,
+.th-gt-anh > .tram-3d-anh{position:absolute;inset:0;width:100%;height:100%;display:block;border-radius:inherit;pointer-events:none}
+.th-gt-anh > .tram-3d-cv{opacity:0;transition:opacity 1.1s var(--muot);pointer-events:auto;touch-action:pan-y;cursor:grab;-webkit-tap-highlight-color:transparent;user-select:none;-webkit-user-select:none;z-index:1}
+.th-gt-anh > .tram-3d-cv.hien{opacity:1}
+.th-gt-anh > .tram-3d-cv.dang-keo{cursor:grabbing}
+.th-gt-anh > .tram-3d-anh{object-fit:fill}
+.th-gt-anh:has(> .tram-3d-cv.hien) > .tram-3d-anh{visibility:hidden}
+.th-gt-anh.tram-3d-co > svg.th-ve{opacity:0;transition:opacity 1s var(--muot)}
+
+/* gợi ý "Kéo để xoay": hiện vài giây khi mô hình vừa lên, chạm/kéo là tắt */
+.tram-3d-goi{position:absolute;left:50%;bottom:calc(16px*var(--z));translate:-50% 0;z-index:2;display:inline-flex;align-items:center;gap:calc(6px*var(--z));
+  padding:calc(5px*var(--z)) calc(12px*var(--z)) calc(5px*var(--z)) calc(10px*var(--z));border-radius:calc(99px*var(--z));
+  font:500 calc(11.5px*var(--z))/1.2 var(--sans);letter-spacing:.04em;color:var(--muc);background:color-mix(in srgb,var(--the) 86%,transparent);
+  border:1px solid color-mix(in srgb,var(--vang) 40%,transparent);pointer-events:none;opacity:0;visibility:hidden;white-space:nowrap}
+.tram-3d-goi svg{width:calc(14px*var(--z));height:calc(14px*var(--z));color:var(--vang)}
+.toi .tram-3d-goi{color:#efe8da;background:rgba(20,38,46,.62);border-color:rgba(232,223,204,.2)}
+.toi .tram-3d-goi svg{color:var(--vang2)}
+.tram-3d-co > .tram-3d-goi{animation:tram3d-goi 5.5s 1.2s var(--muot) both}
+.tram-3d-co > .tram-3d-goi.an{animation:none;opacity:0;visibility:hidden;transition:opacity .3s}
+@keyframes tram3d-goi{0%{opacity:0;visibility:visible;translate:-50% calc(6px*var(--z))}12%,78%{opacity:1;visibility:visible;translate:-50% 0}100%{opacity:0;visibility:hidden}}
+
+@media (prefers-reduced-motion: reduce){
+  .th-gt-anh > .tram-3d-cv,.th-gt-anh.tram-3d-co > svg.th-ve{transition:none}
+  .tram-3d-co > .tram-3d-goi{animation:none;opacity:1;visibility:visible}
+  .tram-3d-co > .tram-3d-goi.an{opacity:0;visibility:hidden}
+}

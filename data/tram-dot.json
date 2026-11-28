@@ -1,5 +1,5 @@
 {
- "_ghiChu": "Trầm đốt nhà làm — trang tram-huong.html. Mỗi dòng (loai): id, ve (hình vẽ: co-tam/khong-tam/nu/thien), ten, mo, dacDiem [chữ], sp [{id (không dấu, không trùng, vd co-tam-1), ten, mo (tuỳ chọn), anh (id ảnh Drive hoặc đường dẫn; trống = hình vẽ), noiBat (true = thẻ lớn, chỉ dòng Nụ trầm), quyCach [{id (vd qc1), ten, gia (đồng; null = chưa có giá → khách nhắn Zalo)}]}]. Mã trong giỏ: td-<sp.id>-<quyCach.id>.",
+ "_ghiChu": "Trầm đốt nhà làm — trang tram-huong.html. Mỗi dòng (loai): id, ve (hình vẽ: co-tam/khong-tam/nu/thien/vong/ram), ten, mo, dacDiem [chữ], sp [{id (không dấu, không trùng, vd co-tam-1), ten, mo (tuỳ chọn), anh (id ảnh Drive hoặc đường dẫn; trống = hình vẽ), noiBat (true = thẻ lớn, chỉ dòng Nụ trầm), quyCach [{id (vd qc1), ten, gia (đồng; null = chưa có giá → khách nhắn Zalo)}]}]. Mã trong giỏ: td-<sp.id>-<quyCach.id>.",
  "loai": [
   {
    "id": "co-tam",
@@ -326,6 +326,86 @@
        "id": "qc1",
        "ten": "1 hộp",
        "gia": 550000
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "nhang-vong",
+   "ve": "vong",
+   "ten": "Nhang vòng",
+   "mo": "Trầm cuộn thành vòng xoắn, treo lên móc hoặc đặt trên đế. Một vòng cháy chậm và đều trong nhiều giờ liền.",
+   "dacDiem": [
+    "Cuộn xoắn, treo móc hoặc đặt trên đế",
+    "Cháy lâu, có loại 2 giờ và 24 giờ"
+   ],
+   "sp": [
+    {
+     "id": "sp026580",
+     "ma": "SP026580",
+     "ten": "Nhang vòng 24h hộp xanh",
+     "mo": "Cháy 24 giờ · hộp",
+     "anh": "1r7kI1xD6iiW1FrZ_9n2TwnVlqcZLoh-9",
+     "anhThem": [
+      "137rzxXMtSFY2vSVNfLyfJZ382MJ-yWDM",
+      "1_8IsNF5SpQCbCXPcmQF6S2hNTqPaeVtU",
+      "1mEjNVDQDhkAK1h_fsILmMqBdmNC0aSQe"
+     ],
+     "quyCach": [
+      {
+       "id": "qc1",
+       "ten": "1 hộp",
+       "gia": 350000
+      }
+     ]
+    },
+    {
+     "id": "sp026590",
+     "ma": "SP026590",
+     "ten": "Nhang vòng 2h",
+     "mo": "Cháy 2 giờ",
+     "anh": "1ZPjsvatohOZuGZS5INbzrhImpcV5wbPr",
+     "anhThem": [
+      "1QiSKxoo_jS78f4M5XFTUhjdUkiWppbFd",
+      "17XONKWpxMOLNsti_trxldVD7L84pzn_c"
+     ],
+     "quyCach": [
+      {
+       "id": "qc1",
+       "ten": "1 hộp",
+       "gia": 300000
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "ram-tram",
+   "ve": "ram",
+   "ten": "Răm trầm",
+   "mo": "Trầm vụn và miếng nhỏ, xông trên lò xông hoặc đĩa than để hương toả nhẹ khắp phòng.",
+   "dacDiem": [
+    "Dạng vụn, miếng nhỏ",
+    "Xông trên lò xông"
+   ],
+   "sp": [
+    {
+     "id": "sp026589",
+     "ma": "SP026589",
+     "ten": "Răm trầm Hải Nam 15g",
+     "mo": "15g/hộp",
+     "anh": "1AfSWuLLRqjSrEsorWvaIiDdMfcrxmsiR",
+     "anhThem": [
+      "1A5OoMj_sPaAouCheGqjAHiZVTwSFcOI7",
+      "1kcrbf3Ed-kc8g-ct7LJ385qt8L1TC77t",
+      "19ykIllsnBRE_maPFg1r5l8P-OZXOumu0"
+     ],
+     "quyCach": [
+      {
+       "id": "qc1",
+       "ten": "1 hộp",
+       "gia": 600000
       }
      ]
     }
