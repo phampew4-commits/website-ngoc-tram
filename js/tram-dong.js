@@ -504,3 +504,90 @@
   document.addEventListener('visibilitychange', batLai);
   if (/[?&]chup=1/.test(location.search)) ve(0);
 })();
+
+/* ================= DANH SÁCH SẢN PHẨM MỖI DÒNG → SLIDE VÒNG LẶP (28/11: user muốn "làm dạng slide hết, dạng loop") =================
+   Mọi kiểu cũ (lưới / hàng vuốt / nổi bật / danh sách) đổi thành một băng trượt: máy tính 3 thẻ, máy vừa 2, điện thoại 1 thẻ + hé thẻ sau.
+   Vòng lặp bằng cách ĐỔI THỨ TỰ thẻ thật sau mỗi lần trượt (không nhân bản thẻ) → nút giỏ, số lượng, quy cách, ảnh đổi… vẫn chạy.
+   Tự trượt ~4,5 giây/lần khi băng đang trên màn hình; rê chuột / chạm / bấm → tạm dừng 7 giây. Mũi tên hai bên, chấm vị trí, vuốt/kéo được.
+   Ít thẻ hơn số chỗ thì đứng yên, canh giữa. Giảm chuyển động: không tự trượt, trượt bằng tay vẫn được (không hoạt ảnh). */
+(function () {
+  if (typeof taiTramDot === 'undefined') return;
+  var GIAM = /[?&]chup=1/.test(location.search) || matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var MUI_L = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"/></svg>';
+  var MUI_R = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5l7 7-7 7"/></svg>';
+  taiTramDot.then(function () {
+    [].forEach.call(document.querySelectorAll('.th-dong [data-ds]'), function (ds) {
+      var the = [].slice.call(ds.querySelectorAll(':scope > .th-sp')); if (!the.length) return;
+      var sec = ds.closest('.th-dong');
+      ds.className = 'tdc'; the.forEach(function (t) { t.classList.remove('lon'); });
+      var noiBat = sec.querySelector('.th-noi-bat'); if (noiBat) noiBat.remove();
+      var ray = document.createElement('div'); ray.className = 'tdc-ray';
+      var ke = document.createElement('div'); ke.className = 'tdc-ke';
+      the.forEach(function (t) { t.dataset.tdcI = the.indexOf(t); ke.appendChild(t); });
+      ray.appendChild(ke); ds.appendChild(ray);
+      var luiN = document.createElement('button'), toiN = document.createElement('button');
+      luiN.type = toiN.type = 'button'; luiN.className = 'tdc-mui tdc-lui'; toiN.className = 'tdc-mui tdc-toi';
+      luiN.setAttribute('aria-label', 'Sản phẩm trước'); toiN.setAttribute('aria-label', 'Sản phẩm sau'); luiN.innerHTML = MUI_L; toiN.innerHTML = MUI_R;
+      ds.appendChild(luiN); ds.appendChild(toiN);
+      var cham = document.createElement('div'); cham.className = 'tdc-cham'; cham.setAttribute('aria-hidden', 'true');
+      cham.innerHTML = the.map(function () { return '<i></i>'; }).join(''); ds.appendChild(cham);
+      [].forEach.call(sec.querySelectorAll('.th-mui,.th-vuot-goi'), function (x) { x.hidden = true; x.style.display = 'none'; });
+
+      var n = the.length, hien = 3, buocPx = 0, ban = false, dung = 0, thay = false, hen = 0;
+      function doKich() {
+        var w = ray.clientWidth, gap = parseFloat(getComputedStyle(ke).columnGap) || 20;
+        hien = w < 640 ? 1.3 : w < 980 ? 2 : 3;
+        var cw = (w - gap * (Math.ceil(hien) - 1)) / hien;
+        if (hien === 1.3) cw = (w - gap) / hien;
+        ke.style.setProperty('--tdc-w', cw + 'px'); buocPx = cw + gap;
+        var loop = n > Math.floor(hien);
+        ds.classList.toggle('tdc-tinh', !loop);
+        return loop;
+      }
+      var loop = doKich();
+      function chamOn() { var dau = +ke.firstElementChild.dataset.tdcI; [].forEach.call(cham.children, function (c, i) { c.classList.toggle('on', i === dau); }); }
+      chamOn();
+      function toi() {
+        if (ban || !loop) return; ban = true;
+        var xong = function () { ke.style.transition = 'none'; ke.appendChild(ke.firstElementChild); ke.style.transform = 'translate3d(0,0,0)'; void ke.offsetWidth; ke.style.transition = ''; ban = false; chamOn(); };
+        if (GIAM) { xong(); return; }
+        ke.style.transform = 'translate3d(' + (-buocPx) + 'px,0,0)';
+        hen = setTimeout(xong, 640);
+      }
+      function lui() {
+        if (ban || !loop) return; ban = true;
+        ke.style.transition = 'none'; ke.insertBefore(ke.lastElementChild, ke.firstElementChild); ke.style.transform = 'translate3d(' + (-buocPx) + 'px,0,0)'; void ke.offsetWidth; ke.style.transition = '';
+        chamOn();
+        if (GIAM) { ke.style.transition = 'none'; ke.style.transform = 'translate3d(0,0,0)'; ban = false; return; }
+        requestAnimationFrame(function () { ke.style.transform = 'translate3d(0,0,0)'; });
+        setTimeout(function () { ban = false; }, 640);
+      }
+      function nghi() { dung = Date.now() + 7000; }
+      toiN.onclick = function () { nghi(); toi(); };
+      luiN.onclick = function () { nghi(); lui(); };
+      ray.addEventListener('pointerenter', function (ev) { if (ev.pointerType === 'mouse') dung = Infinity; });
+      ray.addEventListener('pointerleave', function (ev) { if (ev.pointerType === 'mouse') dung = Date.now() + 1500; });
+      ray.addEventListener('focusin', function () { dung = Infinity; });
+      ray.addEventListener('focusout', function () { nghi(); });
+      /* vuốt / kéo ngang */
+      var x0 = null, y0 = 0, keo = false, dx = 0;
+      ray.addEventListener('pointerdown', function (ev) { if (ev.button || ban || !loop) return; x0 = ev.clientX; y0 = ev.clientY; keo = false; dx = 0; });
+      ray.addEventListener('pointermove', function (ev) {
+        if (x0 === null) return; dx = ev.clientX - x0;
+        if (!keo && Math.abs(dx) > 10 && Math.abs(dx) > Math.abs(ev.clientY - y0)) { keo = true; nghi(); ke.style.transition = 'none'; }
+        if (keo) ke.style.transform = 'translate3d(' + dx * .9 + 'px,0,0)';
+      });
+      function tha() {
+        if (x0 === null) return; x0 = null; if (!keo) return;
+        ke.style.transition = ''; ke.style.transform = 'translate3d(0,0,0)';
+        if (dx < -50) setTimeout(toi, 10); else if (dx > 50) setTimeout(lui, 10);
+        setTimeout(function () { keo = false; }, 30);
+      }
+      ray.addEventListener('pointerup', tha); ray.addEventListener('pointercancel', tha);
+      ray.addEventListener('click', function (ev) { if (keo) { ev.preventDefault(); ev.stopPropagation(); } }, true);
+      addEventListener('resize', function () { clearTimeout(ray._h); ray._h = setTimeout(function () { loop = doKich(); }, 150); });
+      if ('IntersectionObserver' in window) new IntersectionObserver(function (es) { thay = es[0].isIntersecting; }, {threshold: .35}).observe(ray);
+      if (!GIAM) setInterval(function () { if (thay && loop && !document.hidden && Date.now() > dung && x0 === null) toi(); }, 4500);
+    });
+  });
+})();
