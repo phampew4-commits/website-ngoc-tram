@@ -134,3 +134,9 @@ html.tu-the #khungAnh,html.tu-the #khungAnh img{transition:none!important}
 #luoiLq .tct-the:hover img{scale:1.05}
 #luoiLq .tct-the b{display:block;margin-top:calc(12px*var(--z));font:400 clamp(calc(15px*var(--z)),calc(14.5px*var(--z)) + .14vw,calc(17px*var(--z)))/1.35 var(--serif);color:var(--muc)}
 #luoiLq .tct-the small{display:block;margin-top:calc(4px*var(--z));color:var(--mo);font-size:calc(13px*var(--z))}
+/* 28/11: giãn khoảng cách — khối chọn quy cách / số lượng tách hẳn khỏi hàng nút mua */
+.tct-chon{margin-top:calc(20px*var(--z))}
+.tct-chon + .tct-chon{padding-top:calc(18px*var(--z));border-top:1px solid var(--vien)}
+.tct-chon + .hang-mua{margin-top:calc(32px*var(--z))}
+.tct-trong-gio{margin-top:calc(14px*var(--z))}
+@media (max-width:600px){.tct-chon + .hang-mua{margin-top:calc(26px*var(--z))}}
