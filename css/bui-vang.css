@@ -3,4 +3,4 @@
 .tdb-bui{position:absolute;inset:0;width:100%;height:100%;z-index:-1;pointer-events:none;display:block}
 /* trang chủ — phần "Mỗi viên ngọc mang một câu chuyện riêng": bỏ ảnh nền (ảnh sản phẩm phóng to bị nhoè), thay bằng nền tối + quầng sáng ấm + bụi vàng */
 .chuyen .phong{background:radial-gradient(60% 55% at 50% 30%,rgba(209,173,102,.16),transparent 70%),radial-gradient(40% 40% at 20% 75%,rgba(120,150,160,.08),transparent 70%),var(--dem)}
-.chuyen .phong img.phong-anh{z-index:-2;opacity:.5;object-position:50% 45%}   /* ảnh hạt ngọc cận cảnh (lưu sẵn ở img/, không phụ thuộc món còn bán) — dưới lớp bụi vàng */
+.chuyen .phong .phong-anh{position:absolute;inset:-6% 0;width:100%;height:112%;object-fit:cover;object-position:50% 50%;opacity:.5;will-change:transform;z-index:-2}   /* video sản phẩm (chép riêng ở video/nen-cau-chuyen.mp4, không bị app dọn khi món bán) — ảnh hạt ngọc làm ảnh chờ; dưới lớp bụi vàng */   /* ảnh hạt ngọc cận cảnh (lưu sẵn ở img/, không phụ thuộc món còn bán) — dưới lớp bụi vàng */

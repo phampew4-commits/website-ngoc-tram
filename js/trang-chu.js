@@ -150,7 +150,15 @@ function dungBst() {
 
 /* ---------- câu chuyện: ảnh trôi + chữ sáng dần theo cuộn ---------- */
 function dungPhong() {
-  /* 28/11: bỏ ảnh nền (ảnh sản phẩm phóng to bị nhoè, có vệt) — nền giờ là quầng sáng + bụi vàng (css/bui-vang.css, js/bui-vang.js) */
+  /* 28/11: nền = video sản phẩm (video/nen-cau-chuyen.mp4) chạy chậm, chỉ tải + chạy khi phần này gần / trên màn hình; ảnh hạt ngọc làm ảnh chờ.
+     Giảm chuyển động: chỉ hiện ảnh chờ. Bụi vàng phủ phía trên (js/bui-vang.js). */
+  var v = $('#phong .phong-anh');
+  if (v && v.tagName === 'VIDEO' && !GIAM && 'IntersectionObserver' in window) new IntersectionObserver(function (es) {
+    if (es[0].isIntersecting) {
+      if (!v.src) { v.src = v.dataset.src; v.load(); }
+      v.defaultPlaybackRate = v.playbackRate = .8; var p = v.play(); if (p && p.catch) p.catch(function () {});
+    } else if (!v.paused) v.pause();
+  }, {rootMargin: '200px 0px'}).observe(v);
   var q = $('#chuQuet');
   q.innerHTML = q.textContent.split(/(\s+)/).map(function (w) { return /^\s+$/.test(w) ? w : '<span>' + e(w) + '</span>'; }).join('');
 }
@@ -172,7 +180,7 @@ function khiCuon() {
   cho = false;
   if (GIAM) return;
   var vh = innerHeight;
-  var ph = $('#phong'), img = ph && ph.querySelector('img');
+  var ph = $('#phong'), img = ph && ph.querySelector('.phong-anh');
   if (img) { var r = ph.getBoundingClientRect(); if (r.bottom > 0 && r.top < vh) img.style.transform = 'translate3d(0,' + ((r.top / vh) * -8).toFixed(2) + '%,0) scale(1.05)'; }
   var ch = $('#chay'), rc = ch.getBoundingClientRect();
   if (rc.bottom > 0 && rc.top < vh) $$('#chay .hang').forEach(function (h) {
