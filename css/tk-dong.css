@@ -1,0 +1,41 @@
+/* Chuyển động riêng trang Tự thiết kế chuỗi — js/tk-dong.js */
+
+/* #442 charm bay lên chuỗi + vòng sáng chỗ đáp */
+.tkd-bay{position:fixed;z-index:950;pointer-events:none;border-radius:50%;overflow:hidden;background:var(--giay2);
+  box-shadow:0 calc(14px*var(--z)) calc(30px*var(--z)) calc(-10px*var(--z)) rgba(20,38,46,.45),0 0 0 2px var(--vang)}
+.tkd-bay img{width:100%;height:100%;object-fit:cover;display:block}
+.tkd-loe{position:fixed;z-index:949;width:calc(16px*var(--z));height:calc(16px*var(--z));margin:calc(-8px*var(--z)) 0 0 calc(-8px*var(--z));border-radius:50%;pointer-events:none;
+  border:1.5px solid var(--vang);box-shadow:0 0 calc(18px*var(--z)) rgba(209,173,102,.55);animation:tkd-loe .85s cubic-bezier(.2,.7,.2,1) forwards}
+@keyframes tkd-loe{from{scale:.4;opacity:1}to{scale:5.5;opacity:0}}
+
+/* #042 số bước: viền vàng → tô đặc + dấu tích vẽ ra */
+.tk-bang .so-buoc,.tom-tat .so-buoc{position:relative;display:inline-block;transition:color .6s var(--muot),-webkit-text-stroke-color .6s}
+.so-buoc.tkd-xong{color:var(--vang)}
+.tkd-tick{position:absolute;right:calc(-13px*var(--z));top:calc(-5px*var(--z));width:calc(15px*var(--z));height:calc(15px*var(--z));border-radius:50%;
+  background:var(--vang);opacity:0;scale:.3;transition:opacity .3s,scale .5s cubic-bezier(.34,1.6,.64,1)}
+.tkd-tick path{fill:none;stroke:#fff;stroke-width:2.6;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:1;stroke-dashoffset:1;transition:stroke-dashoffset .45s .2s var(--muot)}
+.so-buoc.tkd-xong .tkd-tick{opacity:1;scale:1}
+.so-buoc.tkd-xong .tkd-tick path{stroke-dashoffset:0}
+
+/* #018 tổng lăn số: nhích nhẹ theo chiều tăng / giảm */
+.tkd-len{animation:tkd-len .7s var(--muot)}
+.tkd-xuong{animation:tkd-xuong .7s var(--muot)}
+@keyframes tkd-len{0%{translate:0 .35em;color:var(--vang)}100%{translate:0 0}}
+@keyframes tkd-xuong{0%{translate:0 -.35em;color:var(--vang)}100%{translate:0 0}}
+.tom-tat .tong-tt b,#thanhTk b{display:inline-block;font-variant-numeric:tabular-nums}
+
+/* #017 bong bóng số cm trên thanh cỡ tay, nghiêng theo đà kéo */
+.tkd-tay{position:relative;padding-top:calc(6px*var(--z))}
+.tkd-bong{position:absolute;bottom:calc(100% - 4px*var(--z));left:0;translate:-50% 0;transform-origin:50% 120%;pointer-events:none;
+  opacity:0;scale:.6;transition:opacity .25s,scale .35s cubic-bezier(.34,1.5,.64,1)}
+.tkd-bong b{display:block;padding:calc(5px*var(--z)) calc(10px*var(--z));border-radius:calc(8px*var(--z));background:var(--muc);color:#fff;white-space:nowrap;
+  font:500 calc(12.5px*var(--z))/1.2 var(--sans);box-shadow:0 calc(8px*var(--z)) calc(18px*var(--z)) calc(-8px*var(--z)) rgba(20,38,46,.5)}
+.tkd-bong b::after{content:"";position:absolute;left:50%;top:100%;translate:-50% -1px;border:calc(5px*var(--z)) solid transparent;border-top-color:var(--muc)}
+.tkd-tay.tkd-keo .tkd-bong{opacity:1;scale:1}
+@media (hover:hover){.tkd-tay:hover .tkd-bong{opacity:1;scale:1}}
+
+@media (prefers-reduced-motion:reduce){
+  .tkd-tick,.tkd-tick path,.so-buoc{transition:none!important}
+  .tkd-len,.tkd-xuong{animation:none}
+  .tkd-bong{transition:none}
+}

@@ -17,7 +17,7 @@
     '.lw-vua{display:grid;gap:14px;margin:18px 0;padding:18px;border-radius:18px;background:rgba(0,0,0,.035)}',
     '.lw-vua .h{display:grid;grid-template-columns:1fr 1fr;gap:10px}.lw-vua label{display:grid;gap:4px;font-size:13px}.lw-vua input{width:100%;padding:10px 12px;border-radius:10px;border:1px solid rgba(0,0,0,.15);font:inherit;font-size:16px}',
     '.lw-vua svg{width:100%;max-width:300px;margin:auto;display:block}.lw-vua .kq{text-align:center;font-weight:600;font-size:15px}.lw-vua .kq small{display:block;font-weight:400;opacity:.7;font-size:12.5px;margin-top:2px}',
-    '.lw-vua circle.vong{transition:r .45s cubic-bezier(.34,1.4,.64,1)}.lw-vua ellipse{transition:rx .45s,ry .45s}',
+    '.lw-vua circle.lw-vong{transition:r .45s cubic-bezier(.34,1.4,.64,1)}.lw-vua ellipse{transition:rx .45s,ry .45s}',
     '.lw-bb{position:fixed;left:0;right:0;bottom:0;z-index:800;display:flex;align-items:center;gap:12px;padding:10px max(16px,env(safe-area-inset-left)) calc(10px + env(safe-area-inset-bottom));background:rgba(255,255,255,.96);backdrop-filter:blur(10px);box-shadow:0 -8px 24px -12px rgba(0,0,0,.25);transform:translateY(110%);transition:transform .35s cubic-bezier(.2,.8,.2,1)}',
     '.lw-bb.hien{transform:none}.lw-bb img{width:44px;height:44px;border-radius:10px;object-fit:cover}.lw-bb div{flex:1;min-width:0;font-size:13px}.lw-bb div b{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}',
     '.lw-bb button{flex:none;padding:12px 20px;border-radius:99px;border:0;background:#1f2a24;color:#fff;font:inherit;font-weight:600;cursor:pointer}',
@@ -50,13 +50,13 @@
   if (choVua) {
     var k = D.createElement('div'); k.className = 'lw-vua';
     k.innerHTML = '<b>Thử xem chuỗi / vòng có vừa tay không</b><div class="h"><label>Chu vi cổ tay (cm)<input id="lw-ct" inputmode="decimal" value="15"></label><label>Size chuỗi (cm)<input id="lw-sz" inputmode="decimal" value="16"></label></div>' +
-      '<svg viewBox="0 0 200 200" aria-hidden="true"><ellipse cx="100" cy="100" rx="60" ry="44" fill="#f1d3bd" stroke="#d9b49a" stroke-width="2"/><circle class="vong" cx="100" cy="100" r="70" fill="none" stroke="#c9a45c" stroke-width="12" stroke-dasharray="1 13" stroke-linecap="round"/></svg><div class="kq" aria-live="polite"></div>';
+      '<svg viewBox="0 0 200 200" aria-hidden="true"><ellipse cx="100" cy="100" rx="60" ry="44" fill="#f1d3bd" stroke="#d9b49a" stroke-width="2"/><circle class="lw-vong" cx="100" cy="100" r="70" fill="none" stroke="#c9a45c" stroke-width="12" stroke-dasharray="1 13" stroke-linecap="round"/></svg><div class="kq" aria-live="polite"></div>';
     choVua.appendChild(k);
     var ve2 = function () {
       var ct = parseFloat(k.querySelector('#lw-ct').value.replace(',', '.')) || 0, sz = parseFloat(k.querySelector('#lw-sz').value.replace(',', '.')) || 0; if (!ct || !sz) return;
       // cổ tay ≈ elip tỉ lệ 1 : 0,74 có chu vi = ct; chuỗi ≈ vòng tròn chu vi = sz; thu phóng để vật lớn hơn rộng ~80px
       var a = ct / (Math.PI * 1.74), r = sz / (2 * Math.PI), s = 80 / Math.max(a, r);
-      k.querySelector('circle.vong').setAttribute('r', (r * s).toFixed(1)); k.querySelector('ellipse').setAttribute('rx', (a * s).toFixed(1)); k.querySelector('ellipse').setAttribute('ry', (a * s * .74).toFixed(1));
+      k.querySelector('circle.lw-vong').setAttribute('r', (r * s).toFixed(1)); k.querySelector('ellipse').setAttribute('rx', (a * s).toFixed(1)); k.querySelector('ellipse').setAttribute('ry', (a * s * .74).toFixed(1));
       var vn = function (v) { return String(v).replace('.', ','); }, du = sz - ct, kq = du < 0.5 ? ['Hơi chật', 'Nên chọn size ' + vn(Math.ceil((ct + 1) * 2) / 2) + ' cm'] : du <= 2 ? ['Vừa đẹp ✓', 'Hở khoảng ' + du.toFixed(1).replace('.', ',') + ' cm — đeo thoải mái'] : du <= 3 ? ['Hơi rộng', 'Hợp nếu thích đeo lỏng'] : ['Rộng', 'Nên chọn size ' + vn(Math.ceil((ct + 1.5) * 2) / 2) + ' cm'];
       k.querySelector('.kq').innerHTML = e(kq[0]) + '<small>' + e(kq[1]) + '</small>'; };
     k.addEventListener('input', ve2); ve2();

@@ -7,6 +7,7 @@
    #305 ngăn lọc điện thoại đếm ngay · #242 thanh loại bám đầu trang · #039 viên chọn trượt · #043 "Xem thêm" có tiến độ
    #079/#439 khung chờ có ánh lướt · #092 không có kết quả → gợi ý nới lọc · #322 dòng tìm nhanh tự cuộn
    #050 thẻ nghiêng nhẹ + ánh · #366 rê ngang trên ảnh xem các ảnh khác · #342 hộp quà mở nắp (quà tặng)
+   28/11: #461 thẻ ngân sách + thẻ dịch vụ quà nghiêng theo tay, vệt sáng lướt (quà tặng, cuối file)
    ========================================================= */
 var MUC_GIA = [
   {k: 'duoi-1', ten: 'Dưới 1 triệu', tu: 0, den: 1e6},
@@ -704,4 +705,40 @@ if (/^(cua-hang|qua-tang)$/.test(document.body.dataset.trang) && matchMedia('(ho
     ev0 = ev; if (!hen) hen = requestAnimationFrame(ve);
   }, {passive: true});
   document.addEventListener('pointerleave', function () { if (the0) { roi(the0); the0 = null; } });
+})();
+
+/* ================= #461 QUÀ TẶNG: thẻ ngân sách + thẻ dịch vụ quà nghiêng theo tay, có vệt sáng lướt (28/11) =================
+   Chỉ máy có chuột; điện thoại / giảm chuyển động giữ nguyên. Thẻ ngân sách đang chọn (.on) đứng yên cho khớp khung vàng #039.
+   Thẻ sản phẩm trong lưới đã có #050 riêng ở trên nên không áp lại. CSS ở cuối css/cua-hang-hu.css. */
+if (document.body.dataset.trang === 'qua-tang' && !GIAM && matchMedia('(hover:hover) and (pointer:fine)').matches) (function () {
+  var SEL = '#qtNgan .qt-the:not(.on), #qtDv .qt-dv-o', the0 = null, ev0 = null, hen = 0;
+  function z() { return parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--z')) || 1; }
+  function ve() {
+    hen = 0; var c = the0, ev = ev0; if (!c || !ev) return;
+    var r = c.getBoundingClientRect(), px = Math.max(0, Math.min(1, (ev.clientX - r.left) / r.width)), py = Math.max(0, Math.min(1, (ev.clientY - r.top) / r.height));
+    c.style.transform = 'perspective(' + Math.round(1000 * z()) + 'px) rotateX(' + ((.5 - py) * 7).toFixed(2) + 'deg) rotateY(' + ((px - .5) * 9).toFixed(2) + 'deg)';
+    c.style.setProperty('--sx', ((1 - px) * 100).toFixed(1) + '%');
+  }
+  function roi(c) {
+    c.classList.remove('nt-dang'); c.style.transform = ''; c.classList.add('nt-ve');
+    clearTimeout(c._nt); c._nt = setTimeout(function () { c.classList.remove('nt-ve'); }, 750);
+  }
+  document.addEventListener('pointermove', function (ev) {
+    if (ev.pointerType !== 'mouse') return;
+    var c = ev.target.closest && ev.target.closest(SEL);
+    if (c && (c.hasAttribute('data-hien') && !c.classList.contains('hien') || /\bpd-(cho|len)\b/.test(c.className))) c = null;   // chưa hiện xong thì thôi
+    if (c !== the0) {
+      if (the0) roi(the0); the0 = c;
+      if (c) {
+        if (!c.querySelector(':scope > .nt-sang')) c.insertAdjacentHTML('beforeend', '<i class="nt-sang" aria-hidden="true"></i>');
+        clearTimeout(c._nt); c.classList.remove('nt-ve'); c.classList.add('nt-dang');
+      }
+    }
+    if (!c) return; ev0 = ev; if (!hen) hen = requestAnimationFrame(ve);
+  }, {passive: true});
+  document.addEventListener('click', function (ev) {   // vừa bấm chọn ngân sách: thẻ thành .on → thả về phẳng ngay
+    var c = ev.target.closest && ev.target.closest('#qtNgan .qt-the');
+    if (c && c === the0) { roi(c); the0 = null; }
+  });
+  document.documentElement.addEventListener('pointerleave', function () { if (the0) { roi(the0); the0 = null; } });
 })();

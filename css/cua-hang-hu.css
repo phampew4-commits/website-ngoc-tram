@@ -262,3 +262,24 @@
 .ch-bam{transition:top .55s var(--muot),translate .55s var(--muot),opacity .4s,visibility .55s}
 html.dau-an .ch-bam{top:0}
 @media (min-width:901px){html.dau-an body.ch-bam-hien .ch-loc{top:calc(68px*var(--z));max-height:calc(100svh - calc(86px*var(--z)))}}
+
+/* ---------- #461 quà tặng: thẻ ngân sách + thẻ dịch vụ nghiêng theo tay, vệt sáng lướt (28/11) — chỉ máy có chuột ---------- */
+.qt-dv-o{position:relative}
+.qt-the .nt-sang,.qt-dv-o .nt-sang{position:absolute;inset:0;z-index:2;border-radius:inherit;pointer-events:none;opacity:0;transition:opacity .45s;
+  background:linear-gradient(105deg,rgba(255,250,236,0) 34%,rgba(255,250,236,.5) 49%,rgba(209,173,102,.16) 53%,rgba(255,250,236,0) 66%) no-repeat;
+  background-size:260% 100%;background-position:var(--sx,50%) 0;mix-blend-mode:soft-light}
+@media (hover:hover){
+  .qt-the.nt-dang,.qt-dv-o.nt-dang{transition:transform .16s linear,border-color .4s,box-shadow .4s,outline-color .3s!important;transition-delay:0s!important;will-change:transform;
+    box-shadow:0 calc(26px*var(--z)) calc(44px*var(--z)) calc(-30px*var(--z)) rgba(14,28,34,.45)}
+  .qt-the.nt-ve,.qt-dv-o.nt-ve{transition:transform .75s var(--muot),border-color .4s,box-shadow .4s,outline-color .3s!important;transition-delay:0s!important}
+  .qt-the.nt-dang > .nt-sang,.qt-dv-o.nt-dang > .nt-sang{opacity:1}
+}
+
+/* ô sắp xếp: bỏ mũi tên mặc định của trình duyệt, dùng mũi tên vẽ riêng như ô sắp xếp trang chủ (.tim select) */
+.ch-tim select{-webkit-appearance:none;appearance:none;cursor:pointer;padding-right:calc(42px*var(--z));
+  background:var(--the) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%231d3a46' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M7 10l5 5 5-5'/%3E%3C/svg%3E") no-repeat right calc(15px*var(--z)) center/calc(15px*var(--z));
+  transition:border-color .3s var(--muot),box-shadow .3s var(--muot)}
+.ch-tim input{transition:border-color .3s var(--muot),box-shadow .3s var(--muot)}
+@media (hover:hover){.ch-tim select:hover,.ch-tim input:hover{border-color:rgba(29,58,70,.35)}}
+.ch-tim select:focus-visible,.ch-tim input:focus{border-color:var(--muc);box-shadow:0 0 0 calc(4px*var(--z)) rgba(29,58,70,.08)}
+.ch-tim select:focus:not(:focus-visible){border-color:var(--vien)}

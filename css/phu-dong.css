@@ -1,0 +1,87 @@
+/* Chuyển động chung cho các trang phụ (ngoài trang chủ) — ý từ lucianlabs. JS: js/phu-dong.js
+   #216 + #263 tiêu đề đầu trang · #363 lưới chấm gợn sóng · #251 thẻ nổi lên so le
+   #260 câu tô đậm theo cuộn · #394 dải chữ lớn trôi · #211 khung "Cần tư vấn?" có vệt sáng chạy viền */
+
+/* ---------- #216 tiêu đề h1 đầu trang: dòng đứng yên, từng từ trồi lên lần lượt dưới mặt nạ của dòng (.dong-chu) ----------
+   Từ trốn ở 170% (sâu hơn 140% của dòng) để dấu chồng trên chữ hoa không ló lên mép dưới khung che. */
+.pd-tach .dong-chu>span{translate:none!important;transition:none!important}
+.pd-tu{display:inline-block}
+@keyframes pd-tu-len{from{translate:0 170%}to{translate:0 0}}
+/* h1 không có khung .dong-chu (giỏ hàng, tài khoản, 404): từ hiện mờ → rõ, nhích lên */
+@keyframes pd-tu-mo{from{opacity:0;translate:0 .42em;filter:blur(calc(5px*var(--z)))}to{opacity:1;translate:0 0;filter:blur(0)}}
+.pd-tach .pd-tu{animation:pd-tu-len 1.15s var(--muot) var(--d,0s) both}
+.pd-tach.pd-tron .pd-tu{animation:pd-tu-mo 1s var(--muot) var(--d,0s) both}
+
+/* ---------- #263 chữ nghiêng <em> trong tiêu đề có ánh vàng chảy chậm (mỗi từ lệch pha một chút → ánh đi từ trái sang phải) ---------- */
+@keyframes pd-em-chay{from{background-position:100% 0}to{background-position:0 0}}
+.pd-tach em .pd-tu{--e1:var(--vang);--e2:#c49a4e;--e3:#f0dcaa;
+  background:linear-gradient(100deg,var(--e1) 0%,var(--e1) 40%,var(--e2) 45%,var(--e3) 50%,var(--e2) 55%,var(--e1) 60%,var(--e1) 100%);background-size:300% 100%;background-position:100% 0;
+  -webkit-background-clip:text;background-clip:text;color:transparent;-webkit-text-fill-color:transparent;
+  padding:.16em .12em .22em .04em;margin:-.16em -.12em -.22em -.04em;   /* chừa chỗ cho nét nghiêng, dấu chồng, đuôi g/p/y — không đổi bố cục */
+  animation:pd-tu-len 1.15s var(--muot) var(--d,0s) both,pd-em-chay 7s linear var(--de,0s) infinite;animation-play-state:running,paused}
+.pd-tach.pd-tron em .pd-tu{animation:pd-tu-mo 1s var(--muot) var(--d,0s) both,pd-em-chay 7s linear var(--de,0s) infinite;animation-play-state:running,paused}
+.pd-tach.pd-thay em .pd-tu{animation-play-state:running,running}
+.vnt-dau .pd-tach em .pd-tu{--e1:var(--vang2);--e2:#ecd29a;--e3:#fff4dc}   /* nền tối trang Về Ngọc Trầm */
+
+/* ---------- #363 lưới chấm vàng rất nhạt ở vùng đầu trang, gợn sóng tròn ---------- */
+.pd-co-cham{position:relative;isolation:isolate}
+.pd-cham{position:absolute;inset:0;width:100%;height:100%;z-index:-1;pointer-events:none;display:block}
+
+/* ---------- #251 thẻ trong lưới nổi lên so le khi cuộn tới (chỉ translate / opacity / scale — transform để dành cho hiệu ứng nghiêng thẻ) ---------- */
+:where(.pd-the)[data-hien]{opacity:1;translate:none}   /* phần hiện ra do phu-dong lo; :where giữ độ ưu tiên thấp để hover cũ vẫn thắng */
+.pd-the.pd-cho{opacity:0!important}
+@keyframes pd-noi{from{opacity:0;translate:0 calc(64px*var(--z));scale:.9}55%{opacity:1}to{opacity:1;translate:0 0;scale:1}}
+.pd-the.pd-len{animation:pd-noi 1.2s var(--muot) var(--pd-tre,0s) backwards}
+
+/* ---------- #260 câu lớn: chữ xám nhạt, cuộn tới đâu tô đậm màu mực tới đó, mấy từ cuối ánh vàng ---------- */
+.pd-cau{padding:calc(130px*var(--z)) 0 calc(116px*var(--z));text-align:center;border-top:1px solid var(--vien)}
+.pd-cau .nho{display:block;color:var(--vang);margin-bottom:calc(30px*var(--z))}
+.pd-cau p{margin:0 auto;max-width:calc(1000px*var(--z));font:400 clamp(calc(28px*var(--z)),3.9vw,calc(56px*var(--z)))/1.32 var(--serif);letter-spacing:-.012em;color:rgba(29,58,70,.17);text-wrap:balance}
+.pd-cau .pd-w{transition:color .55s var(--muot)}
+.pd-cau .pd-w.on{color:var(--muc)}
+.pd-cau .pd-w.vang{font-style:italic}
+.pd-cau .pd-w.vang.on{color:var(--vang)}
+
+/* ---------- #394 dải 2–3 hàng chữ lớn, nét mảnh, trôi ngược chiều nhau; cuộn trang thì trôi nhanh hơn ---------- */
+.pd-troi{overflow:hidden;padding:calc(54px*var(--z)) 0 calc(60px*var(--z));border-top:1px solid var(--vien);-webkit-user-select:none;user-select:none;pointer-events:none}
+.pd-hang{white-space:nowrap;font:400 clamp(calc(46px*var(--z)),7.4vw,calc(124px*var(--z)))/1.2 var(--serif);letter-spacing:-.02em}
+.pd-ray{display:inline-flex;will-change:transform}
+.pd-ban{display:inline-flex;align-items:center;flex:none}
+.pd-ban span{padding:0 .3em}
+.pd-ban i{flex:none;width:.13em;height:.13em;background:var(--vang2);opacity:.55;rotate:45deg}
+.pd-hang.h1{color:rgba(29,58,70,.14)}
+.pd-hang.h2{font-style:italic;color:rgba(168,130,58,.36)}
+.pd-hang.h3{color:transparent;-webkit-text-stroke:1px rgba(29,58,70,.24)}
+.pd-hang.h3 .pd-ban i{background:none;box-shadow:inset 0 0 0 1px rgba(168,130,58,.5)}
+@media (max-width:620px){
+  .pd-cau{padding:calc(86px*var(--z)) 0 calc(80px*var(--z))}
+  .pd-troi{padding:calc(36px*var(--z)) 0 calc(40px*var(--z))}
+  .pd-hang{font-size:calc(42px*var(--z))}
+  .pd-hang.h3{display:none}
+}
+
+/* ---------- #211 khung "Cần tư vấn? / Nhắn cho Ngọc Trầm." ở chân trang: lưới mờ phía sau + vệt sáng vàng chạy quanh viền ---------- */
+@property --pd-goc{syntax:'<angle>';inherits:false;initial-value:0deg}
+@keyframes pd-goc{to{--pd-goc:360deg}}
+.lh .tren.pd-lh{isolation:isolate}
+.pd-lh-luoi{position:absolute;inset:0;z-index:-1;pointer-events:none;
+  background-image:linear-gradient(rgba(209,173,102,.1) 1px,transparent 1px),linear-gradient(90deg,rgba(209,173,102,.1) 1px,transparent 1px);
+  background-size:calc(44px*var(--z)) calc(44px*var(--z));background-position:50% calc(20px*var(--z));
+  -webkit-mask-image:radial-gradient(56% 60% at 50% 56%,#000 0,rgba(0,0,0,.45) 48%,transparent 80%);mask-image:radial-gradient(56% 60% at 50% 56%,#000 0,rgba(0,0,0,.45) 48%,transparent 80%)}
+.pd-lh-vien{position:absolute;z-index:-1;pointer-events:none;top:calc(60px*var(--z));bottom:calc(36px*var(--z));
+  left:max(calc(16px*var(--z)),calc(50% - 560px*var(--z)));right:max(calc(16px*var(--z)),calc(50% - 560px*var(--z)));
+  filter:drop-shadow(0 0 calc(5px*var(--z)) rgba(209,173,102,.5))}
+.pd-lh-vien i{position:absolute;inset:0;border-radius:calc(30px*var(--z));padding:1.5px;
+  background:conic-gradient(from var(--pd-goc) at 50% 50%,transparent 0 64%,rgba(209,173,102,.25) 72%,rgba(209,173,102,.85) 79%,#fbecc4 81.5%,rgba(209,173,102,.4) 84%,transparent 88%);
+  background-color:rgba(209,173,102,.12);
+  -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;
+  mask:linear-gradient(#000 0 0) content-box exclude,linear-gradient(#000 0 0);
+  animation:pd-goc 11s linear infinite;animation-play-state:paused}
+.pd-lh.pd-chay .pd-lh-vien i{animation-play-state:running}
+@media (max-width:620px){.pd-lh-vien{top:calc(44px*var(--z));bottom:calc(24px*var(--z))}.pd-lh-vien i{border-radius:calc(22px*var(--z))}}
+
+@media (prefers-reduced-motion:reduce){
+  .pd-tu,.pd-tach em .pd-tu,.pd-the.pd-len,.pd-lh-vien i{animation:none!important}
+  .pd-the.pd-cho{opacity:1!important}
+  .pd-cau .pd-w{transition:none}
+}
