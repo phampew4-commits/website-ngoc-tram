@@ -439,7 +439,7 @@ var taiDuLieu = taiJson('data/san-pham.json').then(function (d) {
   var an = ((CH.trangChu || {}).an || []).map(String);
   ds = d.filter(function (x) { return x.anh && x.anh.length && an.indexOf(String(x.ma)) < 0 && an.indexOf(String(x.id || '')) < 0; }); return ds;
 });
-function linkSp(x) { return x.td ? 'tram-huong.html#' + x.sp : 'san-pham.html?ma=' + encodeURIComponent(khoa(x)); }
+function linkSp(x) { return x.td ? 'san-pham.html?tram=' + encodeURIComponent(String(x.sp).replace(/^sp-/, '')) : 'san-pham.html?ma=' + encodeURIComponent(khoa(x)); }   // món trầm → trang chi tiết trầm (28/11)
 dungChanTrang();
 
 function conHang(loai) {

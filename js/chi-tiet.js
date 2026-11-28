@@ -13,7 +13,10 @@ var maSp = new URLSearchParams(location.search).get('ma') || '';
 var CHE_SI = new URLSearchParams(location.search).get('si') === '1' && typeof SI !== 'undefined';
 if (CHE_SI) document.documentElement.classList.add('che-si');
 
-Promise.all([taiDuLieu, CHE_SI ? SI.san() : null]).then(function (r) {
+/* ?tram=<id món trầm>: chi tiết sản phẩm trầm đốt (data/tram-dot.json) — 28/11, trước đây món trầm chỉ bán ngay trên thẻ ở tram-huong.html */
+var maTram = new URLSearchParams(location.search).get('tram') || '';
+if (maTram) taiTramDot.then(dungTram).catch(khongThay);
+else Promise.all([taiDuLieu, CHE_SI ? SI.san() : null]).then(function (r) {
   if (CHE_SI && !r[1]) { location.replace('si.html?ve=' + encodeURIComponent(maSp)); return; }
   var x = ds.filter(function (y) { return khoa(y) === maSp; })[0] || ds.filter(function (y) { return y.ma === maSp; })[0];
   if (!x) return khongThay();
@@ -733,4 +736,128 @@ function moManNoi() {
       if (o) o.animate([{opacity: 1}, {opacity: 0}], {duration: 260, fill: 'forwards'}).onfinish = function () { o.remove(); };
     }, 520);
   });
+}
+
+/* ================= CHI TIẾT SẢN PHẨM TRẦM ĐỐT (?tram=<id>) =================
+   Bộ ảnh thật (kính lúp, xem lớn như món ngọc) · chọn quy cách → giá · số lượng · thêm vào giỏ (mã td-<id>-<quy cách>, cộng dồn) · hỏi Zalo
+   · thông tin dòng trầm + đặc điểm · giao hàng / đổi trả / cách giữ trầm · các món khác cùng dòng. */
+function dungTram() {
+  var l = null, s = null;
+  (TD.loai || []).forEach(function (a) { (a.sp || []).forEach(function (b) { if (!s && String(b.id) === maTram) { l = a; s = b; } }); });
+  if (!s) return khongThay();
+  var q = (s.quyCach || []).filter(function (x) { return x && x.ten; });
+  if (!q.length) q = [{id: 'qc1', ten: 'Một quy cách', gia: null}];
+  var anhS = [s.anh].concat(s.anhThem || []).filter(Boolean);
+  if (!anhS.length) anhS = ['img/tram/' + (l.ve || l.id) + '.svg'];
+  var giaMin = q.reduce(function (m, x) { return +x.gia > 0 && (!m || +x.gia < m) ? +x.gia : m; }, 0);
+  var x = {ma: s.ma || String(s.id).toUpperCase(), id: s.id, ten: s.ten, anh: anhS, loai: 'tramdot', tram: true, tt: 'Còn hàng', gia: giaMin, mo_ta: s.mo || ''};
+  var co = q.filter(function (y) { return +y.gia > 0; })[0] || q[0];
+  document.title = x.ten + ' · Trầm đốt · Ngọc Trầm Store';
+  var md = document.querySelector('meta[name="description"]'); if (md) md.content = x.ten + ' – trầm đốt nhà làm Ngọc Trầm. ' + (s.mo || l.mo || '');
+  $('#duong').innerHTML = '<a href="index.html">Trang chủ</a><span>/</span><a href="tram-huong.html">Trầm đốt</a><span>/</span><a href="tram-huong.html#' + e(l.id) + '">' + e(l.ten) + '</a><span>/</span><b>' + e(x.ma) + '</b>';
+  var IC_TUI = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M6 8h12l-1 12H7z"/><path d="M9 8V6a3 3 0 016 0v2"/></svg>';
+  var chip = q.map(function (y) { return '<button type="button" data-qc="' + e(y.id) + '" data-gia="' + (+y.gia > 0 ? +y.gia : '') + '"' + (y === co ? ' class="on" aria-pressed="true"' : ' aria-pressed="false"') + '>' + e(y.ten) + '</button>'; }).join('');
+  var dd = (l.dacDiem || []).filter(function (t) { return typeof t === 'string'; });
+  $('#spChinh').innerHTML =
+    '<div class="sp-anh">' +
+      '<div class="khung-anh" id="khungAnh" data-mo-anh>' + x.anh.map(function (id, i) {
+        return '<figure class="' + (i ? '' : 'on') + '" data-i="' + i + '">' + hinh(id, x.ten + ' – ảnh ' + (i + 1), 1400).replace(i ? '' : ' loading="lazy"', '') + '</figure>'; }).join('') +
+        (x.anh.length > 1 ? '<button class="mui-ten trai" data-buoc="-1" aria-label="Ảnh trước"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M15 5l-7 7 7 7"/></svg></button>' +
+          '<button class="mui-ten phai" data-buoc="1" aria-label="Ảnh sau"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9 5l7 7-7 7"/></svg></button>' +
+          '<span class="dem-anh" id="demAnh">01 / ' + ('0' + x.anh.length).slice(-2) + '</span>' : '') +
+        '<span class="goi-soi" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="10.5" cy="10.5" r="6.5"/><path d="M15.5 15.5L21 21M8 10.5h5M10.5 8v5"/></svg>' +
+          (matchMedia('(hover:hover) and (pointer:fine)').matches ? 'Rê chuột để soi' : 'Chạm giữ để soi') + '</span>' +
+      '</div>' +
+      (x.anh.length > 1 ? '<div class="nho-anh" id="nhoAnh">' + x.anh.map(function (id, i) {
+        return '<button class="' + (i ? '' : 'on') + '" data-i="' + i + '" aria-label="Ảnh ' + (i + 1) + '">' + hinh(id, '', 240) + '</button>'; }).join('') + '</div>' : '') +
+    '</div>' +
+    '<div class="sp-tt"><div class="dinh">' +
+      '<span class="nho" data-hien>Trầm đốt nhà làm · ' + e(l.ten) + '</span>' +
+      '<h1 class="tieu-de"><span class="dong-chu"><span>' + e(x.ten) + '</span></span></h1>' +
+      '<div class="ma-ct" data-hien><span>Mã ' + e(x.ma) + '</span><span class="chip">Nhà làm</span></div>' +
+      '<div class="gia-sp" data-hien><b id="tctGia">' + (+co.gia > 0 ? gia(+co.gia) : 'Liên hệ') + '</b><small id="tctGiaGhi">' + (+co.gia > 0 ? 'Giá cho ' + e(co.ten.toLowerCase()) : 'Nhắn shop để được báo giá') + '</small></div>' +
+      '<div class="tct-chon" data-hien><span class="tct-nhan">Quy cách</span><div class="tct-qc" role="group" aria-label="Quy cách">' + chip + '</div></div>' +
+      '<div class="tct-chon" data-hien><span class="tct-nhan">Số lượng</span><div class="tct-sl"><button type="button" class="tct-bot" aria-label="Bớt một">−</button><input type="number" inputmode="numeric" min="1" max="99" value="1" aria-label="Số lượng"><button type="button" class="tct-cong" aria-label="Thêm một">+</button></div></div>' +
+      '<div class="hang-mua" data-hien>' +
+        '<button type="button" class="nut dac tct-them" data-khong-lan>' + IC_TUI + '<span>Thêm vào giỏ</span></button>' +
+        '<a class="nut zalo" href="' + linkZalo() + '" target="_blank" rel="noopener" data-chep="' + e(x.ma + ' – ' + x.ten) + '">Hỏi qua Zalo</a>' +
+      '</div>' +
+      '<p class="ghi-ct tct-trong-gio" id="tctDa" data-hien hidden></p>' +
+      '<div class="mo-rong" data-hien>' +
+        '<details open><summary>Thông tin sản phẩm</summary><div class="tl"><div>' +
+          (s.mo ? '<p class="mo-ta-sp">' + e(s.mo) + '</p>' : '') +
+          (l.mo ? '<p class="nhan-tp">Về dòng ' + e(l.ten.toLowerCase()) + '</p><p class="mo-ta-sp">' + e(l.mo) + '</p>' : '') +
+          (dd.length ? '<ul class="ds-tp">' + dd.map(function (t) { return '<li>' + e(t) + '</li>'; }).join('') + '</ul>' : '') +
+          '<dl class="bang-ts"><div><dt>Dòng sản phẩm</dt><dd>' + e(l.ten) + '</dd></div><div><dt>Quy cách</dt><dd>' + q.map(function (y) { return e(y.ten); }).join(' · ') + '</dd></div><div><dt>Mã sản phẩm</dt><dd>' + e(x.ma) + '</dd></div><div><dt>Làm tại</dt><dd>Ngọc Trầm (nhà làm)</dd></div></dl>' +
+        '</div></div></details>' +
+        '<details><summary>Giao hàng</summary><div class="tl"><div>' + dsCs('giao') + '</div></div></details>' +
+        '<details><summary>Đổi trả</summary><div class="tl"><div>' + dsCs('doi') + '</div></div></details>' +
+        GIU_TRAM +
+      '</div>' +
+    '</div></div>';
+
+  var o = $('.tct-sl input');
+  function sl(n) { n = Math.max(1, Math.min(99, parseInt(n, 10) || 1)); o.value = n; $('.tct-bot').disabled = n <= 1; return n; }
+  function dangChon() { return $('.tct-qc button.on'); }
+  function chon(b) {
+    $$('.tct-qc button').forEach(function (y) { y.classList.toggle('on', y === b); y.setAttribute('aria-pressed', y === b); });
+    var g = +b.dataset.gia;
+    $('#tctGia').textContent = g ? gia(g) : 'Liên hệ'; $('#tctGiaGhi').textContent = g ? 'Giá cho ' + b.textContent.toLowerCase() : 'Nhắn shop để được báo giá';
+    $('.tct-them').disabled = !g; veThanh();
+  }
+  function trongGio() {
+    var dsTg = [], tong = 0;
+    q.forEach(function (y) { var k = 'td-' + s.id + '-' + y.id; if (GIO.co(k)) { var n = GIO.sl(k); tong += n; dsTg.push(n + ' × ' + y.ten); } });
+    var da = $('#tctDa'); da.hidden = !tong;
+    if (tong) da.innerHTML = 'Trong giỏ: ' + e(dsTg.join(', ')) + ' · <a href="gio-hang.html">Xem giỏ</a>';
+  }
+  function them(nut) {
+    var b = dangChon(); if (!b || !b.dataset.gia) { baoTin('Quy cách này chưa có giá — nhắn Zalo giúp Ngọc Trầm nhé'); return; }
+    var k = 'td-' + s.id + '-' + b.dataset.qc, n = +o.value;
+    if (!TD.mon[k]) { baoTin('Sản phẩm này chưa đặt được — nhắn Zalo giúp Ngọc Trầm nhé'); return; }
+    GIO.themSl(k, n); sl(1); trongGio();
+    if (typeof window.bayVaoGio === 'function') window.bayVaoGio(nut, $('#khungAnh figure.on img'));
+    baoTin('Đã thêm ' + n + ' × ' + x.ten + ' (' + b.textContent + ') vào giỏ');
+  }
+  $$('.tct-qc button').forEach(function (b) { b.onclick = function () { chon(b); }; });
+  $('.tct-bot').onclick = function () { sl(+o.value - 1); };
+  $('.tct-cong').onclick = function () { sl(+o.value + 1); };
+  o.onchange = function () { sl(o.value); };
+  $('.tct-them').onclick = function () { them(this); };
+  sl(1); chon(dangChon() || $('.tct-qc button')); trongGio();
+  addEventListener('storage', trongGio);
+
+  /* thanh mua dính đáy (điện thoại) */
+  function veThanh() {
+    var b = dangChon(), g = b ? +b.dataset.gia : 0;
+    $('#thanhMua').innerHTML = '<div><small>' + e(x.ma) + (b ? ' · ' + e(b.textContent) : '') + '</small><b>' + (g ? gia(g) : 'Liên hệ') + '</b></div>' +
+      (g ? '<button class="nut dac" type="button" data-khong-lan>Thêm vào giỏ</button>' : '<a class="nut dac zalo" href="' + linkZalo() + '" target="_blank" data-chep="' + e(x.ma) + '">Hỏi qua Zalo</a>');
+    var nb = $('#thanhMua button'); if (nb) nb.onclick = function () { them(nb); };
+  }
+  veThanh();
+  var hm = $('.hang-mua'), lq = $('#lien-he');
+  function thanh() { $('#thanhMua').classList.toggle('hien', hm.getBoundingClientRect().bottom < 0 && lq.getBoundingClientRect().top > innerHeight); }
+  addEventListener('scroll', thanh, {passive: true}); thanh();
+
+  theoDoi($('#spChinh'));
+  requestAnimationFrame(function () { $('#khungAnh').classList.add('hien'); $('.sp-tt .tieu-de').classList.add('hien'); });
+  boAnh(x);
+  dungXemKi(x);
+
+  /* các món khác cùng dòng (hết thì lấy dòng khác) */
+  var khac = (l.sp || []).filter(function (y) { return y !== s && y.id && y.ten; });
+  (TD.loai || []).forEach(function (a) { if (a !== l && khac.length < 4) khac = khac.concat((a.sp || []).filter(function (y) { return y.id && y.ten; }).slice(0, 4 - khac.length)); });
+  if (khac.length) {
+    $('#lienQuan').hidden = false;
+    $('#lienQuan .nho').textContent = 'Cùng dòng ' + l.ten.toLowerCase();
+    var tc = $('#lienQuan .them a'); if (tc) { tc.href = 'tram-huong.html'; tc.textContent = 'Xem tất cả trầm đốt'; }
+    $('#luoiLq').innerHTML = khac.slice(0, 8).map(function (y) {
+      var g = (y.quyCach || []).reduce(function (m, z) { return +z.gia > 0 && (!m || +z.gia < m) ? +z.gia : m; }, 0);
+      return '<a class="tct-the" data-hien href="san-pham.html?tram=' + encodeURIComponent(y.id) + '"><span class="h">' + (y.anh ? hinh(y.anh, y.ten, 500) : '') + '</span>' +
+        '<b>' + e(y.ten) + '</b><small>' + (g ? 'Từ ' + gia(g) : 'Liên hệ') + '</small></a>';
+    }).join('');
+    theoDoi($('#lienQuan'));
+  }
+  dungHd(x);
+  thuGonTT();
 }

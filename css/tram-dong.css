@@ -226,3 +226,7 @@ html.chup .td-so-nhan{opacity:1!important;translate:none!important}
 .toi .tdc-cham i{background:rgba(233,227,214,.25)}.toi .tdc-cham i.on{background:var(--vang2)}
 @media (max-width:640px){.tdc-mui{width:calc(38px*var(--z));height:calc(38px*var(--z));top:calc(32% - 19px*var(--z))}.tdc-lui{left:calc(-6px*var(--z))}.tdc-toi{right:calc(-6px*var(--z))}}
 @media (prefers-reduced-motion:reduce){.tdc-ke{transition:none}}
+
+/* thẻ trầm: ảnh + tên bấm được → chi tiết */
+.th-sp .th-sp-anh,.th-sp .th-sp-ten{cursor:pointer}
+@media (hover:hover){.th-sp .th-sp-ten:hover{color:var(--vang)}}

@@ -591,3 +591,12 @@
     });
   });
 })();
+
+/* ================= BẤM ẢNH / TÊN THẺ TRẦM → TRANG CHI TIẾT (san-pham.html?tram=<id>) — 28/11 ================= */
+document.addEventListener('click', function (ev) {
+  if (ev.defaultPrevented || ev.button || ev.metaKey || ev.ctrlKey) return;
+  var vung = ev.target.closest && ev.target.closest('.th-sp .th-sp-anh, .th-sp .th-sp-ten'); if (!vung) return;
+  var the = vung.closest('.th-sp'); if (!the || !the.dataset.sp) return;
+  var url = 'san-pham.html?tram=' + encodeURIComponent(the.dataset.sp);
+  if (typeof sangTrang === 'function') sangTrang(url, the.dataset.ten); else location.href = url;
+});

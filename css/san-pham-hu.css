@@ -110,3 +110,27 @@ html.tu-the #khungAnh,html.tu-the #khungAnh img{transition:none!important}
   .kinh-lup,.den-anh figure,.dai-xk .dai,.dai-xk img,.thu-gon,.thu-gon::after,.xem-them svg{transition:none!important}
   .dai-xk .dai{clip-path:none}
 }
+
+/* ---------- chi tiết sản phẩm trầm đốt (san-pham.html?tram=…, js/chi-tiet.js dungTram) ---------- */
+.tct-chon{display:flex;align-items:center;gap:calc(16px*var(--z));margin:calc(16px*var(--z)) 0 0;flex-wrap:wrap}
+.tct-nhan{min-width:calc(78px*var(--z));font-size:calc(11px*var(--z));letter-spacing:.18em;text-transform:uppercase;color:var(--mo)}
+.tct-qc{display:flex;flex-wrap:wrap;gap:calc(8px*var(--z))}
+.tct-qc button{padding:calc(9px*var(--z)) calc(16px*var(--z));border-radius:calc(99px*var(--z));border:1px solid var(--vien);background:var(--the);font-size:clamp(calc(13px*var(--z)),calc(12.8px*var(--z)) + .06vw,calc(14px*var(--z)));transition:background .3s,color .3s,border-color .3s,scale .2s}
+.tct-qc button:hover{border-color:var(--muc)}
+.tct-qc button.on{background:var(--muc);border-color:var(--muc);color:#fff}
+.tct-qc button:active{scale:.96}
+.tct-sl{display:inline-flex;align-items:center;border:1px solid var(--vien);border-radius:calc(99px*var(--z));background:var(--the);overflow:hidden}
+.tct-sl button{width:calc(40px*var(--z));height:calc(40px*var(--z));font-size:calc(18px*var(--z));color:var(--muc);transition:background .25s}
+.tct-sl button:hover:not(:disabled){background:var(--giay2)}
+.tct-sl button:disabled{opacity:.35}
+.tct-sl input{width:calc(44px*var(--z));text-align:center;border:0;background:transparent;font:500 calc(15px*var(--z)) var(--sans);color:var(--chu);-moz-appearance:textfield}
+.tct-sl input::-webkit-inner-spin-button,.tct-sl input::-webkit-outer-spin-button{-webkit-appearance:none;margin:0}
+.tct-them svg{width:calc(18px*var(--z));height:calc(18px*var(--z))}
+.tct-them:disabled{opacity:.5;cursor:not-allowed}
+.tct-trong-gio a{color:var(--muc);text-decoration:underline;text-underline-offset:calc(3px*var(--z))}
+#luoiLq .tct-the{display:block;color:inherit;text-decoration:none}
+#luoiLq .tct-the .h{display:block;aspect-ratio:1;border-radius:calc(6px*var(--z));overflow:hidden;background:var(--giay2)}
+#luoiLq .tct-the img{width:100%;height:100%;object-fit:cover;transition:scale .8s var(--muot)}
+#luoiLq .tct-the:hover img{scale:1.05}
+#luoiLq .tct-the b{display:block;margin-top:calc(12px*var(--z));font:400 clamp(calc(15px*var(--z)),calc(14.5px*var(--z)) + .14vw,calc(17px*var(--z)))/1.35 var(--serif);color:var(--muc)}
+#luoiLq .tct-the small{display:block;margin-top:calc(4px*var(--z));color:var(--mo);font-size:calc(13px*var(--z))}
